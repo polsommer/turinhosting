@@ -12,6 +12,8 @@ class MarketingController extends Controller
      */
     public function index(): View
     {
-        return view('marketing.home');
+        return view('marketing.home', [
+            'pricing' => config('pricing'),
+        ]);
     }
 }
