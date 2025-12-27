@@ -1,0 +1,14 @@
+{
+  "users": [
+    {
+      "name": "Turin Admin",
+      "email": "admin@turinhosting.dev",
+      "image": "https://example.com/avatar/admin.png"
+    },
+    {
+      "name": "Sample Operator",
+      "email": "operator@turinhosting.dev",
+      "image": "https://example.com/avatar/operator.png"
+    }
+  ]
+}
