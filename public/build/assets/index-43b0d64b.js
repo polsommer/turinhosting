@@ -1,1 +1,0 @@
-import{d,g as o}from"./index-ddcb4aa7.js";import{r as s}from"./index-115dabe0.js";var l=6e4,a=36e5;function m(e,n,r){s(2,arguments);var i=d(e,n)/a;return o(r==null?void 0:r.roundingMethod)(i)}export{l as a,m as d,a as m};

@@ -1,1 +1,0 @@
-import{cA as i,a as t,k as c,cB as u}from"./index-7b302c2d.js";import{u as f}from"./usePermissions-17e74069.js";function l({action:a,matchAny:e=!1,renderOnError:o,children:r}){const n=f(a);return t(c,{children:e&&n.filter(s=>s).length>0||!e&&n.every(s=>s)?r:o})}const m=i(l,u),d=m;export{d as C};

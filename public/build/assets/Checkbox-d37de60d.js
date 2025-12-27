@@ -1,1 +1,0 @@
-import{D as t,a as m,U as r}from"./index-7b302c2d.js";import{s as e}from"./styles.module-099ddb6f.js";const x=t(({className:s,indeterminate:o,...a},c)=>m("input",{ref:c,type:"checkbox",className:r("form-checkbox",{[e.checkbox]:!0,[e.indeterminate]:o},s),...a}));export{x as C};
