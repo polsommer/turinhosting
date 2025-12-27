@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import ThemeSelect from './ThemeSelect';
 import MigrationChecker from './MigrationChecker';
 import ModeSelection from './ModeSelection';
+import StorefrontSetup from './StorefrontSetup';
 import { finishSetup } from '@/api/setup';
 
 export default () => {
@@ -43,7 +44,8 @@ export default () => {
                 {stage === 2 && <MigrationChecker />}
                 {stage === 3 && <ThemeSelect defaultColor={primary} />}
                 {stage === 4 && <ModeSelection />}
-                {stage === 5 && (
+                {stage === 5 && <StorefrontSetup />}
+                {stage === 6 && (
                     <div>
                         <h1 className={'text-5xl lg:text-8xl'}>
                             Thanks for choosing <span style={{ color: primary }}>Jexactyl</span>
@@ -63,7 +65,7 @@ export default () => {
                             Skip Setup <FontAwesomeIcon icon={faXmark} className={'ml-2 mt-1'} />
                         </Button.Text>
                     )}
-                    {stage < 5 ? (
+                    {stage < 6 ? (
                         <Button onClick={() => setStage(stage + 1)}>
                             Continue <FontAwesomeIcon icon={faArrowRight} className={'ml-2 mt-1'} />
                         </Button>
