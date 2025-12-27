@@ -17,10 +17,13 @@ export default function HomePage() {
         </p>
         <div className="flex flex-wrap gap-3">
           <Button asChild>
-            <Link href="/api/auth/signin">Sign in</Link>
+            <Link href="/login">Sign in</Link>
           </Button>
           <Button variant="outline" asChild>
-            <Link href="/api/auth/signout">Sign out</Link>
+            <Link href="/signup">Create account</Link>
+          </Button>
+          <Button variant="ghost" asChild>
+            <Link href="/dashboard">Go to dashboard</Link>
           </Button>
         </div>
       </section>
