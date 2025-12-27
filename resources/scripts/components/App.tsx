@@ -16,6 +16,8 @@ import { EverestSettings } from '@/state/everest';
 import Onboarding from '@/components/Onboarding';
 import SpeedDial from '@elements/SpeedDial';
 import SetupContainer from './setup/SetupContainer';
+import { useStoreState } from '@/state/hooks';
+import LandingPage from '@/components/landing/LandingPage';
 
 const AdminRouter = lazy(() => import('@/routers/AdminRouter'));
 const AuthenticationRouter = lazy(() => import('@/routers/AuthenticationRouter'));
@@ -41,6 +43,20 @@ interface ExtendedWindow extends Window {
         created_at: string;
     };
 }
+
+const PublicRoute = () => {
+    const isAuthenticated = useStoreState(state => !!state.user.data?.uuid);
+
+    if (isAuthenticated) {
+        return (
+            <Spinner.Suspense>
+                <DashboardRouter />
+            </Spinner.Suspense>
+        );
+    }
+
+    return <LandingPage />;
+};
 
 function App() {
     const { PterodactylUser, SiteConfiguration, EverestConfiguration, ThemeConfiguration } = window as ExtendedWindow;
@@ -138,12 +154,10 @@ function App() {
                                         <Route
                                             path="/*"
                                             element={
-                                                <AuthenticatedRoute>
-                                                    <Spinner.Suspense>
-                                                        {hasAdminRole && <SpeedDial />}
-                                                        <DashboardRouter />
-                                                    </Spinner.Suspense>
-                                                </AuthenticatedRoute>
+                                                <>
+                                                    {hasAdminRole && <SpeedDial />}
+                                                    <PublicRoute />
+                                                </>
                                             }
                                         />
 
