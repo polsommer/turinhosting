@@ -81,6 +81,9 @@ class Kernel extends HttpKernel
             SubstituteBindings::class,
             DaemonAuthenticate::class,
         ],
+        'stripe-webhook' => [
+            IsValidJson::class,
+        ],
     ];
 
     /**

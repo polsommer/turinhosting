@@ -15,6 +15,15 @@ return [
     ],
 
     /*
+     * Configure Stripe product & price identifiers.
+     */
+    'stripe' => [
+        'subscription_product' => env('STRIPE_SUBSCRIPTION_PRODUCT', ''),
+        'subscription_price' => env('STRIPE_SUBSCRIPTION_PRICE', ''),
+        'one_off_price' => env('STRIPE_ONE_OFF_PRICE', ''),
+    ],
+
+    /*
      * Choose whether to add PayPal integration to the Panel.
      */
     'paypal' => env('BILLING_PAYPAL', false),

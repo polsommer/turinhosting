@@ -62,6 +62,11 @@ class RouteServiceProvider extends ServiceProvider
                 ->prefix('/api/remote')
                 ->scopeBindings()
                 ->group(base_path('routes/api-remote.php'));
+
+            Route::middleware('stripe-webhook')
+                ->prefix('/api/stripe')
+                ->scopeBindings()
+                ->group(base_path('routes/api-stripe.php'));
         });
     }
 
@@ -105,6 +110,16 @@ class RouteServiceProvider extends ServiceProvider
                 config('http.rate_limit.application_period'),
                 config('http.rate_limit.application')
             )->by($key);
+        });
+
+        RateLimiter::for('stripe.checkout', function (Request $request) {
+            $key = optional($request->user())->uuid ?: $request->ip();
+
+            return Limit::perMinute(10)->by($key);
+        });
+
+        RateLimiter::for('stripe.webhook', function (Request $request) {
+            return Limit::perMinute(30)->by($request->ip());
         });
     }
 }

@@ -87,6 +87,15 @@ Route::prefix('/')->middleware([SuspendedAccount::class])->group(function () {
 
         Route::get('/orders', [Client\Billing\OrderController::class, 'index']);
         Route::get('/orders/{id}', [Client\Billing\OrderController::class, 'view']);
+
+        Route::post('/checkout/subscription', [Client\Billing\StripeCheckoutController::class, 'subscription'])
+            ->middleware(['throttle:stripe.checkout']);
+        Route::post('/checkout/one-off', [Client\Billing\StripeCheckoutController::class, 'oneOff'])
+            ->middleware(['throttle:stripe.checkout']);
+        Route::post('/portal', [Client\Billing\StripeCheckoutController::class, 'portal'])
+            ->middleware(['throttle:stripe.checkout']);
+        Route::get('/invoices', [Client\Billing\StripeCheckoutController::class, 'invoices'])
+            ->middleware(['throttle:stripe.checkout']);
     });
 
     /*
