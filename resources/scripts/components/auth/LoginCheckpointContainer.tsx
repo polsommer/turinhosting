@@ -70,11 +70,14 @@ function LoginCheckpointContainer() {
 
 const EnhancedForm = withFormik<Props & { location: Location }, Values>({
     handleSubmit: ({ code, recoveryCode }, { setSubmitting, props: { clearAndAddHttpError, location } }) => {
+        const searchParams = new URLSearchParams(location.search);
+        const returnTo = location.state?.returnTo || searchParams.get('return') || undefined;
         checkpoint(location.state?.token || '', code, recoveryCode)
             .then(response => {
                 if (response.complete) {
+                    const destination = response.intended || returnTo || '/';
                     // @ts-expect-error this is valid
-                    window.location = response.intended || '/';
+                    window.location = destination;
                     return;
                 }
 

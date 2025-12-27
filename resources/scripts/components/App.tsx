@@ -23,6 +23,7 @@ const AdminRouter = lazy(() => import('@/routers/AdminRouter'));
 const AuthenticationRouter = lazy(() => import('@/routers/AuthenticationRouter'));
 const DashboardRouter = lazy(() => import('@/routers/DashboardRouter'));
 const ServerRouter = lazy(() => import('@/routers/ServerRouter'));
+const Storefront = lazy(() => import('@/components/storefront/Storefront'));
 
 interface ExtendedWindow extends Window {
     SiteConfiguration?: SiteSettings;
@@ -122,6 +123,15 @@ function App() {
                                             element={
                                                 <Spinner.Suspense>
                                                     <AuthenticationRouter />
+                                                </Spinner.Suspense>
+                                            }
+                                        />
+
+                                        <Route
+                                            path="/store"
+                                            element={
+                                                <Spinner.Suspense>
+                                                    <Storefront />
                                                 </Spinner.Suspense>
                                             }
                                         />
