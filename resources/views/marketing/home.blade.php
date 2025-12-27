@@ -98,42 +98,82 @@
                             <div>
                                 <p class="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-300">Pricing</p>
                                 <h2 class="mt-4 text-3xl font-semibold">Plans built for every stage.</h2>
+                                <a class="mt-3 inline-flex text-sm font-semibold text-cyan-200 hover:text-cyan-100" href="#compare">
+                                    Compare plans →
+                                </a>
                             </div>
                             <p class="max-w-md text-sm text-white/70">
                                 Choose a plan that scales with you. Upgrade instantly as your team grows.
                             </p>
                         </div>
                         <div class="mt-10 grid gap-6 lg:grid-cols-3">
-                            <div class="rounded-3xl border border-white/10 bg-slate-950/60 p-8">
-                                <p class="text-sm font-semibold uppercase tracking-[0.3em] text-white/50">Starter</p>
-                                <p class="mt-4 text-3xl font-semibold">$19<span class="text-base font-normal text-white/60">/mo</span></p>
-                                <ul class="mt-6 space-y-3 text-sm text-white/70">
-                                    <li>1 workspace</li>
-                                    <li>Community support</li>
-                                    <li>5 projects</li>
-                                </ul>
-                                <a class="mt-8 inline-flex w-full justify-center rounded-full border border-white/20 px-4 py-3 text-sm font-semibold text-white hover:border-white/40" href="/auth/register">Start free</a>
+                            @foreach ($pricing['plans'] as $plan)
+                                <div class="relative rounded-3xl border {{ $plan['highlight'] ? 'border-cyan-400/60 bg-gradient-to-br from-cyan-400/10 via-slate-900/70 to-slate-900/80 shadow-xl' : 'border-white/10 bg-slate-950/60' }} p-8">
+                                    @if ($plan['promo_badge'])
+                                        <span class="absolute right-6 top-6 rounded-full {{ $plan['highlight'] ? 'bg-cyan-400 text-slate-900' : 'bg-white/10 text-white' }} px-3 py-1 text-xs font-semibold">
+                                            {{ $plan['promo_badge'] }}
+                                        </span>
+                                    @endif
+                                    <p class="text-sm font-semibold uppercase tracking-[0.3em] {{ $plan['highlight'] ? 'text-cyan-200' : 'text-white/50' }}">
+                                        {{ $plan['name'] }}
+                                    </p>
+                                    <p class="mt-4 text-3xl font-semibold">
+                                        {{ $plan['price'] }}<span class="text-base font-normal text-white/60">{{ $plan['term'] }}</span>
+                                    </p>
+                                    <p class="mt-2 text-xs uppercase tracking-[0.2em] text-white/50">{{ $plan['billing_term'] }}</p>
+                                    <ul class="mt-6 space-y-3 text-sm text-white/70">
+                                        @foreach ($plan['specs'] as $spec)
+                                            <li>{{ $spec }}</li>
+                                        @endforeach
+                                    </ul>
+                                    <a class="mt-8 inline-flex w-full justify-center rounded-full {{ $plan['highlight'] ? 'bg-cyan-400 text-slate-900 hover:bg-cyan-300' : 'border border-white/20 text-white hover:border-white/40' }} px-4 py-3 text-sm font-semibold" href="{{ $plan['cta_url'] }}">
+                                        {{ $plan['cta'] }}
+                                    </a>
+                                </div>
+                            @endforeach
+                        </div>
+                        <div id="compare" class="mt-12 overflow-hidden rounded-3xl border border-white/10 bg-slate-950/60">
+                            <div class="border-b border-white/10 px-6 py-6 md:flex md:items-center md:justify-between">
+                                <div>
+                                    <p class="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-300">Comparison</p>
+                                    <h3 class="mt-3 text-2xl font-semibold">{{ $pricing['comparison']['headline'] }}</h3>
+                                </div>
+                                <p class="mt-4 text-sm text-white/70 md:mt-0">
+                                    Quickly scan the differences and jump to the plan that fits your build.
+                                </p>
                             </div>
-                            <div class="rounded-3xl border border-cyan-400/40 bg-gradient-to-br from-cyan-400/10 via-slate-900/70 to-slate-900/80 p-8 shadow-xl">
-                                <p class="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-200">Growth</p>
-                                <p class="mt-4 text-3xl font-semibold">$59<span class="text-base font-normal text-white/60">/mo</span></p>
-                                <ul class="mt-6 space-y-3 text-sm text-white/70">
-                                    <li>10 workspaces</li>
-                                    <li>Priority support</li>
-                                    <li>Unlimited projects</li>
-                                </ul>
-                                <a class="mt-8 inline-flex w-full justify-center rounded-full bg-cyan-400 px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-cyan-300" href="/auth/register">Choose Growth</a>
+                            <div class="grid gap-6 px-6 py-8 lg:grid-cols-4">
+                                <div class="text-sm text-white/60">Specs</div>
+                                @foreach ($pricing['plans'] as $plan)
+                                    <div class="text-sm font-semibold {{ $plan['highlight'] ? 'text-cyan-200' : 'text-white' }}">
+                                        {{ $plan['name'] }}
+                                        @if ($plan['highlight'])
+                                            <span class="ml-2 rounded-full bg-cyan-400/20 px-2 py-0.5 text-xs text-cyan-200">Most popular</span>
+                                        @endif
+                                    </div>
+                                @endforeach
+                                @foreach ($pricing['comparison']['rows'] as $row)
+                                    <div class="border-t border-white/10 pt-4 text-sm text-white/70 lg:pt-6">{{ $row['label'] }}</div>
+                                    @foreach ($row['values'] as $value)
+                                        <div class="border-t border-white/10 pt-4 text-sm text-white lg:pt-6">{{ $value }}</div>
+                                    @endforeach
+                                @endforeach
                             </div>
-                            <div class="rounded-3xl border border-white/10 bg-slate-950/60 p-8">
-                                <p class="text-sm font-semibold uppercase tracking-[0.3em] text-white/50">Enterprise</p>
-                                <p class="mt-4 text-3xl font-semibold">Custom</p>
-                                <ul class="mt-6 space-y-3 text-sm text-white/70">
-                                    <li>Dedicated infrastructure</li>
-                                    <li>24/7 phone support</li>
-                                    <li>Compliance reporting</li>
-                                </ul>
-                                <a class="mt-8 inline-flex w-full justify-center rounded-full border border-white/20 px-4 py-3 text-sm font-semibold text-white hover:border-white/40" href="/auth/register">Talk to sales</a>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="promo-banner" class="border-t border-white/10">
+                    <div class="mx-auto w-full max-w-6xl px-6 py-12">
+                        <div class="rounded-3xl border border-cyan-400/40 bg-gradient-to-r from-cyan-500/10 via-slate-900/80 to-slate-900/90 p-8 md:flex md:items-center md:justify-between">
+                            <div>
+                                <p class="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-300">{{ $pricing['banner']['eyebrow'] }}</p>
+                                <h3 class="mt-4 text-2xl font-semibold md:text-3xl">{{ $pricing['banner']['title'] }}</h3>
+                                <p class="mt-3 text-sm text-white/70">{{ $pricing['banner']['description'] }}</p>
                             </div>
+                            <a class="mt-6 inline-flex items-center justify-center rounded-full bg-cyan-400 px-6 py-3 text-sm font-semibold text-slate-900 hover:bg-cyan-300 md:mt-0" href="{{ $pricing['banner']['cta_url'] }}">
+                                {{ $pricing['banner']['cta'] }}
+                            </a>
                         </div>
                     </div>
                 </section>
@@ -141,21 +181,13 @@
                 <section id="promos" class="border-t border-white/10">
                     <div class="mx-auto w-full max-w-6xl px-6 py-16">
                         <div class="grid gap-6 lg:grid-cols-3">
-                            <div class="rounded-2xl border border-white/10 bg-slate-900/40 p-6">
-                                <p class="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-300">Promo</p>
-                                <h3 class="mt-3 text-xl font-semibold">Launch credits</h3>
-                                <p class="mt-3 text-sm text-white/70">Get $200 in credits when you sign up today.</p>
-                            </div>
-                            <div class="rounded-2xl border border-white/10 bg-slate-900/40 p-6">
-                                <p class="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-300">Promo</p>
-                                <h3 class="mt-3 text-xl font-semibold">Migration assistance</h3>
-                                <p class="mt-3 text-sm text-white/70">We help you move workloads in a single afternoon.</p>
-                            </div>
-                            <div class="rounded-2xl border border-white/10 bg-slate-900/40 p-6">
-                                <p class="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-300">Promo</p>
-                                <h3 class="mt-3 text-xl font-semibold">Annual savings</h3>
-                                <p class="mt-3 text-sm text-white/70">Save 15% when you commit to a yearly plan.</p>
-                            </div>
+                            @foreach ($pricing['promos'] as $promo)
+                                <div class="rounded-2xl border border-white/10 bg-slate-900/40 p-6">
+                                    <p class="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-300">{{ $promo['eyebrow'] }}</p>
+                                    <h3 class="mt-3 text-xl font-semibold">{{ $promo['title'] }}</h3>
+                                    <p class="mt-3 text-sm text-white/70">{{ $promo['description'] }}</p>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
                 </section>
