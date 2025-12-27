@@ -1,0 +1,1 @@
+import{a as t,U as a}from"./index-7b302c2d.js";const l=({dark:e,className:o,children:s})=>t("code",{className:a("inline-block rounded px-2 py-1 font-mono text-sm",o,{"bg-neutral-700":!e,"bg-neutral-900 text-slate-100":e}),children:s});export{l as C};

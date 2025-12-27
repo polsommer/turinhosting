@@ -1,0 +1,1 @@
+import{n as c,a as r,a5 as u,cX as p}from"./index-7b302c2d.js";function d(o){return function(t){return function({open:e,onClose:a,...i}){const[n,s]=c(o||{});return r(p.Provider,{value:{props:n,setProps:s,close:a},children:r(u,{...n,open:e,onClose:a,children:r(t,{...i})})})}}}export{d as a};

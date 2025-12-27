@@ -1,0 +1,1 @@
+import{i,a}from"./objects-404b3e12.js";const m=n=>{const o=[void 0,null,""],c=u=>Object.entries(u).filter(([e,t])=>!o.includes(t)).reduce((e,[t,s])=>{const r=i(s)?c(s):s;return i(r)&&a(r)?e:{...e,[t]:r}},{});return c(n)};export{m as u};

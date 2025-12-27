@@ -1,0 +1,1 @@
+import{a as i,cy as n}from"./index-7b302c2d.js";function c({children:a,duration:e,...r}){const[t,o]=Array.isArray(e)?e:e?[e,e]:["duration-200","duration-100"];return i(n,{...r,enter:`ease-out ${t}`,enterFrom:"opacity-0",enterTo:"opacity-100",leave:`ease-in ${o}`,leaveFrom:"opacity-100",leaveTo:"opacity-0",children:a})}export{c as F};

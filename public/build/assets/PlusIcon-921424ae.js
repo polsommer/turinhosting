@@ -1,0 +1,1 @@
+import{D as t,Q as o}from"./index-7b302c2d.js";function e(r,n){return o("svg",Object.assign({xmlns:"http://www.w3.org/2000/svg",fill:"none",viewBox:"0 0 24 24",strokeWidth:2,stroke:"currentColor","aria-hidden":"true",ref:n},r),o("path",{strokeLinecap:"round",strokeLinejoin:"round",d:"M12 4v16m8-8H4"}))}const s=t(e),a=s;export{a as P};
