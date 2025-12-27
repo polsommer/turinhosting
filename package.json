@@ -13,6 +13,9 @@
         "coverage": "vitest run --coverage",
         "dev": "vite",
         "lint": "eslint ./resources/scripts/**/*.{ts,tsx} --ext .ts,.tsx",
+        "lint:fix": "eslint ./resources/scripts/**/*.{ts,tsx} --ext .ts,.tsx --fix",
+        "format": "prettier --write \"app/**/*.{php,md}\" \"config/**/*.{php}\" \"resources/**/*.{ts,tsx,js,jsx,json,md,mdx,css,scss,yml,yaml}\" \"routes/**/*.{php}\" \"next-app/**/*.{ts,tsx,js,jsx,json,md,mdx,css,scss,yml,yaml}\"",
+        "format:check": "prettier --check \"app/**/*.{php,md}\" \"config/**/*.{php}\" \"resources/**/*.{ts,tsx,js,jsx,json,md,mdx,css,scss,yml,yaml}\" \"routes/**/*.{php}\" \"next-app/**/*.{ts,tsx,js,jsx,json,md,mdx,css,scss,yml,yaml}\"",
         "test": "vitest run",
         "test:ui": "vitest --ui"
     },
