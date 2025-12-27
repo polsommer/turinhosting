@@ -52,20 +52,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Storefront Settings
-    |--------------------------------------------------------------------------
-    | Configure the landing page copy, CTA text, pricing visibility, and
-    | contact details for the public storefront.
-    */
-    'storefront_headline' => 'Deliver standout VPS hosting with a professional front door and the power of JexPanel.',
-    'storefront_subheading' =>
-        'Create a premium experience for your customers with lightning-fast provisioning, clear pricing, and a control panel that feels effortless to navigate.',
-    'storefront_cta' => 'View pricing',
-    'storefront_contact_email' => 'sales@turinhosting.com',
-    'storefront_show_pricing' => true,
-
-    /*
-    |--------------------------------------------------------------------------
     | Panel Mode
     |--------------------------------------------------------------------------
     | The 'mode' of the Panel controls what features are automatically hidden.

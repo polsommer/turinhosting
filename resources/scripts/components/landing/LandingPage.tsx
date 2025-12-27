@@ -16,20 +16,11 @@ interface PricingPlan {
 }
 
 const LandingPage = () => {
-    const { name, storefront } = useStoreState(state => state.settings.data!);
+    const { name } = useStoreState(state => state.settings.data!);
     const theme = useStoreState(state => state.theme.data!);
     const billing = useStoreState(state => state.everest.data?.billing);
     const [pricing, setPricing] = useState<PublicPricingPayload | null>(null);
     const [pricingError, setPricingError] = useState(false);
-    const contactEmail = storefront?.contact_email ?? 'sales@turinhosting.com';
-    const heroHeadline =
-        storefront?.headline ??
-        'Deliver standout VPS hosting with a professional front door and the power of JexPanel.';
-    const heroSubheading =
-        storefront?.subheading ??
-        'Create a premium experience for your customers with lightning-fast provisioning, clear pricing, and a control panel that feels effortless to navigate.';
-    const heroCtaLabel = storefront?.cta_label ?? 'View pricing';
-    const showPricing = storefront?.show_pricing ?? true;
 
     const highlights = useMemo(
         () => [
@@ -82,7 +73,7 @@ const LandingPage = () => {
                 specs: ['2 vCPU', '4 GB RAM', '80 GB NVMe', '2 TB transfer', '1 snapshot'],
                 cta: {
                     label: 'Contact sales',
-                    href: `mailto:${contactEmail}`,
+                    href: 'mailto:sales@turinhosting.com',
                 },
             },
             {
@@ -93,7 +84,7 @@ const LandingPage = () => {
                 specs: ['3 vCPU', '6 GB RAM', '120 GB NVMe', '3 TB transfer', '3 snapshots'],
                 cta: {
                     label: 'Contact sales',
-                    href: `mailto:${contactEmail}`,
+                    href: 'mailto:sales@turinhosting.com',
                 },
             },
             {
@@ -105,7 +96,7 @@ const LandingPage = () => {
                 featured: true,
                 cta: {
                     label: 'Contact sales',
-                    href: `mailto:${contactEmail}`,
+                    href: 'mailto:sales@turinhosting.com',
                 },
             },
             {
@@ -116,7 +107,7 @@ const LandingPage = () => {
                 specs: ['6 vCPU', '12 GB RAM', '240 GB NVMe', '6 TB transfer', 'Daily backups'],
                 cta: {
                     label: 'Contact sales',
-                    href: `mailto:${contactEmail}`,
+                    href: 'mailto:sales@turinhosting.com',
                 },
             },
             {
@@ -127,7 +118,7 @@ const LandingPage = () => {
                 specs: ['8 vCPU', '16 GB RAM', '320 GB NVMe', '8 TB transfer', 'Advanced monitoring'],
                 cta: {
                     label: 'Contact sales',
-                    href: `mailto:${contactEmail}`,
+                    href: 'mailto:sales@turinhosting.com',
                 },
             },
             {
@@ -138,18 +129,14 @@ const LandingPage = () => {
                 specs: ['16 vCPU', '32 GB RAM', '640 GB NVMe', '12 TB transfer', 'Priority support'],
                 cta: {
                     label: 'Contact sales',
-                    href: `mailto:${contactEmail}`,
+                    href: 'mailto:sales@turinhosting.com',
                 },
             },
         ],
-        [contactEmail],
+        [],
     );
 
     useEffect(() => {
-        if (!showPricing) {
-            return;
-        }
-
         let active = true;
 
         getPublicPricing()
@@ -167,13 +154,9 @@ const LandingPage = () => {
         return () => {
             active = false;
         };
-    }, [showPricing]);
+    }, []);
 
     const pricingPlans = useMemo<PricingPlan[]>(() => {
-        if (!showPricing) {
-            return [];
-        }
-
         if (!pricing?.enabled || pricingError || !pricing.products.length) {
             return fallbackPlans;
         }
@@ -204,7 +187,7 @@ const LandingPage = () => {
                 href: `/account/billing/order/${product.id}`,
             },
         }));
-    }, [billing?.currency, fallbackPlans, pricing, pricingError, showPricing]);
+    }, [billing?.currency, fallbackPlans, pricing, pricingError]);
 
     const addOns = useMemo(
         () => [
@@ -280,11 +263,9 @@ const LandingPage = () => {
                         <a className="hover:text-white" href="#platform">
                             Platform
                         </a>
-                        {showPricing && (
-                            <a className="hover:text-white" href="#pricing">
-                                Pricing
-                            </a>
-                        )}
+                        <a className="hover:text-white" href="#pricing">
+                            Pricing
+                        </a>
                         <a className="hover:text-white" href="#promotions">
                             Promotions
                         </a>
@@ -329,18 +310,19 @@ const LandingPage = () => {
                                 Sleek. Secure. Scalable.
                             </p>
                             <h1 className="mt-4 text-4xl font-semibold leading-tight text-white md:text-5xl">
-                                {heroHeadline}
+                                Deliver standout VPS hosting with a professional front door and the power of JexPanel.
                             </h1>
                             <p className="mt-6 text-lg text-slate-300">
-                                {heroSubheading}
+                                Create a premium experience for your customers with lightning-fast provisioning, clear
+                                pricing, and a control panel that feels effortless to navigate.
                             </p>
                             <div className="mt-8 flex flex-wrap gap-4">
                                 <a
-                                    href={showPricing ? '#pricing' : `mailto:${contactEmail}`}
+                                    href="#pricing"
                                     className="rounded-full px-6 py-3 text-sm font-semibold text-white"
                                     style={{ backgroundColor: theme.colors.primary }}
                                 >
-                                    {heroCtaLabel}
+                                    View pricing
                                 </a>
                                 <a
                                     href="#promotions"
@@ -470,8 +452,7 @@ const LandingPage = () => {
                     </div>
                 </section>
 
-                {showPricing && (
-                    <section id="pricing" className="mx-auto w-full max-w-6xl px-6 py-16">
+                <section id="pricing" className="mx-auto w-full max-w-6xl px-6 py-16">
                     <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                         <div>
                             <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Simple pricing</p>
@@ -535,14 +516,13 @@ const LandingPage = () => {
                             <p className="text-xs text-slate-400">Build bespoke plans with dedicated IPs and compliance.</p>
                         </div>
                         <a
-                            href={`mailto:${contactEmail}`}
+                            href="mailto:sales@turinhosting.com"
                             className="rounded-full border border-slate-700 px-5 py-2 text-sm font-semibold text-slate-200"
                         >
                             Talk to sales
                         </a>
                     </div>
                 </section>
-                )}
 
                 <section id="promotions" className="border-t border-slate-900/80 bg-slate-950/80">
                     <div className="mx-auto w-full max-w-6xl px-6 py-16">
@@ -651,7 +631,7 @@ const LandingPage = () => {
                                     Start with JexPanel
                                 </a>
                                 <a
-                                    href={`mailto:${contactEmail}`}
+                                    href="mailto:support@turinhosting.com"
                                     className="rounded-full border border-slate-700 px-6 py-3 text-sm font-semibold text-slate-200"
                                 >
                                     Contact sales
@@ -672,11 +652,9 @@ const LandingPage = () => {
                         <a className="hover:text-white" href="#features">
                             Features
                         </a>
-                        {showPricing && (
-                            <a className="hover:text-white" href="#pricing">
-                                Pricing
-                            </a>
-                        )}
+                        <a className="hover:text-white" href="#pricing">
+                            Pricing
+                        </a>
                         <a className="hover:text-white" href="#promotions">
                             Promotions
                         </a>

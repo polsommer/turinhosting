@@ -24,15 +24,6 @@ class AssetComposer
                 'enabled' => config('recaptcha.enabled', false),
                 'siteKey' => config('recaptcha.website_key') ?? '',
             ],
-            'storefront' => [
-                'headline' => config('app.storefront_headline')
-                    ?? 'Deliver standout VPS hosting with a professional front door and the power of JexPanel.',
-                'subheading' => config('app.storefront_subheading')
-                    ?? 'Create a premium experience for your customers with lightning-fast provisioning, clear pricing, and a control panel that feels effortless to navigate.',
-                'cta_label' => config('app.storefront_cta') ?? 'View pricing',
-                'contact_email' => config('app.storefront_contact_email') ?? 'sales@turinhosting.com',
-                'show_pricing' => boolval(config('app.storefront_show_pricing', true)),
-            ],
         ]);
     }
 }

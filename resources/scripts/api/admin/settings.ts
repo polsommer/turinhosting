@@ -8,17 +8,7 @@ export interface GeneralSettings {
     speed_dial: boolean;
 }
 
-export interface StorefrontSettings {
-    storefront_headline: string;
-    storefront_subheading: string;
-    storefront_cta: string;
-    storefront_contact_email: string;
-    storefront_show_pricing: boolean;
-}
-
-export type SettingsUpdatePayload = Partial<GeneralSettings & StorefrontSettings>;
-
-export const updateGeneralSettings = async (settings: SettingsUpdatePayload): Promise<void> => {
+export const updateGeneralSettings = async (settings: Partial<GeneralSettings>): Promise<void> => {
     return new Promise((resolve, reject) => {
         http.patch(`/api/application/settings`, settings)
             .then(() => resolve())

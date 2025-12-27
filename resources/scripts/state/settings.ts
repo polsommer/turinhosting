@@ -15,13 +15,6 @@ export interface SiteSettings {
         enabled: boolean;
         siteKey: string;
     };
-    storefront: {
-        headline: string;
-        subheading: string;
-        cta_label: string;
-        contact_email: string;
-        show_pricing: boolean;
-    };
 }
 
 export interface SettingsStore {

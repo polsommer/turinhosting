@@ -14,11 +14,6 @@ class GeneralSettingsRequest extends ApplicationApiRequest
             'auto_update' => 'nullable|bool',
             'indicators' => 'nullable|bool',
             'speed_dial' => 'nullable|bool',
-            'storefront_headline' => 'nullable|string|max:120',
-            'storefront_subheading' => 'nullable|string|max:255',
-            'storefront_cta' => 'nullable|string|max:40',
-            'storefront_contact_email' => 'nullable|email|max:191',
-            'storefront_show_pricing' => 'nullable|bool',
         ];
     }
 
