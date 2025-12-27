@@ -1,0 +1,1 @@
+function i(t){return Math.floor(t*1024*1024)}function f(t,o=2){if(t<1)return"0 Bytes";o=Math.floor(Math.max(0,o));const n=Math.floor(Math.log(t)/Math.log(1024));return`${Number((t/Math.pow(1024,n)).toFixed(o))} ${["Bytes","KiB","MiB","GiB","TiB"][n]}`}function a(t){return t.length>0&&t[0]==="["?t:/([a-f0-9:]+:+)+[a-f0-9]+/.test(t)?`[${t}]`:t}export{f as b,a as i,i as m};

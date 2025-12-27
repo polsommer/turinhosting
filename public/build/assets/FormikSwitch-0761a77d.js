@@ -1,0 +1,1 @@
+import{a as o,ao as c}from"./index-7b302c2d.js";import{F as s}from"./FormikFieldWrapper-c6487a3c.js";import{S as F}from"./Switch-1f834982.js";const h=({name:e,label:t,...a})=>o(s,{name:e,children:o(c,{name:e,children:({field:r,form:i})=>o(F,{name:e,label:t,onChange:()=>{i.setFieldTouched(e),i.setFieldValue(r.name,!r.value)},defaultChecked:r.value,...a})})}),m=h;export{m as F};

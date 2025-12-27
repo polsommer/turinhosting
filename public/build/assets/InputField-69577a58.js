@@ -1,0 +1,1 @@
+import{D as p,a as u,U as l}from"./index-7b302c2d.js";import{s as o}from"./styles.module-099ddb6f.js";var e=(s=>(s[s.Normal=0]="Normal",s[s.Snug=1]="Snug",s[s.Loose=2]="Loose",s))(e||{});const r=p(({className:s,variant:t,...m},n)=>u("input",{ref:n,className:l("form-input",o.text_input,{[o.loose]:t===2},s),...m})),c=Object.assign(r,{Variants:e}),N=c;export{N as I};
