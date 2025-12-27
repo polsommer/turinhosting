@@ -1,9 +1,26 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useStoreState } from '@/state/hooks';
+import { getPublicPricing, PublicPricingPayload } from '@/api/public/pricing';
+
+interface PricingPlan {
+    name: string;
+    price: string;
+    cadence: string;
+    description: string;
+    specs: string[];
+    featured?: boolean;
+    cta: {
+        label: string;
+        href: string;
+    };
+}
 
 const LandingPage = () => {
     const { name } = useStoreState(state => state.settings.data!);
     const theme = useStoreState(state => state.theme.data!);
+    const billing = useStoreState(state => state.everest.data?.billing);
+    const [pricing, setPricing] = useState<PublicPricingPayload | null>(null);
+    const [pricingError, setPricingError] = useState(false);
 
     const highlights = useMemo(
         () => [
@@ -46,7 +63,7 @@ const LandingPage = () => {
         [],
     );
 
-    const plans = useMemo(
+    const fallbackPlans = useMemo<PricingPlan[]>(
         () => [
             {
                 name: 'Starter VPS',
@@ -54,6 +71,10 @@ const LandingPage = () => {
                 cadence: '/mo',
                 description: 'Launch personal projects with reliable, fast storage.',
                 specs: ['2 vCPU', '4 GB RAM', '80 GB NVMe', '2 TB transfer', '1 snapshot'],
+                cta: {
+                    label: 'Contact sales',
+                    href: 'mailto:sales@turinhosting.com',
+                },
             },
             {
                 name: 'Developer VPS',
@@ -61,6 +82,10 @@ const LandingPage = () => {
                 cadence: '/mo',
                 description: 'Ideal for staging, CI runners, and feature branches.',
                 specs: ['3 vCPU', '6 GB RAM', '120 GB NVMe', '3 TB transfer', '3 snapshots'],
+                cta: {
+                    label: 'Contact sales',
+                    href: 'mailto:sales@turinhosting.com',
+                },
             },
             {
                 name: 'Growth VPS',
@@ -69,6 +94,10 @@ const LandingPage = () => {
                 description: 'Balanced performance for teams and SaaS workloads.',
                 specs: ['4 vCPU', '8 GB RAM', '160 GB NVMe', '4 TB transfer', 'Weekly backups'],
                 featured: true,
+                cta: {
+                    label: 'Contact sales',
+                    href: 'mailto:sales@turinhosting.com',
+                },
             },
             {
                 name: 'Business VPS',
@@ -76,6 +105,10 @@ const LandingPage = () => {
                 cadence: '/mo',
                 description: 'Scale revenue workloads with dedicated resources.',
                 specs: ['6 vCPU', '12 GB RAM', '240 GB NVMe', '6 TB transfer', 'Daily backups'],
+                cta: {
+                    label: 'Contact sales',
+                    href: 'mailto:sales@turinhosting.com',
+                },
             },
             {
                 name: 'Scale VPS',
@@ -83,6 +116,10 @@ const LandingPage = () => {
                 cadence: '/mo',
                 description: 'High-throughput infrastructure for demanding workloads.',
                 specs: ['8 vCPU', '16 GB RAM', '320 GB NVMe', '8 TB transfer', 'Advanced monitoring'],
+                cta: {
+                    label: 'Contact sales',
+                    href: 'mailto:sales@turinhosting.com',
+                },
             },
             {
                 name: 'Enterprise VPS',
@@ -90,10 +127,67 @@ const LandingPage = () => {
                 cadence: '/mo',
                 description: 'Mission-critical performance with priority routing.',
                 specs: ['16 vCPU', '32 GB RAM', '640 GB NVMe', '12 TB transfer', 'Priority support'],
+                cta: {
+                    label: 'Contact sales',
+                    href: 'mailto:sales@turinhosting.com',
+                },
             },
         ],
         [],
     );
+
+    useEffect(() => {
+        let active = true;
+
+        getPublicPricing()
+            .then(data => {
+                if (active) {
+                    setPricing(data);
+                }
+            })
+            .catch(() => {
+                if (active) {
+                    setPricingError(true);
+                }
+            });
+
+        return () => {
+            active = false;
+        };
+    }, []);
+
+    const pricingPlans = useMemo<PricingPlan[]>(() => {
+        if (!pricing?.enabled || pricingError || !pricing.products.length) {
+            return fallbackPlans;
+        }
+
+        const currency = pricing.currency ?? billing?.currency ?? { symbol: '$', code: 'USD' };
+        const maxProducts = 6;
+
+        const formatGiB = (value: number) => {
+            const gib = value / 1024;
+            return Number.isInteger(gib) ? `${gib} GiB` : `${gib.toFixed(1)} GiB`;
+        };
+
+        return pricing.products.slice(0, maxProducts).map((product, index) => ({
+            name: product.name,
+            price: `${currency.symbol}${Number(product.price).toFixed(2)}`,
+            cadence: `${currency.code.toUpperCase()} /mo`,
+            description: product.description || 'Reliable infrastructure for modern workloads.',
+            specs: [
+                `${product.limits.cpu}% CPU`,
+                `${formatGiB(product.limits.memory)} RAM`,
+                `${formatGiB(product.limits.disk)} Storage`,
+                `${product.limits.backup} backup slots`,
+                `${product.limits.database} database slots`,
+            ],
+            featured: index === 2,
+            cta: {
+                label: 'Order now',
+                href: `/account/billing/order/${product.id}`,
+            },
+        }));
+    }, [billing?.currency, fallbackPlans, pricing, pricingError]);
 
     const addOns = useMemo(
         () => [
@@ -368,8 +462,14 @@ const LandingPage = () => {
                             Transparent monthly pricing with predictable resources and no hidden fees.
                         </p>
                     </div>
+                    {(pricingError || (pricing && !pricing.enabled)) && (
+                        <div className="mt-6 rounded-2xl border border-slate-800 bg-slate-900/60 p-4 text-sm text-slate-300">
+                            Billing is currently unavailable. Contact sales to build a custom plan or request access to
+                            our storefront.
+                        </div>
+                    )}
                     <div className="mt-10 grid gap-6 lg:grid-cols-3">
-                        {plans.map(plan => (
+                        {pricingPlans.map(plan => (
                             <div
                                 key={plan.name}
                                 className={`relative rounded-3xl border bg-slate-900/60 p-6 ${
@@ -401,11 +501,11 @@ const LandingPage = () => {
                                     ))}
                                 </ul>
                                 <a
-                                    href="/auth/login"
+                                    href={plan.cta.href}
                                     className="mt-6 inline-flex w-full items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-white"
                                     style={{ backgroundColor: theme.colors.primary }}
                                 >
-                                    Deploy now
+                                    {plan.cta.label}
                                 </a>
                             </div>
                         ))}
