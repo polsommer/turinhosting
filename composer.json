@@ -60,6 +60,7 @@
         ],
         "psr-4": {
             "Everest\\": "app/",
+            "JexPanel\\": "lib/jexpanel/",
             "Database\\Factories\\": "database/Factories/",
             "Database\\Seeders\\": "database/Seeders/"
         }
