@@ -1,9 +1,29 @@
-# Jexpanel (formerly Jexactyl)
+# Jexpanel
 
-Jexpanel is a modern game server management panel with integrated billing. This repository includes:
+Modern, developer-friendly game server management with integrated billing. This monorepo ships:
 
-- **Laravel panel** (root of the repo).
-- **Next.js starter** (`next-app/`) for onboarding, Auth.js, Prisma, and Stripe integrations.
+- **Laravel panel** (root): the core app, API, and admin experience.
+- **Next.js starter** (`next-app/`): onboarding, Auth.js, Prisma, and Stripe integrations.
+
+> Formerly known as **Jexactyl**.
+
+## Highlights
+
+- ✅ **Laravel 10** panel with queue, cache, and scheduler support.
+- ✅ **Next.js 14** starter for auth, billing, and onboarding flows.
+- ✅ **Stripe** billing integrations (webhooks + CLI support).
+- ✅ **Docker Compose** for local infrastructure (DB/Redis).
+
+## Quick start (local)
+
+```bash
+cp .env.example .env
+composer install
+php artisan key:generate
+php artisan migrate --seed
+pnpm install
+pnpm dev
+```
 
 ## Prerequisites
 
@@ -116,3 +136,22 @@ Sample seed data lives in `next-app/prisma/seed-data.json`. Run:
 cd next-app
 pnpm prisma:seed
 ```
+
+## Project structure
+
+```
+.
+├── app/               # Laravel app
+├── routes/            # Laravel routes
+├── resources/         # Blade views, assets
+├── config/            # Laravel config
+├── next-app/          # Next.js starter
+├── public/            # Public assets
+└── database/          # Migrations/seeders/factories
+```
+
+## Troubleshooting
+
+- **Composer memory issues**: `COMPOSER_MEMORY_LIMIT=-1 composer install`
+- **Queue workers**: `php artisan queue:work`
+- **Cache clear**: `php artisan cache:clear && php artisan config:clear`
