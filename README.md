@@ -21,6 +21,7 @@ cp .env.example .env
 composer install
 php artisan key:generate
 php artisan migrate --seed
+corepack enable
 pnpm install
 pnpm dev
 ```
@@ -97,6 +98,7 @@ docker compose up -d
 composer install
 php artisan key:generate
 php artisan migrate --seed
+corepack enable
 pnpm install
 pnpm dev
 ```
@@ -105,6 +107,7 @@ pnpm dev
 
 ```bash
 cd next-app
+corepack enable
 pnpm install
 pnpm prisma:generate
 pnpm prisma:migrate
@@ -134,6 +137,7 @@ Sample seed data lives in `next-app/prisma/seed-data.json`. Run:
 
 ```bash
 cd next-app
+corepack enable
 pnpm prisma:seed
 ```
 
@@ -153,5 +157,6 @@ pnpm prisma:seed
 ## Troubleshooting
 
 - **Composer memory issues**: `COMPOSER_MEMORY_LIMIT=-1 composer install`
+- **pnpm not found**: run `corepack enable` (Node 16.13+) or `npm install -g pnpm`
 - **Queue workers**: `php artisan queue:work`
 - **Cache clear**: `php artisan cache:clear && php artisan config:clear`
