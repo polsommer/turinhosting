@@ -31,11 +31,11 @@ class StripeController extends ClientApiController
         $currency = config('gateways.currency', 'USD');
 
         $checkout = $client->checkout->sessions->create([
-            'success_url' => config('app.url') . '/store/credits',
+            'success_url' => config('app.url') . '/store/balance',
             'cancel_url' => config('app.url'),
             'mode' => 'payment',
             'customer_email' => $request->user()->email,
-            'metadata' => ['credit_amount' => $amount, 'user_id' => $request->user()->id],
+            'metadata' => ['amount' => $amount, 'user_id' => $request->user()->id],
             'line_items' => [
                 [
                     'quantity' => 1,
@@ -43,7 +43,7 @@ class StripeController extends ClientApiController
                         'currency' => $currency,
                         'unit_amount' => str_replace('.', '', $cost),
                         'product_data' => [
-                            'name' => $amount . ' Credits | ' . $this->settings->get('settings::app:name'),
+                            'name' => $amount . ' Balance | ' . $this->settings->get('settings::app:name'),
                         ],
                     ],
                 ],

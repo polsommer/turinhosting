@@ -63,14 +63,14 @@ class StoreVerificationService
     }
 
     /**
-     * Ensures the user has enough credits in order to deploy to a given node.
+     * Ensures the user has enough money in order to deploy to a given node.
      */
     private function checkDeploymentCost(CreateServerRequest $request)
     {
         $fee = Node::find($request->input('node'))->deploy_fee;
 
         if ($fee > $request->user()->store_balance) {
-            throw new DisplayException('You do not have enough credits to deploy to this node, as it has a deployment fee of ' . $fee . ' credits.');
+            throw new DisplayException('You do not have enough money to deploy to this node, as it has a deployment fee of ' . $fee . '.');
         }
     }
 }

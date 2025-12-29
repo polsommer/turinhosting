@@ -34,7 +34,7 @@ class ServerRenewalService
         $cost = $this->settings->get('jexactyl::renewal:cost', 200);
 
         if ($user->store_balance < $cost) {
-            throw new DisplayException('You do not have enough credits to renew your server.');
+            throw new DisplayException('You do not have enough money to renew your server.');
         }
 
         try {

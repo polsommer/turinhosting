@@ -39,8 +39,8 @@ class StripeController extends Controller
             return 'Failed - Payment Issue';
         }
         $bal = User::query()->select('store_balance')->where('id', '=', $data['metadata']['user_id'])->first()->store_balance;
-        User::query()->where('id', '=', $data['metadata']['user_id'])->update(['store_balance' => $bal + $data['metadata']['credit_amount']]);
+        User::query()->where('id', '=', $data['metadata']['user_id'])->update(['store_balance' => $bal + $data['metadata']['amount']]);
 
-        return 'Success - Credits Added';
+        return 'Success - Money Added';
     }
 }
