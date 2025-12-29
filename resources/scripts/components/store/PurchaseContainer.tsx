@@ -42,7 +42,7 @@ export default () => {
 
     if (!resources) return <Spinner size={'large'} centered />;
 
-    const purchaseBlocks = layout.purchase?.length ? layout.purchase : defaultStoreLayout.purchase;
+    const purchaseBlocks = layout.purchase ?? defaultStoreLayout.purchase;
 
     return (
         <PageContentBlock title={'Account Balance'} description={'Add funds easily via Stripe or PayPal.'}>
