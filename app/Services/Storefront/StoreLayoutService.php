@@ -26,6 +26,7 @@ class StoreLayoutService
         return config('jexactyl.store_layout', [
             'overview' => [
                 ['type' => 'hero'],
+                ['type' => 'banners'],
                 ['type' => 'featured'],
                 ['type' => 'catalog'],
             ],

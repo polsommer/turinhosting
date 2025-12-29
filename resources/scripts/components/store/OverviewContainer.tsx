@@ -322,18 +322,21 @@ export default () => {
                             <div key={`overview-banners-${index}`} className={'lg:grid lg:grid-cols-3 gap-8 my-10'}>
                                 <StoreBanner
                                     title={'Want to create a server?'}
+                                    description={'Launch a new VPS with presets or custom resources in minutes.'}
                                     className={'bg-storeone'}
                                     action={'Create'}
                                     link={'create'}
                                 />
                                 <StoreBanner
                                     title={'Need more resources?'}
+                                    description={'Upgrade CPU, memory, storage, and more instantly.'}
                                     className={'bg-storetwo'}
                                     action={'Buy Resources'}
                                     link={'resources'}
                                 />
                                 <StoreBanner
                                     title={'Need more balance?'}
+                                    description={'Top up credits to cover upgrades, renewals, and launches.'}
                                     className={'bg-storethree'}
                                     action={'Add Funds'}
                                     link={'credits'}
