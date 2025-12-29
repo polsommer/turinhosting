@@ -23,7 +23,7 @@ class PayPalController extends ClientApiController
 
     /**
      * Constructs the PayPal order request and redirects
-     * the user over to PayPal for credits purchase.
+     * the user over to PayPal for money purchase.
      *
      * @throws DisplayException
      */
@@ -50,7 +50,7 @@ class PayPalController extends ClientApiController
             'purchase_units' => [
                 [
                     'reference_id' => uniqid(),
-                    'description' => $amount . ' Credits | ' . $this->settings->get('settings::app:name'),
+                    'description' => $amount . ' Balance | ' . $this->settings->get('settings::app:name'),
                     'amount' => [
                         'value' => $cost,
                         'currency_code' => strtoupper($currency),
