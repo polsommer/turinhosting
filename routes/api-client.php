@@ -91,6 +91,7 @@ Route::group([
     Route::get('/costs', [Client\Store\ResourceController::class, 'costs'])->name('api:client:store.costs');
     Route::get('/nodes', [Client\Store\ServerController::class, 'nodes'])->name('api:client:store.nests');
     Route::get('/nests', [Client\Store\ServerController::class, 'nests'])->name('api:client:store.nests');
+    Route::get('/products', [Client\Store\ProductController::class, 'index'])->name('api:client:store.products');
 
     Route::group(['prefix' => '/create', 'middleware' => 'throttle:storefront'], function () {
         Route::post('/', [Client\Store\ServerController::class, 'store'])->name('api:client:store.create');

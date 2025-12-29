@@ -20,6 +20,8 @@ import StoreContainer from '@/components/elements/StoreContainer';
 import { getResources, Resources } from '@/api/store/getResources';
 import PageContentBlock from '@/components/elements/PageContentBlock';
 import formatCurrency from '@/util/formatCurrency';
+import { useLocation } from 'react-router-dom';
+import { StorefrontProduct } from '@/state/storefront';
 import {
     faArchive,
     faCube,
@@ -55,7 +57,9 @@ export default () => {
 
     const user = useStoreState((state) => state.user.data!);
     const currency = useStoreState((state) => state.storefront.data?.currency);
+    const catalog = useStoreState((state) => state.storefront.data?.products);
     const { clearFlashes, clearAndAddHttpError } = useFlash();
+    const location = useLocation();
 
     const [egg, setEgg] = useState<number>(0);
     const [eggs, setEggs] = useState<Egg[]>();
@@ -73,6 +77,17 @@ export default () => {
         getNests().then((nests) => setNests(nests));
         getNodes().then((nodes) => setNodes(nodes));
     }, []);
+
+    const productId = new URLSearchParams(location.search).get('product');
+    const selectedProduct: StorefrontProduct | undefined = catalog?.products?.find(
+        (product) => product.id === productId
+    );
+
+    const getPresetValue = (value: number | undefined, fallback: number, minimum: number) => {
+        if (!value) return Math.max(minimum, fallback);
+
+        return Math.max(minimum, Math.min(value, fallback));
+    };
 
     const changeNest = (e: ChangeEvent<HTMLSelectElement>) => {
         setNest(parseInt(e.target.value));
@@ -126,15 +141,18 @@ export default () => {
         <PageContentBlock title={'Create Server'} showFlashKey={'store:create'}>
             <Formik
                 onSubmit={submit}
+                enableReinitialize
                 initialValues={{
                     name: `${user.username}'s server`,
-                    description: 'Write a server description here.',
-                    cpu: resources.cpu,
-                    memory: resources.memory,
-                    disk: resources.disk,
-                    ports: resources.ports,
-                    backups: resources.backups,
-                    databases: resources.databases,
+                    description: selectedProduct
+                        ? `${selectedProduct.name} plan from the storefront.`
+                        : 'Write a server description here.',
+                    cpu: getPresetValue(selectedProduct?.provisioning?.cpu, resources.cpu, 25),
+                    memory: getPresetValue(selectedProduct?.provisioning?.memory, resources.memory, 256),
+                    disk: getPresetValue(selectedProduct?.provisioning?.disk, resources.disk, 256),
+                    ports: getPresetValue(selectedProduct?.provisioning?.ports, resources.ports, 1),
+                    backups: selectedProduct?.provisioning?.backups ?? resources.backups,
+                    databases: selectedProduct?.provisioning?.databases ?? resources.databases,
                     nest: 1,
                     egg: 1,
                     node: 1,
@@ -157,6 +175,15 @@ export default () => {
                 })}
             >
                 <Form>
+                    {selectedProduct && (
+                        <div className={'bg-gray-800 border border-gray-700 rounded-lg p-4 mb-6'}>
+                            <h2 className={'text-xl font-semibold'}>Checkout preset applied</h2>
+                            <p className={'text-sm text-neutral-400'}>
+                                {selectedProduct.name} has prefilled resource limits. You can still customize them
+                                below before provisioning.
+                            </p>
+                        </div>
+                    )}
                     <h1 className={'text-5xl'}>Basic Details</h1>
                     <h3 className={'text-2xl text-neutral-500'}>Set the basic fields for your new server.</h3>
                     <StoreContainer className={'lg:grid lg:grid-cols-2 my-10 gap-4'}>

@@ -70,4 +70,12 @@ class Composer
                 return $setting;
         }
     }
+
+    /**
+     * Get a raw setting value from the database.
+     */
+    protected function settingRaw(string $data, $default = null)
+    {
+        return $this->settings->get($data, $default);
+    }
 }

@@ -177,4 +177,114 @@ return [
         // Should an email be sent to a server owner whenever their server is reinstalled?
         'send_reinstall_notification' => env('JEXACTYL_SEND_REINSTALL_NOTIFICATION', true),
     ],
+
+    /*
+    |----------------------------------------------------------------------
+    | Storefront Product Catalog
+    |----------------------------------------------------------------------
+    |
+    | Define the default storefront product catalog. This can be overridden
+    | via the jexactyl::store:products setting with a JSON payload.
+    */
+
+    'store_products' => [
+        'categories' => [
+            [
+                'id' => 'vps',
+                'name' => 'VPS Hosting',
+                'description' => 'Flexible virtual machines with dedicated resources.',
+            ],
+            [
+                'id' => 'game',
+                'name' => 'Game Servers',
+                'description' => 'Low-latency game hosting tuned for popular titles.',
+            ],
+        ],
+        'products' => [
+            [
+                'id' => 'vps-starter',
+                'name' => 'VPS Starter',
+                'category' => 'vps',
+                'price' => 6.99,
+                'billing' => 'mo',
+                'specs' => [
+                    'cpu' => '2 vCPU',
+                    'memory' => '4 GB RAM',
+                    'disk' => '80 GB NVMe',
+                    'bandwidth' => '4 TB',
+                ],
+                'provisioning' => [
+                    'cpu' => 200,
+                    'memory' => 4096,
+                    'disk' => 81920,
+                    'ports' => 1,
+                    'backups' => 1,
+                    'databases' => 0,
+                ],
+            ],
+            [
+                'id' => 'vps-performance',
+                'name' => 'VPS Performance',
+                'category' => 'vps',
+                'price' => 12.99,
+                'billing' => 'mo',
+                'specs' => [
+                    'cpu' => '4 vCPU',
+                    'memory' => '8 GB RAM',
+                    'disk' => '160 GB NVMe',
+                    'bandwidth' => '6 TB',
+                ],
+                'provisioning' => [
+                    'cpu' => 400,
+                    'memory' => 8192,
+                    'disk' => 163840,
+                    'ports' => 1,
+                    'backups' => 2,
+                    'databases' => 0,
+                ],
+            ],
+            [
+                'id' => 'game-boost',
+                'name' => 'Game Boost',
+                'category' => 'game',
+                'price' => 9.99,
+                'billing' => 'mo',
+                'specs' => [
+                    'cpu' => '3 vCPU',
+                    'memory' => '6 GB RAM',
+                    'disk' => '60 GB SSD',
+                    'bandwidth' => '3 TB',
+                ],
+                'provisioning' => [
+                    'cpu' => 300,
+                    'memory' => 6144,
+                    'disk' => 61440,
+                    'ports' => 2,
+                    'backups' => 2,
+                    'databases' => 1,
+                ],
+            ],
+            [
+                'id' => 'game-pro',
+                'name' => 'Game Pro',
+                'category' => 'game',
+                'price' => 17.99,
+                'billing' => 'mo',
+                'specs' => [
+                    'cpu' => '5 vCPU',
+                    'memory' => '10 GB RAM',
+                    'disk' => '120 GB SSD',
+                    'bandwidth' => '6 TB',
+                ],
+                'provisioning' => [
+                    'cpu' => 500,
+                    'memory' => 10240,
+                    'disk' => 122880,
+                    'ports' => 3,
+                    'backups' => 3,
+                    'databases' => 2,
+                ],
+            ],
+        ],
+    ],
 ];

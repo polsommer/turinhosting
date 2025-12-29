@@ -22,6 +22,7 @@ class StoreComposer extends Composer
         $view->with('storeConfiguration', [
             'enabled' => $this->setting('store:enabled', Composer::TYPE_BOOL),
             'currency' => $this->setting('store:currency', Composer::TYPE_STR),
+            'products' => $this->getStoreProducts(),
 
             'gateways' => [
                 'paypal' => $this->setting('store:paypal:enabled', Composer::TYPE_BOOL),
@@ -51,6 +52,28 @@ class StoreComposer extends Composer
                 'enabled' => $this->setting('earn:enabled', Composer::TYPE_BOOL),
                 'amount' => $this->setting('earn:amount', Composer::TYPE_INT),
             ],
+        ]);
+    }
+
+    private function getStoreProducts(): array
+    {
+        $setting = $this->settingRaw('jexactyl::store:products');
+
+        if (is_string($setting) && $setting !== '') {
+            $decoded = json_decode($setting, true);
+
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                return $decoded;
+            }
+        }
+
+        if (is_array($setting)) {
+            return $setting;
+        }
+
+        return config('jexactyl.store_products', [
+            'categories' => [],
+            'products' => [],
         ]);
     }
 }
