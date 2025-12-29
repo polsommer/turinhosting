@@ -25,7 +25,9 @@
                     <div class="box-body">
                         <p class="text-muted">
                             Define layout blocks for the storefront overview, resources, purchase/credits, and create pages. This JSON is stored as
-                            <code>jexactyl::store:layout</code>. Leave the field empty to restore defaults.
+                            <code>jexactyl::store:layout</code>. Leave the field empty to restore defaults. Use the <code>purchase</code> section name
+                            going forward; a legacy top-level <code>balance</code> section is mapped into <code>purchase</code> if <code>purchase</code>
+                            is empty or omitted.
                         </p>
                         <div class="form-group">
                             <label class="control-label">Layout JSON</label>
