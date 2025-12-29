@@ -37,6 +37,11 @@ Route::group(['prefix' => '/'], function () {
         Route::patch('/', [Jexactyl\StoreController::class, 'update'])->name('admin.jexactyl.store');
     });
 
+    Route::group(['prefix' => '/store-layout'], function () {
+        Route::get('/', [Jexactyl\StoreLayoutController::class, 'index'])->name('admin.jexactyl.store.layout');
+        Route::patch('/', [Jexactyl\StoreLayoutController::class, 'update']);
+    });
+
     Route::group(['prefix' => '/registration'], function () {
         Route::get('/', [Jexactyl\RegistrationController::class, 'index']);
         Route::patch('/', [Jexactyl\RegistrationController::class, 'update'])->name('admin.jexactyl.registration');

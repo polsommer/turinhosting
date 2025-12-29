@@ -4,6 +4,7 @@ export interface StorefrontSettings {
     enabled: boolean;
     currency: string;
     products?: StorefrontCatalog;
+    layout?: StorefrontLayout;
     renewals: {
         cost: number;
         days: number;
@@ -36,6 +37,31 @@ export interface StorefrontSettings {
         enabled: boolean;
         amount: number;
     };
+}
+
+export type StorefrontLayoutBlock =
+    | { type: 'hero' }
+    | { type: 'banners' }
+    | {
+          type: 'featured';
+          title?: string;
+          description?: string;
+          productIds?: string[];
+          categoryIds?: string[];
+          limit?: number;
+      }
+    | { type: 'catalog'; title?: string; description?: string }
+    | { type: 'resource-grid'; resources?: string[] }
+    | { type: 'resource-tips'; title?: string }
+    | { type: 'resource-cta'; title?: string; description?: string; link?: string; linkLabel?: string }
+    | { type: 'balance-summary'; balanceTitle?: string; gatewaysTitle?: string }
+    | { type: 'earnings'; title?: string; description?: string }
+    | { type: string; [key: string]: unknown };
+
+export interface StorefrontLayout {
+    overview: StorefrontLayoutBlock[];
+    resources: StorefrontLayoutBlock[];
+    purchase: StorefrontLayoutBlock[];
 }
 
 export interface StorefrontProductSpecs {
@@ -87,11 +113,20 @@ export interface StorefrontStore {
     setStorefrontProducts: Action<StorefrontStore, StorefrontCatalog>;
 }
 
+export const defaultStoreLayout: StorefrontLayout = {
+    overview: [{ type: 'hero' }, { type: 'banners' }, { type: 'featured' }, { type: 'catalog' }],
+    resources: [{ type: 'resource-grid' }, { type: 'resource-tips' }, { type: 'resource-cta' }],
+    purchase: [{ type: 'balance-summary' }, { type: 'earnings' }],
+};
+
 const storefront: StorefrontStore = {
     data: undefined,
 
     setStorefront: action((state, payload) => {
-        state.data = payload;
+        state.data = {
+            ...payload,
+            layout: payload.layout ?? defaultStoreLayout,
+        };
     }),
 
     setStorefrontProducts: action((state, payload) => {
@@ -99,6 +134,7 @@ const storefront: StorefrontStore = {
             state.data = {
                 enabled: false,
                 currency: 'USD',
+                layout: defaultStoreLayout,
                 renewals: { cost: 0, days: 0 },
                 editing: { enabled: false },
                 deletion: { enabled: false },

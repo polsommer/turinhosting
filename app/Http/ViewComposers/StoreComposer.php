@@ -23,6 +23,7 @@ class StoreComposer extends Composer
             'enabled' => $this->setting('store:enabled', Composer::TYPE_BOOL),
             'currency' => $this->setting('store:currency', Composer::TYPE_STR),
             'products' => $this->getStoreProducts(),
+            'layout' => $this->getStoreLayout(),
 
             'gateways' => [
                 'paypal' => $this->setting('store:paypal:enabled', Composer::TYPE_BOOL),
@@ -75,5 +76,12 @@ class StoreComposer extends Composer
             'categories' => [],
             'products' => [],
         ]);
+    }
+
+    private function getStoreLayout(): array
+    {
+        return \Jexactyl\Services\Storefront\StoreLayoutService::fromSetting(
+            $this->settingRaw('jexactyl::store:layout')
+        );
     }
 }
