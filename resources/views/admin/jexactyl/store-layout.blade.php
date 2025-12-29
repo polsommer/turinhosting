@@ -24,8 +24,9 @@
                     </div>
                     <div class="box-body">
                         <p class="text-muted">
-                            Define layout blocks for the storefront overview, resources, and balance pages. This JSON is stored as
+                            Define layout blocks for the storefront overview, resources, and purchase pages. This JSON is stored as
                             <code>jexactyl::store:layout</code>. Leave the field empty to restore defaults.
+                            Use <code>purchase</code> for the balance page layout; <code>balance</code> is supported for legacy layouts.
                         </p>
                         <div class="form-group">
                             <label class="control-label">Layout JSON</label>

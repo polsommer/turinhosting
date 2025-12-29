@@ -55,6 +55,10 @@ class StoreLayoutService
             return $defaults;
         }
 
+        if (empty($layout['purchase']) && isset($layout['balance'])) {
+            $layout['purchase'] = $layout['balance'];
+        }
+
         return [
             'overview' => self::normalizeSection($layout['overview'] ?? null, $defaults['overview'] ?? []),
             'resources' => self::normalizeSection($layout['resources'] ?? null, $defaults['resources'] ?? []),
