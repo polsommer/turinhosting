@@ -11,9 +11,31 @@
 |
 */
 
-$app = new Illuminate\Foundation\Application(
-    $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
-);
+$basePath = $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__);
+$appKey = $_ENV['APP_KEY'] ?? $_SERVER['APP_KEY'] ?? getenv('APP_KEY');
+
+if (empty($appKey)) {
+    $generatedKey = 'base64:' . base64_encode(random_bytes(32));
+    $_ENV['APP_KEY'] = $generatedKey;
+    $_SERVER['APP_KEY'] = $generatedKey;
+    putenv("APP_KEY={$generatedKey}");
+
+    $envPath = $basePath . '/.env';
+    if (is_file($envPath) && is_writable($envPath)) {
+        $envContents = file_get_contents($envPath);
+        if ($envContents !== false) {
+            if (preg_match('/^APP_KEY=.*$/m', $envContents) === 1) {
+                $envContents = preg_replace('/^APP_KEY=.*$/m', "APP_KEY={$generatedKey}", $envContents);
+            } else {
+                $envContents = rtrim($envContents) . PHP_EOL . "APP_KEY={$generatedKey}" . PHP_EOL;
+            }
+
+            file_put_contents($envPath, $envContents);
+        }
+    }
+}
+
+$app = new Illuminate\Foundation\Application($basePath);
 
 /*
 |--------------------------------------------------------------------------
