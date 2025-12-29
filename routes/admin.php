@@ -16,6 +16,11 @@ use Jexactyl\Http\Middleware\Admin\Servers\ServerInstalled;
 Route::group(['prefix' => '/'], function () {
     Route::get('/', [Jexactyl\IndexController::class, 'index'])->name('admin.index');
 
+    Route::group(['prefix' => '/jexactyl/onboarding'], function () {
+        Route::get('/', [Jexactyl\OnboardingController::class, 'index'])->name('admin.jexactyl.onboarding');
+        Route::post('/', [Jexactyl\OnboardingController::class, 'update'])->name('admin.jexactyl.onboarding.update');
+    });
+
     Route::group(['prefix' => '/appearance'], function () {
         Route::get('/', [Jexactyl\AppearanceController::class, 'index']);
         Route::patch('/', [Jexactyl\AppearanceController::class, 'update'])->name('admin.jexactyl.appearance');
