@@ -141,7 +141,34 @@ export default () => {
     }
 
         return (
-            <PageContentBlock title={'Create Server'} showFlashKey={'store:create'}>
+            <PageContentBlock
+                title={'Create Your VPS'}
+                description={'Customize every detail and deploy in minutes.'}
+                showFlashKey={'store:create'}
+            >
+                <div className={'rounded-2xl border border-gray-700 bg-gray-900/60 p-6 mb-8'}>
+                    <div className={'flex flex-col gap-2'}>
+                        <p className={'text-xs uppercase tracking-[0.3em] text-indigo-300'}>Launch flow</p>
+                        <h2 className={'text-3xl font-semibold text-white'}>Build the exact server you need</h2>
+                        <p className={'text-sm text-neutral-300'}>
+                            Start with a plan or fully customize resources, then choose a node and server type.
+                        </p>
+                    </div>
+                    <div className={'mt-4 grid gap-3 text-xs text-neutral-300 md:grid-cols-3'}>
+                        <div className={'rounded-xl border border-gray-700 px-3 py-2'}>
+                            <p className={'font-semibold text-white'}>1. Configure</p>
+                            <p>Set CPU, RAM, and storage.</p>
+                        </div>
+                        <div className={'rounded-xl border border-gray-700 px-3 py-2'}>
+                            <p className={'font-semibold text-white'}>2. Select</p>
+                            <p>Pick node, nest, and egg.</p>
+                        </div>
+                        <div className={'rounded-xl border border-gray-700 px-3 py-2'}>
+                            <p className={'font-semibold text-white'}>3. Deploy</p>
+                            <p>Review and launch instantly.</p>
+                        </div>
+                    </div>
+                </div>
                 <Formik
                     onSubmit={submit}
                     enableReinitialize
@@ -230,7 +257,7 @@ export default () => {
                                         )}
                                         <h1 className={'text-5xl'}>Basic Details</h1>
                                         <h3 className={'text-2xl text-neutral-500'}>
-                                            Set the basic fields for your new server.
+                                            Set your server name and description for easy tracking.
                                         </h3>
                                         <StoreContainer className={'lg:grid lg:grid-cols-2 my-10 gap-4'}>
                                             <TitledGreyBox
@@ -259,7 +286,7 @@ export default () => {
                                         </StoreContainer>
                                         <h1 className={'text-5xl'}>Resource Limits</h1>
                                         <h3 className={'text-2xl text-neutral-500'}>
-                                            Set specific limits for CPU, RAM and more.
+                                            Dial in compute, memory, and storage to match your workload.
                                         </h3>
                                         <StoreContainer className={'lg:grid lg:grid-cols-3 my-10 gap-4'}>
                                             <TitledGreyBox
@@ -316,7 +343,7 @@ export default () => {
                                         </StoreContainer>
                                         <h1 className={'text-5xl'}>Feature Limits</h1>
                                         <h3 className={'text-2xl text-neutral-500'}>
-                                            Add databases, allocations and ports to your server.
+                                            Add databases, backups, and network ports in one place.
                                         </h3>
                                         <StoreContainer className={'lg:grid lg:grid-cols-3 my-10 gap-4'}>
                                             <TitledGreyBox
@@ -358,7 +385,9 @@ export default () => {
                                             </TitledGreyBox>
                                         </StoreContainer>
                                         <h1 className={'text-5xl'}>Deployment</h1>
-                                        <h3 className={'text-2xl text-neutral-500'}>Choose a node and server type.</h3>
+                                        <h3 className={'text-2xl text-neutral-500'}>
+                                            Choose where to deploy and what to run.
+                                        </h3>
                                         <StoreContainer className={'lg:grid lg:grid-cols-3 my-10 gap-4'}>
                                             <TitledGreyBox
                                                 title={'Available Nodes'}
@@ -419,7 +448,7 @@ export default () => {
                                                     size={Button.Sizes.Large}
                                                     disabled={loading}
                                                 >
-                                                    <Icon.Server className={'mr-2'} /> Create
+                                                    <Icon.Server className={'mr-2'} /> Create VPS
                                                 </Button>
                                             </div>
                                         </InputSpinner>
@@ -503,6 +532,20 @@ export default () => {
                                                     )}
                                                 </div>
                                             )}
+                                        </div>
+                                        <div className={'mt-4 rounded-lg border border-gray-700 bg-gray-900/60 p-4 text-sm text-neutral-300'}>
+                                            <p className={'font-semibold text-white'}>Need more resources or credits?</p>
+                                            <p className={'mt-1 text-neutral-400'}>
+                                                Visit the resource shop or add funds to finish checkout faster.
+                                            </p>
+                                            <div className={'mt-3 flex flex-col gap-2 text-sm'}>
+                                                <a className={'text-indigo-300 hover:text-indigo-200'} href={'/store/resources'}>
+                                                    Add resources
+                                                </a>
+                                                <a className={'text-indigo-300 hover:text-indigo-200'} href={'/store/credits'}>
+                                                    Add credits
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
