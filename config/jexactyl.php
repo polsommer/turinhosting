@@ -195,12 +195,6 @@ return [
                 'description' => 'Flexible virtual machines with dedicated resources.',
                 'icon' => '🖥️',
             ],
-            [
-                'id' => 'game',
-                'name' => 'Game Servers',
-                'description' => 'Low-latency game hosting tuned for popular titles.',
-                'icon' => '🎮',
-            ],
         ],
         'products' => [
             [
@@ -262,48 +256,6 @@ return [
                     'databases' => 0,
                 ],
             ],
-            [
-                'id' => 'game-boost',
-                'name' => 'Game Boost',
-                'category' => 'game',
-                'price' => 9.99,
-                'billing' => 'mo',
-                'specs' => [
-                    'cpu' => '3 vCPU',
-                    'memory' => '6 GB RAM',
-                    'disk' => '60 GB SSD',
-                    'bandwidth' => '3 TB',
-                ],
-                'provisioning' => [
-                    'cpu' => 300,
-                    'memory' => 6144,
-                    'disk' => 61440,
-                    'ports' => 2,
-                    'backups' => 2,
-                    'databases' => 1,
-                ],
-            ],
-            [
-                'id' => 'game-pro',
-                'name' => 'Game Pro',
-                'category' => 'game',
-                'price' => 17.99,
-                'billing' => 'mo',
-                'specs' => [
-                    'cpu' => '5 vCPU',
-                    'memory' => '10 GB RAM',
-                    'disk' => '120 GB SSD',
-                    'bandwidth' => '6 TB',
-                ],
-                'provisioning' => [
-                    'cpu' => 500,
-                    'memory' => 10240,
-                    'disk' => 122880,
-                    'ports' => 3,
-                    'backups' => 3,
-                    'databases' => 2,
-                ],
-            ],
         ],
     ],
 
@@ -322,18 +274,15 @@ return [
                 'type' => 'hero',
             ],
             [
-                'type' => 'banners',
-            ],
-            [
                 'type' => 'featured',
-                'title' => 'Featured plans',
-                'description' => 'Highlight the best plans from your store.',
-                'limit' => 3,
+                'title' => 'Featured VPS plans',
+                'description' => 'Highlight the most popular VPS packages.',
+                'limit' => 2,
             ],
             [
                 'type' => 'catalog',
-                'title' => 'Shop',
-                'description' => 'Choose a VPS hosting plan or a game server bundle. Buy now to prefill resources and launch faster.',
+                'title' => 'VPS catalog',
+                'description' => 'Browse VPS plans built for production workloads, staging, and personal projects.',
             ],
         ],
         'resources' => [
