@@ -15,7 +15,7 @@
 </h5>
 
 ## Installation
-Head over to our [Documentation](https://docs.jexactyl.com) to get started with self-hosting this software.
+Use the [Install from Scratch guide](docs/install-from-scratch.md) to get this repository running on your own server.
 If you need help at any point during the installation process, please let us know on [Discord](https://discord.com/invite/qttGR4Z5Pk).
 
 ## Why use Jexactyl?
