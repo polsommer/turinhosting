@@ -20,6 +20,8 @@ export default () => {
     const [selectedTier, setSelectedTier] = useState('all');
     const [billingCycle, setBillingCycle] = useState<'mo' | 'yr'>('mo');
     const [comparePlans, setComparePlans] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [sortBy, setSortBy] = useState<'recommended' | 'price-asc' | 'price-desc' | 'name'>('recommended');
 
     useEffect(() => {
         getProducts()
@@ -103,9 +105,65 @@ export default () => {
                 tierOptions.find((tier) => tier.id === selectedTier)?.matches?.(product) ?? true;
             const billingMatch =
                 billingCycle === 'mo' ? product.billing === 'mo' || product.billing === 'month' : product.billing === 'yr' || product.billing === 'year';
-            return tierMatch && billingMatch;
+            if (!tierMatch || !billingMatch) {
+                return false;
+            }
+
+            if (!searchTerm.trim()) {
+                return true;
+            }
+
+            const query = searchTerm.trim().toLowerCase();
+            const haystack = [
+                product.name,
+                product.tag,
+                product.region,
+                product.specs?.cpu,
+                product.specs?.memory,
+                product.specs?.disk,
+                product.specs?.bandwidth,
+                ...(product.features ?? []),
+            ]
+                .filter(Boolean)
+                .join(' ')
+                .toLowerCase();
+
+            return haystack.includes(query);
         });
-    }, [billingCycle, categoryProducts, selectedTier, tierOptions]);
+    }, [billingCycle, categoryProducts, searchTerm, selectedTier, tierOptions]);
+
+    const sortedProducts = useMemo(() => {
+        const products = [...filteredProducts];
+
+        switch (sortBy) {
+            case 'price-asc':
+                return products.sort((a, b) => a.price - b.price);
+            case 'price-desc':
+                return products.sort((a, b) => b.price - a.price);
+            case 'name':
+                return products.sort((a, b) => a.name.localeCompare(b.name));
+            case 'recommended':
+            default:
+                return products.sort((a, b) => {
+                    const highlightDelta = Number(Boolean(b.highlight)) - Number(Boolean(a.highlight));
+                    if (highlightDelta !== 0) {
+                        return highlightDelta;
+                    }
+
+                    const priceDelta = a.price - b.price;
+                    if (priceDelta !== 0) {
+                        return priceDelta;
+                    }
+
+                    return a.name.localeCompare(b.name);
+                });
+        }
+    }, [filteredProducts, sortBy]);
+
+    const recommendedProduct = useMemo(() => {
+        const highlighted = sortedProducts.find((product) => product.highlight);
+        return highlighted ?? sortedProducts[0];
+    }, [sortedProducts]);
 
     const comparisonRows: { label: string; value: (product: StorefrontProduct) => string }[] = useMemo(
         () => [
@@ -328,7 +386,68 @@ export default () => {
                                             {comparePlans ? 'Close compare' : 'Compare plans'}
                                         </button>
                                     </div>
+                                    <div className={'flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between'}>
+                                        <label className={'flex flex-1 items-center gap-2 rounded-full border border-gray-700 bg-gray-900/60 px-4 py-2 text-sm text-neutral-200'}>
+                                            <span className={'text-neutral-400'}>Search</span>
+                                            <input
+                                                className={'w-full bg-transparent text-sm text-white placeholder:text-neutral-500 focus:outline-none'}
+                                                placeholder={'Search plans, regions, or features'}
+                                                value={searchTerm}
+                                                onChange={(event) => setSearchTerm(event.target.value)}
+                                            />
+                                        </label>
+                                        <div className={'flex items-center gap-3'}>
+                                            <label className={'flex items-center gap-2 text-xs uppercase tracking-wider text-neutral-400'}>
+                                                Sort
+                                                <select
+                                                    className={'rounded-full border border-gray-700 bg-gray-900 px-3 py-2 text-xs text-neutral-200'}
+                                                    value={sortBy}
+                                                    onChange={(event) => setSortBy(event.target.value as typeof sortBy)}
+                                                >
+                                                    <option value={'recommended'}>Recommended</option>
+                                                    <option value={'price-asc'}>Price (low to high)</option>
+                                                    <option value={'price-desc'}>Price (high to low)</option>
+                                                    <option value={'name'}>Name</option>
+                                                </select>
+                                            </label>
+                                            <button
+                                                className={'rounded-full border border-gray-700 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-neutral-300 transition hover:border-indigo-400 hover:text-white'}
+                                                onClick={() => {
+                                                    setSelectedTier('all');
+                                                    setBillingCycle('mo');
+                                                    setComparePlans(false);
+                                                    setSearchTerm('');
+                                                    setSortBy('recommended');
+                                                }}
+                                                type={'button'}
+                                            >
+                                                Clear filters
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
+                                {recommendedProduct && (
+                                    <div className={'mt-8 rounded-2xl border border-indigo-500/40 bg-indigo-500/10 p-6'}>
+                                        <div className={'flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between'}>
+                                            <div>
+                                                <p className={'text-xs uppercase tracking-[0.2em] text-indigo-200'}>Smart pick</p>
+                                                <h4 className={'text-2xl font-semibold text-white'}>
+                                                    {recommendedProduct.highlight ? 'Recommended plan' : 'Best value for your filters'}
+                                                </h4>
+                                                <p className={'mt-1 text-sm text-indigo-100/80'}>
+                                                    {recommendedProduct.name} • {recommendedProduct.specs.cpu} • {recommendedProduct.specs.memory}
+                                                </p>
+                                            </div>
+                                            <button
+                                                className={'rounded-full border border-indigo-400 px-6 py-2 text-sm font-semibold text-indigo-100 transition hover:bg-indigo-500/20'}
+                                                onClick={() => window.location.assign(`/store/create?product=${recommendedProduct.id}`)}
+                                                type={'button'}
+                                            >
+                                                {recommendedProduct.cta ?? 'Choose this plan'}
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
                                 <div className={'mt-10 space-y-12'}>
                                     {comparePlans ? (
                                         <div className={'overflow-x-auto rounded-2xl border border-gray-700 bg-gray-800/50'}>
@@ -336,7 +455,7 @@ export default () => {
                                                 <thead className={'border-b border-gray-700 text-xs uppercase tracking-wider text-neutral-400'}>
                                                     <tr>
                                                         <th className={'px-4 py-3'}>Plan</th>
-                                                        {filteredProducts.map((product) => (
+                                                        {sortedProducts.map((product) => (
                                                             <th key={product.id} className={'px-4 py-3'}>
                                                                 <div className={'flex flex-col gap-1'}>
                                                                     <span className={'font-semibold text-white'}>{product.name}</span>
@@ -352,7 +471,7 @@ export default () => {
                                                     {comparisonRows.map((row) => (
                                                         <tr key={row.label} className={'border-b border-gray-700 last:border-none'}>
                                                             <td className={'px-4 py-3 font-medium text-neutral-300'}>{row.label}</td>
-                                                            {filteredProducts.map((product) => (
+                                                            {sortedProducts.map((product) => (
                                                                 <td key={`${product.id}-${row.label}`} className={'px-4 py-3'}>
                                                                     {row.value(product)}
                                                                 </td>
@@ -364,14 +483,14 @@ export default () => {
                                         </div>
                                     ) : (
                                         <div className={'grid gap-6 lg:grid-cols-2'}>
-                                            {filteredProducts.map((product) => (
+                                            {sortedProducts.map((product) => (
                                                 <ProductCard key={product.id} product={product} currency={currency} />
                                             ))}
                                         </div>
                                     )}
-                                    {!filteredProducts.length && (
+                                    {!sortedProducts.length && (
                                         <div className={'rounded-xl border border-dashed border-gray-700 bg-gray-900/40 p-6 text-sm text-neutral-400'}>
-                                            No plans match the selected filters. Try another tier or billing cycle.
+                                            No plans match the selected filters. Try a different tier, billing cycle, or search.
                                         </div>
                                     )}
                                 </div>

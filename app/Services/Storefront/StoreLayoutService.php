@@ -4,24 +4,6 @@ namespace Jexactyl\Services\Storefront;
 
 class StoreLayoutService
 {
-    private const OVERVIEW_BLOCKS = [
-        'hero',
-        'banners',
-        'featured',
-        'catalog',
-    ];
-
-    private const RESOURCES_BLOCKS = [
-        'resource-grid',
-        'resource-tips',
-        'resource-cta',
-    ];
-
-    private const PURCHASE_BLOCKS = [
-        'balance-summary',
-        'earnings',
-    ];
-
     public static function fromSetting($setting): array
     {
         if (is_string($setting) && $setting !== '') {
@@ -44,7 +26,6 @@ class StoreLayoutService
         return config('jexactyl.store_layout', [
             'overview' => [
                 ['type' => 'hero'],
-                ['type' => 'banners'],
                 ['type' => 'featured'],
                 ['type' => 'catalog'],
             ],
@@ -69,13 +50,13 @@ class StoreLayoutService
         }
 
         return [
-            'overview' => self::normalizeSection($layout['overview'] ?? null, self::OVERVIEW_BLOCKS, $defaults['overview'] ?? []),
-            'resources' => self::normalizeSection($layout['resources'] ?? null, self::RESOURCES_BLOCKS, $defaults['resources'] ?? []),
-            'purchase' => self::normalizeSection($layout['purchase'] ?? null, self::PURCHASE_BLOCKS, $defaults['purchase'] ?? []),
+            'overview' => self::normalizeSection($layout['overview'] ?? null, $defaults['overview'] ?? []),
+            'resources' => self::normalizeSection($layout['resources'] ?? null, $defaults['resources'] ?? []),
+            'purchase' => self::normalizeSection($layout['purchase'] ?? null, $defaults['purchase'] ?? []),
         ];
     }
 
-    private static function normalizeSection($section, array $allowed, array $fallback): array
+    private static function normalizeSection($section, array $fallback): array
     {
         if (!is_array($section)) {
             return $fallback;
@@ -93,7 +74,7 @@ class StoreLayoutService
             }
 
             $type = trim((string) ($block['type'] ?? ''));
-            if ($type === '' || !in_array($type, $allowed, true)) {
+            if ($type === '') {
                 continue;
             }
 
@@ -121,29 +102,33 @@ class StoreLayoutService
             case 'earnings':
                 return self::normalizeEarningsBlock($block);
             default:
-                return ['type' => $type];
+                return array_merge($block, ['type' => $type]);
         }
     }
 
     private static function normalizeFeaturedBlock(array $block): array
     {
-        return array_filter([
+        $defaults = [
             'type' => 'featured',
-            'title' => self::cleanString($block['title'] ?? 'Featured plans'),
-            'description' => self::cleanString($block['description'] ?? 'Highlight the best plans from your store.'),
+            'title' => self::cleanString($block['title'] ?? 'Featured VPS plans'),
+            'description' => self::cleanString($block['description'] ?? 'Highlight the most popular VPS packages.'),
             'productIds' => self::cleanList($block['productIds'] ?? []),
             'categoryIds' => self::cleanList($block['categoryIds'] ?? []),
             'limit' => isset($block['limit']) ? max(1, (int) $block['limit']) : null,
-        ], static fn ($value) => $value !== null && $value !== '' && $value !== []);
+        ];
+
+        return array_merge($defaults, $block, ['type' => 'featured']);
     }
 
     private static function normalizeCatalogBlock(array $block): array
     {
-        return array_filter([
+        $defaults = [
             'type' => 'catalog',
             'title' => self::cleanString($block['title'] ?? 'Shop'),
-            'description' => self::cleanString($block['description'] ?? 'Choose a VPS hosting plan or a game server bundle. Buy now to prefill resources and launch faster.'),
-        ], static fn ($value) => $value !== null && $value !== '' && $value !== []);
+            'description' => self::cleanString($block['description'] ?? 'Browse VPS plans built for production workloads, staging, and personal projects.'),
+        ];
+
+        return array_merge($defaults, $block, ['type' => 'catalog']);
     }
 
     private static function normalizeResourceGridBlock(array $block): array
@@ -153,47 +138,57 @@ class StoreLayoutService
             $resources = ['cpu', 'memory', 'disk', 'slot', 'port', 'backup', 'database'];
         }
 
-        return [
+        $defaults = [
             'type' => 'resource-grid',
             'resources' => $resources,
         ];
+
+        return array_merge($defaults, $block, ['type' => 'resource-grid', 'resources' => $resources]);
     }
 
     private static function normalizeResourceTipsBlock(array $block): array
     {
-        return array_filter([
+        $defaults = [
             'type' => 'resource-tips',
             'title' => self::cleanString($block['title'] ?? 'How to use resources'),
-        ], static fn ($value) => $value !== null && $value !== '' && $value !== []);
+        ];
+
+        return array_merge($defaults, $block, ['type' => 'resource-tips']);
     }
 
     private static function normalizeResourceCtaBlock(array $block): array
     {
-        return array_filter([
+        $defaults = [
             'type' => 'resource-cta',
             'title' => self::cleanString($block['title'] ?? 'Ready to get started?'),
             'description' => self::cleanString($block['description'] ?? ''),
             'link' => self::cleanString($block['link'] ?? '/store/create'),
             'linkLabel' => self::cleanString($block['linkLabel'] ?? 'Create a server'),
-        ], static fn ($value) => $value !== null && $value !== '' && $value !== []);
+        ];
+
+        return array_merge($defaults, $block, ['type' => 'resource-cta']);
     }
 
     private static function normalizeBalanceSummaryBlock(array $block): array
     {
-        return array_filter([
+        $defaults = [
             'type' => 'balance-summary',
             'balanceTitle' => self::cleanString($block['balanceTitle'] ?? 'Account Balance'),
             'gatewaysTitle' => self::cleanString($block['gatewaysTitle'] ?? 'Add Funds'),
-        ], static fn ($value) => $value !== null && $value !== '' && $value !== []);
+        ];
+
+        return array_merge($defaults, $block, ['type' => 'balance-summary']);
     }
 
     private static function normalizeEarningsBlock(array $block): array
     {
-        return array_filter([
+        $defaults = [
             'type' => 'earnings',
             'title' => self::cleanString($block['title'] ?? 'Idle Balance Earnings'),
             'description' => self::cleanString($block['description'] ?? 'See how much you will earn per minute while AFK.'),
-        ], static fn ($value) => $value !== null && $value !== '' && $value !== []);
+        ];
+
+        return array_merge($defaults, $block, ['type' => 'earnings']);
     }
 
     private static function cleanList($items): array
