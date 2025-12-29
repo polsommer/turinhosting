@@ -193,11 +193,13 @@ return [
                 'id' => 'vps',
                 'name' => 'VPS Hosting',
                 'description' => 'Flexible virtual machines with dedicated resources.',
+                'icon' => '🖥️',
             ],
             [
                 'id' => 'game',
                 'name' => 'Game Servers',
                 'description' => 'Low-latency game hosting tuned for popular titles.',
+                'icon' => '🎮',
             ],
         ],
         'products' => [
@@ -213,6 +215,14 @@ return [
                     'disk' => '80 GB NVMe',
                     'bandwidth' => '4 TB',
                 ],
+                'tag' => 'Great for starters',
+                'region' => 'US East',
+                'features' => [
+                    'NVMe storage included',
+                    'Root access & snapshots',
+                    'IPv4 + IPv6 available',
+                ],
+                'cta' => 'Launch VPS',
                 'provisioning' => [
                     'cpu' => 200,
                     'memory' => 4096,
@@ -234,6 +244,15 @@ return [
                     'disk' => '160 GB NVMe',
                     'bandwidth' => '6 TB',
                 ],
+                'tag' => 'Most Popular',
+                'region' => 'US West',
+                'highlight' => true,
+                'features' => [
+                    'Priority compute nodes',
+                    'Daily backups included',
+                    'Premium DDoS protection',
+                ],
+                'cta' => 'Deploy now',
                 'provisioning' => [
                     'cpu' => 400,
                     'memory' => 8192,
