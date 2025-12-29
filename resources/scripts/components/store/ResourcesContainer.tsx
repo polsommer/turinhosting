@@ -120,21 +120,35 @@ export default () => {
 
     return (
         <PageContentBlock
-            title={'Buy Resources'}
-            description={'Buy more resources to add to your server.'}
+            title={'Boost Your Server Resources'}
+            description={'Top up CPU, RAM, storage, and more in a few clicks. Changes apply instantly.'}
             showFlashKey={'store:resources'}
         >
             <SpinnerOverlay size={'large'} visible={open} />
             <Dialog.Confirm
                 open={open}
                 onClose={() => setOpen(false)}
-                title={'Confirm resource seletion'}
-                confirm={'Continue'}
+                title={'Confirm resource selection'}
+                confirm={'Purchase'}
                 onConfirmed={() => purchase(resource)}
             >
-                Are you sure you want to purchase this resource ({resource})? This will deduct the cost from your
-                balance and add the resource. This is not a reversible transaction.
+                You are about to purchase {resource}. The cost will be deducted from your balance and the resource will
+                be applied immediately. This action cannot be undone.
             </Dialog.Confirm>
+            <div className={'rounded-2xl border border-gray-700 bg-gray-900/60 p-6'}>
+                <div className={'flex flex-col gap-2'}>
+                    <p className={'text-xs uppercase tracking-[0.3em] text-indigo-300'}>Quick guide</p>
+                    <h2 className={'text-3xl font-semibold text-white'}>Customize resources to match your workload</h2>
+                    <p className={'text-sm text-neutral-300'}>
+                        Pick exactly what you need today. You can always return here to scale up as your VPS grows.
+                    </p>
+                </div>
+                <div className={'mt-4 flex flex-wrap gap-3 text-xs text-neutral-300'}>
+                    <span className={'rounded-full border border-gray-700 px-3 py-1'}>Instant activation</span>
+                    <span className={'rounded-full border border-gray-700 px-3 py-1'}>Pay with store balance</span>
+                    <span className={'rounded-full border border-gray-700 px-3 py-1'}>No downtime required</span>
+                </div>
+            </div>
             {resourceBlocks.map((block, index) => {
                 switch (block.type) {
                     case 'resource-grid': {
