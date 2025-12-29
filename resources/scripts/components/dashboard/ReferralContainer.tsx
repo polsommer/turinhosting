@@ -10,6 +10,7 @@ import { Dialog } from '@/components/elements/dialog';
 import GreyRowBox from '@/components/elements/GreyRowBox';
 import ContentBox from '@/components/elements/ContentBox';
 import useFlash, { useFlashKey } from '@/plugins/useFlash';
+import formatCurrency from '@/util/formatCurrency';
 import deleteReferralCode from '@/api/account/deleteReferralCode';
 import createReferralCode from '@/api/account/createReferralCode';
 import SpinnerOverlay from '@/components/elements/SpinnerOverlay';
@@ -41,6 +42,7 @@ export default () => {
     const [activity, setActivity] = useState<ReferralActivity[]>([]);
     const { clearFlashes, clearAndAddHttpError } = useFlashKey('referrals');
     const reward = useStoreState((state) => state.storefront.data?.referrals.reward);
+    const currency = useStoreState((state) => state.storefront.data?.currency);
 
     useEffect(() => {
         clearFlashes();
@@ -148,8 +150,11 @@ export default () => {
                 </ContentBox>
                 <ContentBox title={'Available Perks'} css={tw`mt-8 sm:mt-0 sm:ml-8`}>
                     <h1 css={tw`text-xl`}>
-                        You will recieve <span className={'text-green-500'}>{reward}</span> credits for every user you
-                        refer to this Panel.
+                        You will receive{' '}
+                        <span className={'text-green-500'}>
+                            {reward !== undefined ? formatCurrency(reward, currency) : '--'}
+                        </span>{' '}
+                        for every user you refer to this panel.
                     </h1>
                 </ContentBox>
                 <ContentBox title={'Users Referred'} css={tw`mt-8 sm:mt-0 sm:ml-8`}>

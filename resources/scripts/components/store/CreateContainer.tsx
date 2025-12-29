@@ -19,6 +19,7 @@ import FlashMessageRender from '@/components/FlashMessageRender';
 import StoreContainer from '@/components/elements/StoreContainer';
 import { getResources, Resources } from '@/api/store/getResources';
 import PageContentBlock from '@/components/elements/PageContentBlock';
+import formatCurrency from '@/util/formatCurrency';
 import {
     faArchive,
     faCube,
@@ -53,6 +54,7 @@ export default () => {
     const [resources, setResources] = useState<Resources>();
 
     const user = useStoreState((state) => state.user.data!);
+    const currency = useStoreState((state) => state.storefront.data?.currency);
     const { clearFlashes, clearAndAddHttpError } = useFlash();
 
     const [egg, setEgg] = useState<number>(0);
@@ -226,8 +228,8 @@ export default () => {
                                 {nodes.map((n) => (
                                     <option key={n.id} value={n.id}>
                                         {n.name} ({n.location}) |{' '}
-                                        {100 - parseInt(((n?.used / n?.total) * 100).toFixed(0))}% free | {n.deployFee}{' '}
-                                        credits
+                                        {100 - parseInt(((n?.used / n?.total) * 100).toFixed(0))}% free |{' '}
+                                        {formatCurrency(n.deployFee, currency)}
                                     </option>
                                 ))}
                             </Select>

@@ -9,11 +9,14 @@ import { Button } from '@/components/elements/button/index';
 import TitledGreyBox from '@/components/elements/TitledGreyBox';
 import FlashMessageRender from '@/components/FlashMessageRender';
 import SpinnerOverlay from '@/components/elements/SpinnerOverlay';
+import { useStoreState } from '@/state/hooks';
+import formatCurrency from '@/util/formatCurrency';
 
 export default () => {
     const { clearAndAddHttpError } = useFlash();
     const [amount, setAmount] = useState(0);
     const [submitting, setSubmitting] = useState(false);
+    const currency = useStoreState((state) => state.storefront.data?.currency);
 
     const submit = () => {
         setSubmitting(true);
@@ -33,7 +36,7 @@ export default () => {
     };
 
     return (
-        <TitledGreyBox title={'Purchase via Stripe'}>
+        <TitledGreyBox title={'Add Funds via Stripe'}>
             <Dialog open={submitting} hideCloseIcon onClose={() => undefined}>
                 You are now being taken to the Stripe gateway to complete this transaction.
             </Dialog>
@@ -51,21 +54,21 @@ export default () => {
                             Choose an amount...
                         </option>
                         <option key={'stripe:buy:100'} value={100}>
-                            Purchase 100 credits
+                            Add {formatCurrency(100, currency)} to balance
                         </option>
                         <option key={'stripe:buy:200'} value={200}>
-                            Purchase 200 credits
+                            Add {formatCurrency(200, currency)} to balance
                         </option>
                         <option key={'stripe:buy:500'} value={500}>
-                            Purchase 500 credits
+                            Add {formatCurrency(500, currency)} to balance
                         </option>
                         <option key={'stripe:buy:1000'} value={1000}>
-                            Purchase 1000 credits
+                            Add {formatCurrency(1000, currency)} to balance
                         </option>
                     </Select>
                     <div css={tw`mt-6`}>
                         <Button type={'submit'} disabled={submitting}>
-                            Purchase via Stripe
+                            Add Funds via Stripe
                         </Button>
                     </div>
                 </Form>

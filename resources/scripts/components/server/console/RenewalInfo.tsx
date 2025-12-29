@@ -6,12 +6,14 @@ import { ServerContext } from '@/state/server';
 import renewServer from '@/api/server/renewServer';
 import { Dialog } from '@/components/elements/dialog';
 import SpinnerOverlay from '@/components/elements/SpinnerOverlay';
+import formatCurrency from '@/util/formatCurrency';
 
 export default () => {
     const [open, setOpen] = useState(false);
     const { addFlash, clearFlashes } = useFlash();
     const [loading, setLoading] = useState(false);
     const store = useStoreState((state) => state.storefront.data!);
+    const currency = useStoreState((state) => state.storefront.data?.currency);
     const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
     const renewal = ServerContext.useStoreState((state) => state.server.data!.renewal);
 
@@ -38,7 +40,7 @@ export default () => {
                 addFlash({
                     key: 'console:share',
                     type: 'danger',
-                    message: 'Unable to renew your server. Are you sure you have enough credits?',
+                    message: 'Unable to renew your server. Are you sure you have enough balance?',
                 });
             });
     };
@@ -52,8 +54,8 @@ export default () => {
                 onConfirmed={() => doRenewal()}
             >
                 <SpinnerOverlay visible={loading} />
-                You will be charged {store.renewals.cost} credits to add {store.renewals.days} days until your next
-                renewal is due.
+                You will be charged {formatCurrency(store.renewals.cost, currency)} to add {store.renewals.days} days
+                until your next renewal is due.
             </Dialog.Confirm>
             in {renewal} days{' '}
             <span className={'text-blue-500 text-sm cursor-pointer'} onClick={() => setOpen(true)}>
