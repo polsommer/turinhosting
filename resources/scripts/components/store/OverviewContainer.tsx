@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import useWindowDimensions from '@/plugins/useWindowDimensions';
 import ResourceBar from '@/components/elements/store/ResourceBar';
@@ -181,6 +182,20 @@ export default () => {
         [currency]
     );
 
+    const catalogSummary = useMemo(() => {
+        const products = catalog?.products ?? [];
+        const categories = catalog?.categories ?? [];
+        const highlighted = products.filter((product) => product.highlight).length;
+        const prices = products.map((product) => product.price);
+        const lowestPrice = prices.length ? Math.min(...prices) : null;
+        return {
+            totalProducts: products.length,
+            totalCategories: categories.length,
+            highlighted,
+            lowestPrice,
+        };
+    }, [catalog?.categories, catalog?.products]);
+
     const overviewBlocks = layout.overview ?? defaultStoreLayout.overview;
 
     const getFeaturedProducts = (
@@ -220,14 +235,86 @@ export default () => {
                 switch (block.type) {
                     case 'hero':
                         return (
-                            <div key={`overview-hero-${index}`} className={'flex flex-row items-center justify-between mt-10'}>
+                            <div key={`overview-hero-${index}`} className={'mt-10'}>
+                                <div className={'rounded-3xl border border-indigo-500/20 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 p-8'}>
+                                    <div className={'flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between'}>
+                                        <div className={'space-y-4'}>
+                                            <div>
+                                                <p className={'text-sm uppercase tracking-[0.3em] text-indigo-300'}>Storefront</p>
+                                                <h1 className={'text-4xl font-semibold text-white md:text-5xl'}>
+                                                    Welcome back, {username}!
+                                                </h1>
+                                                <p className={'mt-2 text-base text-neutral-300'}>
+                                                    Discover curated plans, flexible resources, and instant upgrades in one place.
+                                                </p>
+                                            </div>
+                                            <div className={'flex flex-wrap items-center gap-3 text-sm text-neutral-200'}>
+                                                <span className={'rounded-full border border-gray-700 px-4 py-2'}>
+                                                    {catalogSummary.totalProducts || 0} plans
+                                                </span>
+                                                <span className={'rounded-full border border-gray-700 px-4 py-2'}>
+                                                    {catalogSummary.totalCategories || 0} categories
+                                                </span>
+                                                {catalogSummary.highlighted > 0 && (
+                                                    <span className={'rounded-full border border-indigo-500/40 bg-indigo-500/10 px-4 py-2 text-indigo-100'}>
+                                                        {catalogSummary.highlighted} recommended
+                                                    </span>
+                                                )}
+                                                {catalogSummary.lowestPrice !== null && (
+                                                    <span className={'rounded-full border border-emerald-500/40 bg-emerald-500/10 px-4 py-2 text-emerald-100'}>
+                                                        From {formatCurrency(catalogSummary.lowestPrice, currency)}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className={'flex flex-wrap gap-3'}>
+                                                <Link
+                                                    className={'rounded-full border border-indigo-400 px-6 py-2 text-sm font-semibold text-indigo-100 transition hover:bg-indigo-500/20'}
+                                                    to={'/store'}
+                                                >
+                                                    Browse plans
+                                                </Link>
+                                                <Link
+                                                    className={'rounded-full border border-gray-700 px-6 py-2 text-sm font-semibold text-neutral-200 transition hover:border-indigo-400 hover:text-white'}
+                                                    to={'/store/resources'}
+                                                >
+                                                    Add resources
+                                                </Link>
+                                            </div>
+                                        </div>
+                                        <div className={'w-full lg:w-2/5'}>
+                                            <ResourceBar className={'w-full'} />
+                                        </div>
+                                    </div>
+                                </div>
                                 {width >= 1280 && (
-                                    <div>
-                                        <h1 className={'text-6xl'}>Hey, {username}!</h1>
-                                        <h3 className={'text-2xl mt-2 text-neutral-500'}>👋 Welcome to the store.</h3>
+                                    <div className={'mt-6 grid gap-4 lg:grid-cols-3'}>
+                                        <div className={'rounded-2xl border border-gray-700 bg-gray-900/60 p-4'}>
+                                            <p className={'text-xs uppercase tracking-[0.25em] text-neutral-500'}>Top pick</p>
+                                            <p className={'mt-2 text-lg font-semibold text-white'}>
+                                                {recommendedProduct ? recommendedProduct.name : 'Awaiting store setup'}
+                                            </p>
+                                            <p className={'mt-1 text-sm text-neutral-400'}>
+                                                {recommendedProduct
+                                                    ? `${recommendedProduct.specs.cpu} • ${recommendedProduct.specs.memory}`
+                                                    : 'Add products in the store catalog to get started.'}
+                                            </p>
+                                        </div>
+                                        <div className={'rounded-2xl border border-gray-700 bg-gray-900/60 p-4'}>
+                                            <p className={'text-xs uppercase tracking-[0.25em] text-neutral-500'}>Compare in seconds</p>
+                                            <p className={'mt-2 text-lg font-semibold text-white'}>Use filters to match your budget</p>
+                                            <p className={'mt-1 text-sm text-neutral-400'}>
+                                                Toggle tiers, billing, and categories to see the best fit instantly.
+                                            </p>
+                                        </div>
+                                        <div className={'rounded-2xl border border-gray-700 bg-gray-900/60 p-4'}>
+                                            <p className={'text-xs uppercase tracking-[0.25em] text-neutral-500'}>Upgrade anytime</p>
+                                            <p className={'mt-2 text-lg font-semibold text-white'}>Add CPU, memory, or disk</p>
+                                            <p className={'mt-1 text-sm text-neutral-400'}>
+                                                Resource purchases apply immediately to keep you moving.
+                                            </p>
+                                        </div>
                                     </div>
                                 )}
-                                <ResourceBar className={'w-full lg:w-3/4'} />
                             </div>
                         );
                     case 'banners':
