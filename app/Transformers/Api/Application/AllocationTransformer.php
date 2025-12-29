@@ -1,15 +1,19 @@
 <?php
 
-namespace Everest\Transformers\Api\Application;
+namespace Jexactyl\Transformers\Api\Application;
 
-use Everest\Models\Allocation;
+use Jexactyl\Models\Node;
+use Jexactyl\Models\Server;
+use Jexactyl\Models\Allocation;
 use League\Fractal\Resource\Item;
-use Everest\Services\Acl\Api\AdminAcl;
-use Everest\Transformers\Api\Transformer;
+use Jexactyl\Services\Acl\Api\AdminAcl;
 use League\Fractal\Resource\NullResource;
 
-class AllocationTransformer extends Transformer
+class AllocationTransformer extends BaseTransformer
 {
+    /**
+     * Relationships that can be loaded onto allocation transformations.
+     */
     protected array $availableIncludes = ['node', 'server'];
 
     /**
@@ -23,21 +27,22 @@ class AllocationTransformer extends Transformer
     /**
      * Return a generic transformed allocation array.
      */
-    public function transform(Allocation $model): array
+    public function transform(Allocation $allocation): array
     {
         return [
-            'id' => $model->id,
-            'ip' => $model->ip,
-            'alias' => $model->ip_alias,
-            'port' => $model->port,
-            'notes' => $model->notes,
-            'server_id' => $model->server_id,
-            'assigned' => !is_null($model->server_id),
+            'id' => $allocation->id,
+            'ip' => $allocation->ip,
+            'alias' => $allocation->ip_alias,
+            'port' => $allocation->port,
+            'notes' => $allocation->notes,
+            'assigned' => !is_null($allocation->server_id),
         ];
     }
 
     /**
      * Load the node relationship onto a given transformation.
+     *
+     * @throws \Jexactyl\Exceptions\Transformer\InvalidTransformerLevelException
      */
     public function includeNode(Allocation $allocation): Item|NullResource
     {
@@ -45,11 +50,17 @@ class AllocationTransformer extends Transformer
             return $this->null();
         }
 
-        return $this->item($allocation->node, new NodeTransformer());
+        return $this->item(
+            $allocation->node,
+            $this->makeTransformer(NodeTransformer::class),
+            Node::RESOURCE_NAME
+        );
     }
 
     /**
      * Load the server relationship onto a given transformation.
+     *
+     * @throws \Jexactyl\Exceptions\Transformer\InvalidTransformerLevelException
      */
     public function includeServer(Allocation $allocation): Item|NullResource
     {
@@ -57,6 +68,10 @@ class AllocationTransformer extends Transformer
             return $this->null();
         }
 
-        return $this->item($allocation->server, new ServerTransformer());
+        return $this->item(
+            $allocation->server,
+            $this->makeTransformer(ServerTransformer::class),
+            Server::RESOURCE_NAME
+        );
     }
 }

@@ -1,20 +1,20 @@
 <?php
 
-namespace Everest\Transformers\Api\Client;
+namespace Jexactyl\Transformers\Api\Client;
 
-use Everest\Models\Database;
-use Everest\Models\Permission;
+use Jexactyl\Models\Database;
+use Jexactyl\Models\Permission;
 use League\Fractal\Resource\Item;
-use Everest\Transformers\Api\Transformer;
 use League\Fractal\Resource\NullResource;
 use Illuminate\Contracts\Encryption\Encrypter;
-use Everest\Contracts\Extensions\HashidsInterface;
+use Jexactyl\Contracts\Extensions\HashidsInterface;
 
-class DatabaseTransformer extends Transformer
+class DatabaseTransformer extends BaseClientTransformer
 {
     protected array $availableIncludes = ['password'];
 
     private Encrypter $encrypter;
+
     private HashidsInterface $hashids;
 
     /**
@@ -38,8 +38,8 @@ class DatabaseTransformer extends Transformer
         return [
             'id' => $this->hashids->encode($model->id),
             'host' => [
-                'address' => $model->host->host,
-                'port' => $model->host->port,
+                'address' => $model->getRelation('host')->host,
+                'port' => $model->getRelation('host')->port,
             ],
             'name' => $model->database,
             'username' => $model->username,
@@ -53,7 +53,7 @@ class DatabaseTransformer extends Transformer
      */
     public function includePassword(Database $database): Item|NullResource
     {
-        if ($this->user()->cannot(Permission::ACTION_DATABASE_VIEW_PASSWORD, $database->server)) {
+        if (!$this->request->user()->can(Permission::ACTION_DATABASE_VIEW_PASSWORD, $database->server)) {
             return $this->null();
         }
 

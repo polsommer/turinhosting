@@ -1,15 +1,13 @@
-import classNames from 'classnames';
 import copy from 'copy-to-clipboard';
-import type { MouseEvent, ReactNode } from 'react';
-import { Children, cloneElement, isValidElement, useEffect, useState } from 'react';
-
-import Portal from '@elements/Portal';
-import FadeTransition from '@elements/transitions/FadeTransition';
+import classNames from 'classnames';
+import Fade from '@/components/elements/Fade';
+import Portal from '@/components/elements/Portal';
+import React, { useEffect, useState } from 'react';
 
 interface CopyOnClickProps {
     text: string | number | null | undefined;
     showInNotification?: boolean;
-    children: ReactNode;
+    children: React.ReactNode;
 }
 
 const CopyOnClick = ({ text, showInNotification = true, children }: CopyOnClickProps) => {
@@ -27,16 +25,15 @@ const CopyOnClick = ({ text, showInNotification = true, children }: CopyOnClickP
         };
     }, [copied]);
 
-    if (!isValidElement(children)) {
+    if (!React.isValidElement(children)) {
         throw new Error('Component passed to <CopyOnClick/> must be a valid React element.');
     }
 
     const child = !text
-        ? Children.only(children)
-        : cloneElement(Children.only(children), {
-              // @ts-expect-error I don't know
+        ? React.Children.only(children)
+        : React.cloneElement(React.Children.only(children), {
               className: classNames(children.props.className || '', 'cursor-pointer'),
-              onClick: (e: MouseEvent<HTMLElement>) => {
+              onClick: (e: React.MouseEvent<HTMLElement>) => {
                   copy(String(text));
                   setCopied(true);
                   if (typeof children.props.onClick === 'function') {
@@ -49,9 +46,9 @@ const CopyOnClick = ({ text, showInNotification = true, children }: CopyOnClickP
         <>
             {copied && (
                 <Portal>
-                    <FadeTransition show duration="duration-250" key={copied ? 'visible' : 'invisible'}>
-                        <div className="fixed bottom-0 right-0 z-50 m-4">
-                            <div className="rounded-md bg-neutral-600/95 py-3 px-4 text-slate-200 shadow">
+                    <Fade in appear timeout={250} key={copied ? 'visible' : 'invisible'}>
+                        <div className={'fixed z-50 bottom-0 right-0 m-4'}>
+                            <div className={'rounded-md py-3 px-4 text-gray-200 bg-neutral-600/95 shadow'}>
                                 <p>
                                     {showInNotification
                                         ? `Copied "${String(text)}" to clipboard.`
@@ -59,7 +56,7 @@ const CopyOnClick = ({ text, showInNotification = true, children }: CopyOnClickP
                                 </p>
                             </div>
                         </div>
-                    </FadeTransition>
+                    </Fade>
                 </Portal>
             )}
             {child}

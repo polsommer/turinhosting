@@ -1,162 +1,52 @@
-# Jexpanel
+[![Logo Image](.github/Banner.jpg)](https://jexactyl.com)
 
-Modern, developer-friendly game server management with integrated billing. This monorepo ships:
+[![Discord](https://img.shields.io/discord/922284031129825280?style=for-the-badge)](https://discord.com/invite/qttGR4Z5Pk)
+![Downloads - Total](https://img.shields.io/github/downloads/jexactyl/jexactyl/total?style=for-the-badge)
+![Downloads - Latest](https://img.shields.io/github/downloads/jexactyl/jexactyl/latest/total?style=for-the-badge)
+![Version](https://img.shields.io/github/v/release/jexactyl/jexactyl?style=for-the-badge)
+![Contributors](https://img.shields.io/github/contributors-anon/jexactyl/jexactyl?style=for-the-badge)
 
-- **Laravel panel** (root): the core app, API, and admin experience.
-- **Next.js starter** (`next-app/`): onboarding, Auth.js, Prisma, and Stripe integrations.
+<h1 align="center">Jexactyl</h1>
+<h5 align="center">
+    <strong>
+        Jexactyl is a fast, advanced and customisable game management panel and billing system in one.
+        Give your users the edge in terms of performance, reliability and pure functionality.
+    </strong>
+</h5>
 
-> Formerly known as **Jexactyl**.
+## Installation
+Head over to our [Documentation](https://docs.jexactyl.com) to get started with self-hosting this software.
+If you need help at any point during the installation process, please let us know on [Discord](https://discord.com/invite/qttGR4Z5Pk).
 
-## Highlights
+## Why use Jexactyl?
+* Billing system which supports [Stripe](https://stripe.com) and [PayPal](https://paypal.com) out of the box.
+* Full customizability via a simple administrative dashboard.
+* Ticket system in order to provide support to customers.
+* Enhanced customisability and configurations.
+* A fluent UI/UX with an easy-to-use API for both admins and clients.
+* User approvals, server renewals, and much much more.
 
-- ✅ **Laravel 10** panel with queue, cache, and scheduler support.
-- ✅ **Next.js 14** starter for auth, billing, and onboarding flows.
-- ✅ **Stripe** billing integrations (webhooks + CLI support).
-- ✅ **Docker Compose** for local infrastructure (DB/Redis).
+## Sponsors
+*Want to sponsor Jexactyl? [Donate Here.](https://donate.stripe.com/6oE02Zftd9cC34IbIS)*
 
-## Quick start (local)
+| Company | About | Link |
+| ------- | ----- | ------- |
+| [**HostEZ**](https://hostez.io) | Providing North America Valheim, Minecraft and other popular games with low latency, high uptime and maximum availability. EZ! | [Website](https://hostez.io) |
+| [**CXMPUTE**](https://cxmpute.com) | CXMPUTE provides low-cost VPS and gameserver solutions, starting at $2/month. | [Website](https://cxmpute.com) |
+| [**ZipCloud**](https://discord.gg/f4rbEmYAXb) | Game & VPS hosting with full DDoS protection and great uptime. | [Discord](https://discord.gg/f4rbEmYAXb) |
 
-```bash
-cp .env.example .env
-composer install
-php artisan key:generate
-php artisan migrate --seed
-corepack enable
-pnpm install
-pnpm dev
-```
+## Previews
+![image](https://user-images.githubusercontent.com/72230943/201116518-af5e3291-74f7-433a-b035-6d80e8c7e8f8.png)
+![image](https://user-images.githubusercontent.com/72230943/201116580-ae864e7c-aac7-4766-ab9c-c6cb97d0b015.png)
+![image](https://user-images.githubusercontent.com/72230943/201116688-b53d721e-c30f-424e-8a53-025f313ec98f.png)
+![image](https://user-images.githubusercontent.com/72230943/201116840-92c00c15-5717-4121-83cd-69397f9bacba.png)
+![image](https://user-images.githubusercontent.com/72230943/201116914-8b1c8867-c462-4b25-ae47-803b2e4ea39c.png)
+![image](https://user-images.githubusercontent.com/72230943/201116959-a626e6fc-18a9-4c06-869e-2f13b37b8457.png)
+![image](https://user-images.githubusercontent.com/72230943/201117028-3db8aa2e-b14b-4679-9f2c-c5afb208767c.png)
 
-## Prerequisites
 
-- PHP 8.1/8.2, Composer, and required PHP extensions (see `composer.json`).
-- Node.js 16.13+ (root app) and Node.js 18+ recommended for `next-app/`.
-- pnpm 9.x.
-- Docker + Docker Compose (for local Postgres/Redis or the panel stack).
-- Stripe CLI (for local webhook testing).
+## Licensing
+Some Javascript and CSS used within the panel are licensed under a `MIT` or `Apache 2.0` license. Please check their
+respective header files for more information.
 
-## Environment setup
-
-### Laravel panel
-
-Copy the example file and set secrets as needed:
-
-```bash
-cp .env.example .env
-```
-
-Key environment variables:
-
-| Variable | Description |
-| --- | --- |
-| `APP_URL` | Public URL for the panel. |
-| `APP_KEY` | Laravel application key (`php artisan key:generate`). |
-| `DB_*` | Database connection details for the panel. |
-| `REDIS_*` | Redis connection settings for cache/session/queue. |
-
-### Next.js starter
-
-```bash
-cd next-app
-cp .env.example .env
-```
-
-Key environment variables:
-
-| Variable | Description |
-| --- | --- |
-| `DATABASE_URL` | Postgres connection string for Prisma. |
-| `NEXTAUTH_SECRET` | Auth.js secret. |
-| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | OAuth app credentials. |
-| `STRIPE_SECRET_KEY` | Stripe secret key. |
-| `STRIPE_WEBHOOK_SECRET` | Webhook signing secret. |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe publishable key. |
-| `REDIS_URL` | Optional Redis URL for caching. |
-
-## Docker Compose usage
-
-### Panel services
-
-Use the example file to run MariaDB + Redis + the panel container:
-
-```bash
-cp docker-compose.example.yml docker-compose.yml
-docker compose up -d
-```
-
-### Next.js dependencies
-
-From `next-app/`, start Postgres + Redis:
-
-```bash
-cd next-app
-docker compose up -d
-```
-
-## Laravel panel development
-
-```bash
-composer install
-php artisan key:generate
-php artisan migrate --seed
-corepack enable
-pnpm install
-pnpm dev
-```
-
-## Prisma migrations (Next.js starter)
-
-```bash
-cd next-app
-corepack enable
-pnpm install
-pnpm prisma:generate
-pnpm prisma:migrate
-```
-
-## Stripe webhook local testing
-
-Use the Stripe CLI to forward events to your local webhook handler (adjust the path to match your handler):
-
-```bash
-stripe listen --forward-to http://localhost:3000/api/stripe/webhook
-```
-
-Then set the generated webhook secret in `next-app/.env` as `STRIPE_WEBHOOK_SECRET`.
-
-## Seed data
-
-### Laravel panel
-
-```bash
-php artisan db:seed
-```
-
-### Next.js starter
-
-Sample seed data lives in `next-app/prisma/seed-data.json`. Run:
-
-```bash
-cd next-app
-corepack enable
-pnpm prisma:seed
-```
-
-## Project structure
-
-```
-.
-├── app/               # Laravel app
-├── routes/            # Laravel routes
-├── resources/         # Blade views, assets
-├── config/            # Laravel config
-├── next-app/          # Next.js starter
-├── public/            # Public assets
-└── database/          # Migrations/seeders/factories
-```
-
-## Troubleshooting
-
-- **Composer memory issues**: `COMPOSER_MEMORY_LIMIT=-1 composer install`
-- **pnpm not found**: run `corepack enable` (Node 16.13+) or `npm install -g pnpm`
-- **Queue workers**: `php artisan queue:work`
-- **Cache clear**: `php artisan cache:clear && php artisan config:clear`
+*Jexactyl is not affiliated with [Pterodactyl Software](https://pterodactyl.io).*

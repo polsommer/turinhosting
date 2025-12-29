@@ -1,12 +1,12 @@
 <?php
 
-namespace Everest\Services\Backups;
+namespace Jexactyl\Services\Backups;
 
-use Everest\Models\User;
-use Everest\Models\Backup;
+use Jexactyl\Models\User;
 use Carbon\CarbonImmutable;
-use Everest\Services\Nodes\NodeJWTService;
-use Everest\Extensions\Backups\BackupManager;
+use Jexactyl\Models\Backup;
+use Jexactyl\Services\Nodes\NodeJWTService;
+use Jexactyl\Extensions\Backups\BackupManager;
 
 class DownloadLinkService
 {
@@ -45,7 +45,7 @@ class DownloadLinkService
      */
     protected function getS3BackupUrl(Backup $backup): string
     {
-        /** @var \Everest\Extensions\Filesystem\S3Filesystem $adapter */
+        /** @var \Jexactyl\Extensions\Filesystem\S3Filesystem $adapter */
         $adapter = $this->backupManager->adapter(Backup::ADAPTER_AWS_S3);
 
         $request = $adapter->getClient()->createPresignedRequest(

@@ -1,24 +1,23 @@
-import * as React from 'react';
-import { Link } from 'react-router-dom';
-import Tooltip from '@elements/tooltip/Tooltip';
-import Translate from '@elements/Translate';
-import { format, formatDistanceToNowStrict } from 'date-fns';
-import { ActivityLog } from '@definitions/user';
-import ActivityLogMetaButton from '@elements/activity/ActivityLogMetaButton';
-import { FolderOpenIcon, TerminalIcon } from '@heroicons/react/solid';
+import React from 'react';
 import classNames from 'classnames';
+import * as Icon from 'react-feather';
 import style from './style.module.css';
+import { Link } from 'react-router-dom';
 import Avatar from '@/components/Avatar';
+import { ActivityLog } from '@definitions/user';
 import useLocationHash from '@/plugins/useLocationHash';
+import Translate from '@/components/elements/Translate';
 import { getObjectKeys, isObject } from '@/lib/objects';
-import { useStoreState } from '@/state/hooks';
+import Tooltip from '@/components/elements/tooltip/Tooltip';
+import { format, formatDistanceToNowStrict } from 'date-fns';
+import ActivityLogMetaButton from '@/components/elements/activity/ActivityLogMetaButton';
 
 interface Props {
     activity: ActivityLog;
     children?: React.ReactNode;
 }
 
-function wrapProperties(value: unknown): any {
+export function wrapProperties(value: unknown): any {
     if (value === null || typeof value === 'string' || typeof value === 'number') {
         return `<strong>${String(value)}</strong>`;
     }
@@ -43,42 +42,36 @@ export default ({ activity, children }: Props) => {
     const { pathTo } = useLocationHash();
     const actor = activity.relationships.actor;
     const properties = wrapProperties(activity.properties);
-    const { colors } = useStoreState(state => state.theme.data!);
 
     return (
-        <div
-            className={'group grid grid-cols-10 py-4 last:rounded-b last:border-0 border-b-2 border-black/50'}
-            style={{ backgroundColor: colors.secondary }}
-        >
-            <div className={'hidden select-none items-center justify-center sm:col-span-1 sm:flex'}>
-                <div className={'flex h-10 w-10 items-center overflow-hidden rounded-full bg-slate-600'}>
+        <div className={'grid grid-cols-10 py-4 border-b-2 border-gray-800 last:rounded-b last:border-0 group'}>
+            <div className={'hidden sm:flex sm:col-span-1 items-center justify-center select-none'}>
+                <div className={'flex items-center w-10 h-10 rounded-full bg-gray-600 overflow-hidden'}>
                     <Avatar name={actor?.uuid || 'system'} />
                 </div>
             </div>
-            <div className={'col-span-10 flex sm:col-span-9'}>
+            <div className={'col-span-10 sm:col-span-9 flex'}>
                 <div className={'flex-1 px-4 sm:px-0'}>
-                    <div className={'flex items-center text-slate-50'}>
+                    <div className={'flex items-center text-gray-50'}>
                         <Tooltip placement={'top'} content={actor?.email || 'System User'}>
-                            <span className={'font-bold'}>{actor?.username || 'System'}</span>
+                            <span>{actor?.username || 'System'}</span>
                         </Tooltip>
-                        <span className={'text-slate-400 mx-2'}>&bull;</span>
+                        <span className={'text-gray-400'}>&nbsp;&mdash;&nbsp;</span>
                         <Link
                             to={`#${pathTo({ event: activity.event })}`}
-                            className={
-                                'text-gray-300 transition-colors duration-75 hover:text-cyan-400 active:text-cyan-400'
-                            }
+                            className={'transition-colors duration-75 active:text-cyan-400 hover:text-cyan-400'}
                         >
-                            {activity.description ?? activity.event}
+                            <Translate ns={'activity'} values={properties} i18nKey={activity.event.replace(':', '.')} />
                         </Link>
-                        <div className={classNames(style.icons, 'group-hover:text-slate-300')}>
+                        <div className={classNames(style.icons, 'group-hover:text-gray-300')}>
                             {activity.isApi && (
                                 <Tooltip placement={'top'} content={'Using API Key'}>
-                                    <TerminalIcon />
+                                    <Icon.Key />
                                 </Tooltip>
                             )}
                             {activity.event.startsWith('server:sftp.') && (
                                 <Tooltip placement={'top'} content={'Using SFTP'}>
-                                    <FolderOpenIcon />
+                                    <Icon.Folder />
                                 </Tooltip>
                             )}
                             {children}
@@ -91,7 +84,7 @@ export default ({ activity, children }: Props) => {
                         {activity.ip && (
                             <span>
                                 {activity.ip}
-                                <span className={'text-slate-400'}>&nbsp;|&nbsp;</span>
+                                <span className={'text-gray-400'}>&nbsp;|&nbsp;</span>
                             </span>
                         )}
                         <Tooltip placement={'right'} content={format(activity.timestamp, 'MMM do, yyyy H:mm:ss')}>

@@ -1,21 +1,21 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Client\Servers;
+namespace Jexactyl\Http\Controllers\Api\Client\Servers;
 
-use Everest\Models\Server;
-use Everest\Facades\Activity;
-use Everest\Models\Allocation;
+use Jexactyl\Models\Server;
+use Jexactyl\Facades\Activity;
+use Jexactyl\Models\Allocation;
 use Illuminate\Http\JsonResponse;
-use Everest\Exceptions\DisplayException;
-use Everest\Repositories\Eloquent\ServerRepository;
-use Everest\Transformers\Api\Client\AllocationTransformer;
-use Everest\Http\Controllers\Api\Client\ClientApiController;
-use Everest\Services\Allocations\FindAssignableAllocationService;
-use Everest\Http\Requests\Api\Client\Servers\Network\GetNetworkRequest;
-use Everest\Http\Requests\Api\Client\Servers\Network\NewAllocationRequest;
-use Everest\Http\Requests\Api\Client\Servers\Network\DeleteAllocationRequest;
-use Everest\Http\Requests\Api\Client\Servers\Network\UpdateAllocationRequest;
-use Everest\Http\Requests\Api\Client\Servers\Network\SetPrimaryAllocationRequest;
+use Jexactyl\Exceptions\DisplayException;
+use Jexactyl\Repositories\Eloquent\ServerRepository;
+use Jexactyl\Transformers\Api\Client\AllocationTransformer;
+use Jexactyl\Http\Controllers\Api\Client\ClientApiController;
+use Jexactyl\Services\Allocations\FindAssignableAllocationService;
+use Jexactyl\Http\Requests\Api\Client\Servers\Network\GetNetworkRequest;
+use Jexactyl\Http\Requests\Api\Client\Servers\Network\NewAllocationRequest;
+use Jexactyl\Http\Requests\Api\Client\Servers\Network\DeleteAllocationRequest;
+use Jexactyl\Http\Requests\Api\Client\Servers\Network\UpdateAllocationRequest;
+use Jexactyl\Http\Requests\Api\Client\Servers\Network\SetPrimaryAllocationRequest;
 
 class NetworkAllocationController extends ClientApiController
 {
@@ -36,15 +36,15 @@ class NetworkAllocationController extends ClientApiController
     public function index(GetNetworkRequest $request, Server $server): array
     {
         return $this->fractal->collection($server->allocations)
-            ->transformWith(AllocationTransformer::class)
+            ->transformWith($this->getTransformer(AllocationTransformer::class))
             ->toArray();
     }
 
     /**
      * Set the primary allocation for a server.
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function update(UpdateAllocationRequest $request, Server $server, Allocation $allocation): array
     {
@@ -60,15 +60,15 @@ class NetworkAllocationController extends ClientApiController
         }
 
         return $this->fractal->item($allocation)
-            ->transformWith(AllocationTransformer::class)
+            ->transformWith($this->getTransformer(AllocationTransformer::class))
             ->toArray();
     }
 
     /**
      * Set the primary allocation for a server.
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function setPrimary(SetPrimaryAllocationRequest $request, Server $server, Allocation $allocation): array
     {
@@ -80,7 +80,7 @@ class NetworkAllocationController extends ClientApiController
             ->log();
 
         return $this->fractal->item($allocation)
-            ->transformWith(AllocationTransformer::class)
+            ->transformWith($this->getTransformer(AllocationTransformer::class))
             ->toArray();
     }
 
@@ -88,7 +88,7 @@ class NetworkAllocationController extends ClientApiController
      * Set the notes for the allocation for a server.
      *s.
      *
-     * @throws \Everest\Exceptions\DisplayException
+     * @throws \Jexactyl\Exceptions\DisplayException
      */
     public function store(NewAllocationRequest $request, Server $server): array
     {
@@ -104,14 +104,14 @@ class NetworkAllocationController extends ClientApiController
             ->log();
 
         return $this->fractal->item($allocation)
-            ->transformWith(AllocationTransformer::class)
+            ->transformWith($this->getTransformer(AllocationTransformer::class))
             ->toArray();
     }
 
     /**
      * Delete an allocation from a server.
      *
-     * @throws \Everest\Exceptions\DisplayException
+     * @throws \Jexactyl\Exceptions\DisplayException
      */
     public function delete(DeleteAllocationRequest $request, Server $server, Allocation $allocation): JsonResponse
     {

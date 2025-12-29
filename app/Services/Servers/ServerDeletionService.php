@@ -1,18 +1,20 @@
 <?php
 
-namespace Everest\Services\Servers;
+namespace Jexactyl\Services\Servers;
 
-use Everest\Models\Server;
+use Jexactyl\Models\User;
+use Jexactyl\Models\Server;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\ConnectionInterface;
-use Everest\Repositories\Wings\DaemonServerRepository;
-use Everest\Services\Databases\DatabaseManagementService;
-use Everest\Exceptions\Http\Connection\DaemonConnectionException;
+use Jexactyl\Repositories\Wings\DaemonServerRepository;
+use Jexactyl\Services\Databases\DatabaseManagementService;
+use Jexactyl\Exceptions\Http\Connection\DaemonConnectionException;
 
 class ServerDeletionService
 {
     protected bool $force = false;
+    protected bool $return_resources = false;
 
     /**
      * ServerDeletionService constructor.
@@ -35,10 +37,22 @@ class ServerDeletionService
     }
 
     /**
+     * Set if the server's owner should recieve the resources upon server deletion.
+     *
+     * @return $this
+     */
+    public function returnResources(bool $bool = true): self
+    {
+        $this->return_resources = $bool;
+
+        return $this;
+    }
+
+    /**
      * Delete a server from the panel and remove any associated databases from hosts.
      *
      * @throws \Throwable
-     * @throws \Everest\Exceptions\DisplayException
+     * @throws \Jexactyl\Exceptions\DisplayException
      */
     public function handle(Server $server): void
     {
@@ -79,5 +93,25 @@ class ServerDeletionService
 
             $server->delete();
         });
+
+        if (!$this->return_resources) {
+            return;
+        }
+
+        try {
+            $user = User::findOrFail($server->owner_id);
+        } catch (\Exception $exception) {
+            throw $exception;
+        }
+
+        $user->update([
+            'store_cpu' => $user->store_cpu + $server->cpu,
+            'store_memory' => $user->store_memory + $server->memory,
+            'store_disk' => $user->store_disk + $server->disk,
+            'store_slots' => $user->store_slots + 1, // Always one slot.
+            'store_ports' => $user->store_ports + $server->allocation_limit,
+            'store_backups' => $user->store_backups + $server->backup_limit,
+            'store_databases' => $user->store_databases + $server->database_limit,
+        ]);
     }
 }

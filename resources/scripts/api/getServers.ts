@@ -1,11 +1,10 @@
-import { Transformers, type Server } from '@definitions/server';
 import http, { getPaginationSet, PaginatedResult } from '@/api/http';
+import { rawDataToServerObject, Server } from '@/api/server/getServer';
 
 interface QueryParams {
     query?: string;
     page?: number;
     type?: string;
-    per_page?: number;
 }
 
 export default ({ query, ...params }: QueryParams): Promise<PaginatedResult<Server>> => {
@@ -18,9 +17,9 @@ export default ({ query, ...params }: QueryParams): Promise<PaginatedResult<Serv
         })
             .then(({ data }) =>
                 resolve({
-                    items: (data.data || []).map(Transformers.toServer),
+                    items: (data.data || []).map((datum: any) => rawDataToServerObject(datum)),
                     pagination: getPaginationSet(data.meta.pagination),
-                }),
+                })
             )
             .catch(reject);
     });

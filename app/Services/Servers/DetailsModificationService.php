@@ -1,13 +1,13 @@
 <?php
 
-namespace Everest\Services\Servers;
+namespace Jexactyl\Services\Servers;
 
-use Everest\Models\Server;
 use Illuminate\Support\Arr;
+use Jexactyl\Models\Server;
 use Illuminate\Database\ConnectionInterface;
-use Everest\Traits\Services\ReturnsUpdatedModels;
-use Everest\Repositories\Wings\DaemonServerRepository;
-use Everest\Exceptions\Http\Connection\DaemonConnectionException;
+use Jexactyl\Traits\Services\ReturnsUpdatedModels;
+use Jexactyl\Repositories\Wings\DaemonServerRepository;
+use Jexactyl\Exceptions\Http\Connection\DaemonConnectionException;
 
 class DetailsModificationService
 {
@@ -35,8 +35,8 @@ class DetailsModificationService
                 'owner_id' => Arr::get($data, 'owner_id'),
                 'name' => Arr::get($data, 'name'),
                 'description' => Arr::get($data, 'description') ?? '',
-                'renewal_date' => Arr::get($data, 'renewal_date') ?? 0,
-                'billing_product_id' => Arr::get($data, 'billing_product_id') ?? null,
+                'renewable' => Arr::get($data, 'renewable') ?? false,
+                'renewal' => Arr::get($data, 'renewal') ?? 0,
             ])->saveOrFail();
 
             // If the owner_id value is changed we need to revoke any tokens that exist for the server

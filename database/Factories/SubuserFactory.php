@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use Everest\Models\Subuser;
-use Everest\Models\Permission;
+use Jexactyl\Models\Subuser;
+use Jexactyl\Models\Permission;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class SubuserFactory extends Factory

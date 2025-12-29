@@ -1,12 +1,9 @@
-import { useRef, useState } from 'react';
-import * as React from 'react';
+import React, { useRef, useState } from 'react';
 import { Dialog as HDialog } from '@headlessui/react';
-import { Button } from '@elements/button/index';
+import { Button } from '@/components/elements/button/index';
+import { XIcon } from '@heroicons/react/solid';
 import { AnimatePresence, motion } from 'framer-motion';
-import { DialogContext, IconPosition, RenderDialogProps } from './';
-import { ReplyIcon, XIcon } from '@heroicons/react/outline';
-import classNames from 'classnames';
-import styles from './style.module.css';
+import { DialogContext, IconPosition, RenderDialogProps, styles } from './';
 
 const variants = {
     open: {
@@ -34,13 +31,6 @@ const variants = {
     },
 };
 
-const sizeMap = {
-    sm: 'max-w-md',
-    md: 'max-w-xl',
-    lg: 'max-w-4xl',
-    xl: 'max-w-7xl',
-};
-
 export default ({
     open,
     title,
@@ -49,8 +39,6 @@ export default ({
     hideCloseIcon,
     preventExternalClose,
     children,
-    subDialog,
-    size = 'md',
 }: RenderDialogProps) => {
     const container = useRef<HTMLDivElement>(null);
     const [icon, setIcon] = useState<React.ReactNode>();
@@ -66,7 +54,7 @@ export default ({
 
     const onDialogClose = (): void => {
         if (!preventExternalClose) {
-            onClose();
+            return onClose();
         }
     };
 
@@ -84,26 +72,26 @@ export default ({
                         open={open}
                         onClose={onDialogClose}
                     >
-                        <div className="fixed inset-0 z-40 bg-slate-900/50" />
-                        <div className="fixed inset-0 z-50 overflow-y-auto">
+                        <div className={'fixed inset-0 bg-gray-900/50 z-40'} />
+                        <div className={'fixed inset-0 overflow-y-auto z-50'}>
                             <div
                                 ref={container}
                                 className={styles.container}
-                                onMouseDown={e => onContainerClick(true, e)}
-                                onMouseUp={e => onContainerClick(false, e)}
+                                onMouseDown={onContainerClick.bind(this, true)}
+                                onMouseUp={onContainerClick.bind(this, false)}
                             >
                                 <HDialog.Panel
                                     as={motion.div}
-                                    initial="closed"
+                                    initial={'closed'}
                                     animate={down ? 'bounce' : 'open'}
-                                    exit="closed"
+                                    exit={'closed'}
                                     variants={variants}
-                                    className={classNames(styles.panel, sizeMap[size])}
+                                    className={styles.panel}
                                 >
-                                    <div className="flex overflow-y-auto p-6 pb-0">
+                                    <div className={'flex p-6 pb-0 overflow-y-auto'}>
                                         {iconPosition === 'container' && icon}
-                                        <div className="max-h-[70vh] min-w-0 flex-1">
-                                            <div className="flex items-center">
+                                        <div className={'flex-1 max-h-[70vh] min-w-0'}>
+                                            <div className={'flex items-center'}>
                                                 {iconPosition !== 'container' && icon}
                                                 <div>
                                                     {title && (
@@ -115,23 +103,20 @@ export default ({
                                                 </div>
                                             </div>
                                             {children}
-                                            <div className="invisible h-6" />
+                                            <div className={'invisible h-6'} />
                                         </div>
                                     </div>
                                     {footer}
+                                    {/* Keep this below the other buttons so that it isn't the default focus if they're present. */}
                                     {!hideCloseIcon && (
-                                        <div className="absolute right-0 top-0 m-4">
+                                        <div className={'absolute right-0 top-0 m-4'}>
                                             <Button.Text
                                                 size={Button.Sizes.Small}
                                                 shape={Button.Shapes.IconSquare}
                                                 onClick={onClose}
-                                                className="group"
+                                                className={'group'}
                                             >
-                                                {subDialog ? (
-                                                    <ReplyIcon className={styles.close_icon} />
-                                                ) : (
-                                                    <XIcon className={styles.close_icon} />
-                                                )}
+                                                <XIcon className={styles.close_icon} />
                                             </Button.Text>
                                         </div>
                                     )}

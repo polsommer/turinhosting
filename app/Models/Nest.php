@@ -1,19 +1,20 @@
 <?php
 
-namespace Everest\Models;
+namespace Jexactyl\Models;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
+ * @property bool $private
  * @property string $uuid
  * @property string $author
  * @property string $name
  * @property string|null $description
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
- * @property \Illuminate\Database\Eloquent\Collection|\Everest\Models\Server[] $servers
- * @property \Illuminate\Database\Eloquent\Collection|\Everest\Models\Egg[] $eggs
+ * @property \Illuminate\Database\Eloquent\Collection|\Jexactyl\Models\Server[] $servers
+ * @property \Illuminate\Database\Eloquent\Collection|\Jexactyl\Models\Egg[] $eggs
  */
 class Nest extends Model
 {
@@ -33,6 +34,7 @@ class Nest extends Model
      */
     protected $fillable = [
         'name',
+        'private',
         'description',
     ];
 

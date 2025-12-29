@@ -1,9 +1,11 @@
 <?php
 
-namespace Everest\Observers;
+namespace Jexactyl\Observers;
 
-use Everest\Events;
-use Everest\Models\Subuser;
+use Jexactyl\Events;
+use Jexactyl\Models\Subuser;
+use Jexactyl\Notifications\AddedToServer;
+use Jexactyl\Notifications\RemovedFromServer;
 
 class SubuserObserver
 {
@@ -21,6 +23,12 @@ class SubuserObserver
     public function created(Subuser $subuser): void
     {
         event(new Events\Subuser\Created($subuser));
+
+        $subuser->user->notify(new AddedToServer([
+            'user' => $subuser->user->name_first,
+            'name' => $subuser->server->name,
+            'uuidShort' => $subuser->server->uuidShort,
+        ]));
     }
 
     /**
@@ -37,5 +45,10 @@ class SubuserObserver
     public function deleted(Subuser $subuser): void
     {
         event(new Events\Subuser\Deleted($subuser));
+
+        $subuser->user->notify(new RemovedFromServer([
+            'user' => $subuser->user->name_first,
+            'name' => $subuser->server->name,
+        ]));
     }
 }

@@ -1,30 +1,31 @@
-const colors = require('tailwindcss/colors');
+const { blue, zinc, cyan } = require('tailwindcss/colors');
 
 module.exports = {
-    content: ['./resources/scripts/**/*.{js,ts,tsx}'],
+    content: [
+        './resources/scripts/**/*.{js,ts,tsx}',
+    ],
     theme: {
         extend: {
-            fontFamily: {
-                header: ['"IBM Plex Sans"', '"Roboto"', 'system-ui', 'sans-serif'],
+            backgroundImage: {
+                'storeone': "url('https://www.minecraft.net/content/dam/games/minecraft/key-art/MC-Vanilla_Block-Column-Image_Boat-Trip_800x800.jpg')",
+                'storetwo': "url('https://www.minecraft.net/content/dam/games/minecraft/key-art/MC-Vanilla_Block-Column-Image_Beach-Cabin_800x800.jpg')",
+                'storethree': "url('https://www.minecraft.net/content/dam/games/minecraft/key-art/MC-Vanilla_Block-Column-Image_Mining_800x800.jpg')",
             },
             colors: {
-                black: '#09090b',
-                slate: colors.slate,
-                // "primary" and "neutral" are deprecated, prefer the use of "blue" and "gray"
-                // in new code.
-                primary: colors.green,
-                neutral: colors.slate,
-                cyan: colors.cyan,
-                zinc: colors.zinc,
+                black: '#000',
+                // "primary" and "neutral" are deprecated.
+                primary: blue,
+                neutral: zinc,
+
+                // Use cyan / gray instead.
+                gray: zinc,
+                cyan: cyan,
             },
             fontSize: {
                 '2xs': '0.625rem',
             },
             transitionDuration: {
                 250: '250ms',
-            },
-            backgroundImage: {
-                'login': "url('https://images.unsplash.com/photo-1531257114315-24a694751517')",
             },
             borderColor: theme => ({
                 default: theme('colors.neutral.400', 'currentColor'),
@@ -36,5 +37,5 @@ module.exports = {
         require('@tailwindcss/forms')({
             strategy: 'class',
         }),
-    ],
+    ]
 };

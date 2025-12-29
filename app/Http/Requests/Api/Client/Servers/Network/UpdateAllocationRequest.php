@@ -1,10 +1,10 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Client\Servers\Network;
+namespace Jexactyl\Http\Requests\Api\Client\Servers\Network;
 
-use Everest\Models\Allocation;
-use Everest\Models\Permission;
-use Everest\Http\Requests\Api\Client\ClientApiRequest;
+use Jexactyl\Models\Allocation;
+use Jexactyl\Models\Permission;
+use Jexactyl\Http\Requests\Api\Client\ClientApiRequest;
 
 class UpdateAllocationRequest extends ClientApiRequest
 {

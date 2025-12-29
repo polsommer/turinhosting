@@ -1,22 +1,22 @@
-import { useContext, useEffect } from 'react';
-import { type Schedule, type Task } from '@/api/definitions/server';
-import { Field as FormikField, Form, Formik, FormikHelpers, useField } from 'formik';
-import { ServerContext } from '@/state/server';
-import { modifyTask } from '@/api/server/tasks';
-import { httpErrorToHuman } from '@/api/http';
-import Field from '@elements/Field';
-import FlashMessageRender from '@/components/FlashMessageRender';
-import { boolean, number, object, string } from 'yup';
-import useFlash from '@/plugins/useFlash';
-import FormikFieldWrapper from '@elements/FormikFieldWrapper';
 import tw from 'twin.macro';
-import Label from '@elements/Label';
-import { Textarea } from '@elements/Input';
-import { Button } from '@elements/button/index';
-import Select from '@elements/Select';
-import ModalContext from '@/context/ModalContext';
 import asModal from '@/hoc/asModal';
-import FormikSwitch from '@elements/FormikSwitch';
+import useFlash from '@/plugins/useFlash';
+import { httpErrorToHuman } from '@/api/http';
+import { ServerContext } from '@/state/server';
+import Field from '@/components/elements/Field';
+import Label from '@/components/elements/Label';
+import Select from '@/components/elements/Select';
+import ModalContext from '@/context/ModalContext';
+import React, { useContext, useEffect } from 'react';
+import { boolean, number, object, string } from 'yup';
+import { Textarea } from '@/components/elements/Input';
+import { Button } from '@/components/elements/button/index';
+import FormikSwitch from '@/components/elements/FormikSwitch';
+import FlashMessageRender from '@/components/FlashMessageRender';
+import FormikFieldWrapper from '@/components/elements/FormikFieldWrapper';
+import { Schedule, Task } from '@/api/server/schedules/getServerSchedules';
+import { Field as FormikField, Form, Formik, FormikHelpers, useField } from 'formik';
+import createOrUpdateScheduleTask from '@/api/server/schedules/createOrUpdateScheduleTask';
 
 interface Props {
     schedule: Schedule;
@@ -35,7 +35,7 @@ interface Values {
 const schema = object().shape({
     action: string().required().oneOf(['command', 'power', 'backup']),
     payload: string().when('action', {
-        is: (v: string) => v !== 'backup',
+        is: (v) => v !== 'backup',
         then: string().required('A task payload must be provided.'),
         otherwise: string(),
     }),
@@ -68,9 +68,9 @@ const TaskDetailsModal = ({ schedule, task }: Props) => {
     const { dismiss } = useContext(ModalContext);
     const { clearFlashes, addError } = useFlash();
 
-    const uuid = ServerContext.useStoreState(state => state.server.data!.uuid);
-    const appendSchedule = ServerContext.useStoreActions(actions => actions.schedules.appendSchedule);
-    const backupLimit = ServerContext.useStoreState(state => state.server.data!.featureLimits.backups);
+    const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
+    const appendSchedule = ServerContext.useStoreActions((actions) => actions.schedules.appendSchedule);
+    const backupLimit = ServerContext.useStoreState((state) => state.server.data!.featureLimits.backups);
 
     useEffect(() => {
         return () => {
@@ -87,17 +87,17 @@ const TaskDetailsModal = ({ schedule, task }: Props) => {
                 key: 'schedule:task',
             });
         } else {
-            modifyTask(uuid, schedule.id, task?.id, values)
-                .then(task => {
-                    let tasks = schedule.tasks.map(t => (t.id === task.id ? task : t));
-                    if (!schedule.tasks.find(t => t.id === task.id)) {
+            createOrUpdateScheduleTask(uuid, schedule.id, task?.id, values)
+                .then((task) => {
+                    let tasks = schedule.tasks.map((t) => (t.id === task.id ? task : t));
+                    if (!schedule.tasks.find((t) => t.id === task.id)) {
                         tasks = [...tasks, task];
                     }
 
                     appendSchedule({ ...schedule, tasks });
                     dismiss();
                 })
-                .catch(error => {
+                .catch((error) => {
                     console.error(error);
                     setSubmitting(false);
                     addError({ message: httpErrorToHuman(error), key: 'schedule:task' });

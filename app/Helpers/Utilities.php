@@ -1,6 +1,6 @@
 <?php
 
-namespace Everest\Helpers;
+namespace Jexactyl\Helpers;
 
 use Carbon\Carbon;
 use Cron\CronExpression;

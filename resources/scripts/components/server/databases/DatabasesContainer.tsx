@@ -1,35 +1,34 @@
-import { useEffect, useState } from 'react';
-import { getDatabases } from '@/api/server/databases';
-import { ServerContext } from '@/state/server';
-import { httpErrorToHuman } from '@/api/http';
-import FlashMessageRender from '@/components/FlashMessageRender';
-import DatabaseRow from '@/components/server/databases/DatabaseRow';
-import Spinner from '@elements/Spinner';
-import CreateDatabaseButton from '@/components/server/databases/CreateDatabaseButton';
-import Can from '@elements/Can';
-import useFlash from '@/plugins/useFlash';
 import tw from 'twin.macro';
+import useFlash from '@/plugins/useFlash';
+import Can from '@/components/elements/Can';
+import { httpErrorToHuman } from '@/api/http';
+import Fade from '@/components/elements/Fade';
+import { ServerContext } from '@/state/server';
+import React, { useEffect, useState } from 'react';
+import Spinner from '@/components/elements/Spinner';
 import { useDeepMemoize } from '@/plugins/useDeepMemoize';
-import FadeTransition from '@elements/transitions/FadeTransition';
-import PageContentBlock from '@/components/elements/PageContentBlock';
+import DatabaseRow from '@/components/server/databases/DatabaseRow';
+import ServerContentBlock from '@/components/elements/ServerContentBlock';
+import getServerDatabases from '@/api/server/databases/getServerDatabases';
+import CreateDatabaseButton from '@/components/server/databases/CreateDatabaseButton';
 
 export default () => {
-    const uuid = ServerContext.useStoreState(state => state.server.data!.uuid);
-    const databaseLimit = ServerContext.useStoreState(state => state.server.data!.featureLimits.databases);
+    const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
+    const databaseLimit = ServerContext.useStoreState((state) => state.server.data!.featureLimits.databases);
 
     const { addError, clearFlashes } = useFlash();
     const [loading, setLoading] = useState(true);
 
-    const databases = useDeepMemoize(ServerContext.useStoreState(state => state.databases.data));
-    const setDatabases = ServerContext.useStoreActions(state => state.databases.setDatabases);
+    const databases = useDeepMemoize(ServerContext.useStoreState((state) => state.databases.data));
+    const setDatabases = ServerContext.useStoreActions((state) => state.databases.setDatabases);
 
     useEffect(() => {
         setLoading(!databases.length);
         clearFlashes('databases');
 
-        getDatabases(uuid)
-            .then(databases => setDatabases(databases))
-            .catch(error => {
+        getServerDatabases(uuid)
+            .then((databases) => setDatabases(databases))
+            .catch((error) => {
                 console.error(error);
                 addError({ key: 'databases', message: httpErrorToHuman(error) });
             })
@@ -37,12 +36,15 @@ export default () => {
     }, []);
 
     return (
-        <PageContentBlock title={'Databases'} header description={'Assign databases directly to your server.'}>
-            <FlashMessageRender byKey={'databases'} css={tw`mb-4`} />
+        <ServerContentBlock
+            title={'Databases'}
+            description={'Create databases for your application.'}
+            showFlashKey={'databases'}
+        >
             {!databases.length && loading ? (
                 <Spinner size={'large'} centered />
             ) : (
-                <FadeTransition duration="duration-150" show>
+                <Fade timeout={150}>
                     <>
                         {databases.length > 0 ? (
                             databases.map((database, index) => (
@@ -73,8 +75,8 @@ export default () => {
                             </div>
                         </Can>
                     </>
-                </FadeTransition>
+                </Fade>
             )}
-        </PageContentBlock>
+        </ServerContentBlock>
     );
 };

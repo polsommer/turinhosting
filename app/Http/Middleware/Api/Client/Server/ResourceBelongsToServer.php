@@ -1,16 +1,16 @@
 <?php
 
-namespace Everest\Http\Middleware\Api\Client\Server;
+namespace Jexactyl\Http\Middleware\Api\Client\Server;
 
-use Everest\Models\Task;
-use Everest\Models\User;
-use Everest\Models\Backup;
-use Everest\Models\Server;
-use Everest\Models\Subuser;
-use Everest\Models\Database;
-use Everest\Models\Schedule;
+use Jexactyl\Models\Task;
+use Jexactyl\Models\User;
+use Jexactyl\Models\Backup;
+use Jexactyl\Models\Server;
 use Illuminate\Http\Request;
-use Everest\Models\Allocation;
+use Jexactyl\Models\Subuser;
+use Jexactyl\Models\Database;
+use Jexactyl\Models\Schedule;
+use Jexactyl\Models\Allocation;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -27,11 +27,11 @@ class ResourceBelongsToServer
     public function handle(Request $request, \Closure $next): mixed
     {
         $params = $request->route()->parameters();
-        if (!$params['server'] instanceof Server) {
+        if (is_null($params) || !$params['server'] instanceof Server) {
             throw new \InvalidArgumentException('This middleware cannot be used in a context that is missing a server in the parameters.');
         }
 
-        /** @var Server $server */
+        /** @var \Jexactyl\Models\Server $server */
         $server = $request->route()->parameter('server');
         $exception = new NotFoundHttpException('The requested resource was not found for this server.');
         foreach ($params as $key => $model) {
@@ -43,7 +43,6 @@ class ResourceBelongsToServer
                 continue;
             }
 
-            /** @var Allocation|Backup|Database|Schedule|Subuser $model */
             switch (get_class($model)) {
                 // All of these models use "server_id" as the field key for the server
                 // they are assigned to, so the logic is identical for them all.
@@ -70,7 +69,6 @@ class ResourceBelongsToServer
                     // Tasks are special since they're (currently) the only item in the API
                     // that requires something in addition to the server in order to be accessed.
                 case Task::class:
-                    /** @var Schedule $schedule */
                     $schedule = $request->route()->parameter('schedule');
                     if ($model->schedule_id !== $schedule->id || $schedule->server_id !== $server->id) {
                         throw $exception;

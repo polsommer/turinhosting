@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Client\Servers\Schedules;
+namespace Jexactyl\Http\Requests\Api\Client\Servers\Schedules;
 
-use Everest\Models\Schedule;
-use Everest\Models\Permission;
+use Jexactyl\Models\Schedule;
+use Jexactyl\Models\Permission;
 
 class StoreScheduleRequest extends ViewScheduleRequest
 {

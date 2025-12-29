@@ -10,7 +10,7 @@ class MoveFunctionsFromFileToDatabase extends Migration
 'use strict';
 
 /**
- * Pterodactyl - Daemon
+ * Jexactyl - Daemon
  * Copyright (c) 2015 - 2017 Dane Everitt <dane@daneeveritt.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -45,7 +45,7 @@ EOF;
 'use strict';
 
 /**
- * Pterodactyl - Daemon
+ * Jexactyl - Daemon
  * Copyright (c) 2015 - 2017 Dane Everitt <dane@daneeveritt.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -85,7 +85,7 @@ EOF;
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::table('services', function (Blueprint $table) {
             $table->text('index_file')->after('startup');
@@ -105,7 +105,7 @@ EOF;
     /**
      * Reverse the migrations.
      */
-    public function down(): void
+    public function down()
     {
         Schema::table('services', function (Blueprint $table) {
             $table->dropColumn('index_file');

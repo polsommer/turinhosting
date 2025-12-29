@@ -1,13 +1,13 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Application\Servers;
+namespace Jexactyl\Http\Controllers\Api\Application\Servers;
 
-use Everest\Models\User;
-use Everest\Models\Server;
-use Everest\Services\Servers\StartupModificationService;
-use Everest\Transformers\Api\Application\ServerTransformer;
-use Everest\Http\Controllers\Api\Application\ApplicationApiController;
-use Everest\Http\Requests\Api\Application\Servers\UpdateServerStartupRequest;
+use Jexactyl\Models\User;
+use Jexactyl\Models\Server;
+use Jexactyl\Services\Servers\StartupModificationService;
+use Jexactyl\Transformers\Api\Application\ServerTransformer;
+use Jexactyl\Http\Controllers\Api\Application\ApplicationApiController;
+use Jexactyl\Http\Requests\Api\Application\Servers\UpdateServerStartupRequest;
 
 class StartupController extends ApplicationApiController
 {
@@ -22,7 +22,10 @@ class StartupController extends ApplicationApiController
     /**
      * Update the startup and environment settings for a specific server.
      *
-     * @throws \Throwable
+     * @throws \Illuminate\Validation\ValidationException
+     * @throws \Jexactyl\Exceptions\Http\Connection\DaemonConnectionException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function index(UpdateServerStartupRequest $request, Server $server): array
     {
@@ -31,7 +34,7 @@ class StartupController extends ApplicationApiController
             ->handle($server, $request->validated());
 
         return $this->fractal->item($server)
-            ->transformWith(ServerTransformer::class)
+            ->transformWith($this->getTransformer(ServerTransformer::class))
             ->toArray();
     }
 }

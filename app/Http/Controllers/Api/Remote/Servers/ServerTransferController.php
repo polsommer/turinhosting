@@ -1,18 +1,18 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Remote\Servers;
+namespace Jexactyl\Http\Controllers\Api\Remote\Servers;
 
 use Illuminate\Http\Response;
-use Everest\Models\Allocation;
+use Jexactyl\Models\Allocation;
 use Illuminate\Http\JsonResponse;
-use Everest\Models\ServerTransfer;
 use Illuminate\Support\Facades\Log;
-use Everest\Http\Controllers\Controller;
+use Jexactyl\Models\ServerTransfer;
+use Jexactyl\Http\Controllers\Controller;
 use Illuminate\Database\ConnectionInterface;
-use Everest\Repositories\Eloquent\ServerRepository;
-use Everest\Repositories\Wings\DaemonServerRepository;
-use Everest\Exceptions\Http\Connection\DaemonConnectionException;
+use Jexactyl\Repositories\Eloquent\ServerRepository;
+use Jexactyl\Repositories\Wings\DaemonServerRepository;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Jexactyl\Exceptions\Http\Connection\DaemonConnectionException;
 
 class ServerTransferController extends Controller
 {
@@ -55,7 +55,7 @@ class ServerTransferController extends Controller
             throw new ConflictHttpException('Server is not being transferred.');
         }
 
-        /** @var \Everest\Models\Server $server */
+        /** @var \Jexactyl\Models\Server $server */
         $server = $this->connection->transaction(function () use ($server, $transfer) {
             $allocations = array_merge([$transfer->old_allocation], $transfer->old_additional_allocations);
 

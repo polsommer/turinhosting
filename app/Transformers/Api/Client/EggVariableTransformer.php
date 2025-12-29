@@ -1,34 +1,33 @@
 <?php
 
-namespace Everest\Transformers\Api\Client;
+namespace Jexactyl\Transformers\Api\Client;
 
-use Everest\Models\EggVariable;
-use Everest\Transformers\Api\Transformer;
+use Jexactyl\Models\EggVariable;
 
-class EggVariableTransformer extends Transformer
+class EggVariableTransformer extends BaseClientTransformer
 {
     public function getResourceName(): string
     {
         return EggVariable::RESOURCE_NAME;
     }
 
-    public function transform(EggVariable $model): array
+    public function transform(EggVariable $variable): array
     {
         // This guards against someone incorrectly retrieving variables (haha, me) and then passing
         // them into the transformer and along to the user. Just throw an exception and break the entire
         // pathway since you should never be exposing these types of variables to a client.
-        if (!$model->user_viewable) {
+        if (!$variable->user_viewable) {
             throw new \BadMethodCallException('Cannot transform a hidden egg variable in a client transformer.');
         }
 
         return [
-            'name' => $model->name,
-            'description' => $model->description,
-            'env_variable' => $model->env_variable,
-            'default_value' => $model->default_value,
-            'server_value' => $model->server_value,
-            'is_editable' => $model->user_editable,
-            'rules' => $model->rules,
+            'name' => $variable->name,
+            'description' => $variable->description,
+            'env_variable' => $variable->env_variable,
+            'default_value' => $variable->default_value,
+            'server_value' => $variable->server_value,
+            'is_editable' => $variable->user_editable,
+            'rules' => $variable->rules,
         ];
     }
 }

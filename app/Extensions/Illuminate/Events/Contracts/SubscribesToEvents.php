@@ -1,6 +1,6 @@
 <?php
 
-namespace Everest\Extensions\Illuminate\Events\Contracts;
+namespace Jexactyl\Extensions\Illuminate\Events\Contracts;
 
 use Illuminate\Contracts\Events\Dispatcher;
 

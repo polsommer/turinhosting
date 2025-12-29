@@ -1,6 +1,6 @@
 <?php
 
-namespace Everest\Traits\Services;
+namespace Jexactyl\Traits\Services;
 
 trait ReturnsUpdatedModels
 {

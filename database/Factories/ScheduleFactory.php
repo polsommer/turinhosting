@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use Everest\Models\Schedule;
+use Jexactyl\Models\Schedule;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ScheduleFactory extends Factory

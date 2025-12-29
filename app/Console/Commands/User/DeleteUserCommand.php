@@ -1,11 +1,11 @@
 <?php
 
-namespace Everest\Console\Commands\User;
+namespace Jexactyl\Console\Commands\User;
 
-use Everest\Models\User;
+use Jexactyl\Models\User;
 use Webmozart\Assert\Assert;
 use Illuminate\Console\Command;
-use Everest\Services\Users\UserDeletionService;
+use Jexactyl\Services\Users\UserDeletionService;
 
 class DeleteUserCommand extends Command
 {
@@ -44,10 +44,10 @@ class DeleteUserCommand extends Command
         if ($this->input->isInteractive()) {
             $tableValues = [];
             foreach ($results as $user) {
-                $tableValues[] = [$user->id, $user->email, $user->username];
+                $tableValues[] = [$user->id, $user->email, $user->name];
             }
 
-            $this->table(['User ID', 'Email', 'Username'], $tableValues);
+            $this->table(['User ID', 'Email', 'Name'], $tableValues);
             if (!$deleteUser = $this->ask(trans('command/messages.user.select_search_user'))) {
                 return $this->handle();
             }

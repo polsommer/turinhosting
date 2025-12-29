@@ -1,27 +1,19 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Application\Users;
+namespace Jexactyl\Http\Controllers\Api\Application\Users;
 
-use Everest\Models\User;
-use Illuminate\Support\Arr;
-use Everest\Facades\Activity;
-use Illuminate\Http\Response;
+use Jexactyl\Models\User;
 use Illuminate\Http\JsonResponse;
 use Spatie\QueryBuilder\QueryBuilder;
-use Spatie\QueryBuilder\AllowedFilter;
-use Everest\Exceptions\DisplayException;
-use Illuminate\Database\Eloquent\Builder;
-use Everest\Services\Users\UserUpdateService;
-use Everest\Services\Users\UserCreationService;
-use Everest\Services\Users\UserDeletionService;
-use Everest\Transformers\Api\Application\UserTransformer;
-use Everest\Exceptions\Http\QueryValueOutOfRangeHttpException;
-use Everest\Http\Requests\Api\Application\Users\GetUserRequest;
-use Everest\Http\Requests\Api\Application\Users\GetUsersRequest;
-use Everest\Http\Requests\Api\Application\Users\StoreUserRequest;
-use Everest\Http\Requests\Api\Application\Users\DeleteUserRequest;
-use Everest\Http\Requests\Api\Application\Users\UpdateUserRequest;
-use Everest\Http\Controllers\Api\Application\ApplicationApiController;
+use Jexactyl\Services\Users\UserUpdateService;
+use Jexactyl\Services\Users\UserCreationService;
+use Jexactyl\Services\Users\UserDeletionService;
+use Jexactyl\Transformers\Api\Application\UserTransformer;
+use Jexactyl\Http\Requests\Api\Application\Users\GetUsersRequest;
+use Jexactyl\Http\Requests\Api\Application\Users\StoreUserRequest;
+use Jexactyl\Http\Requests\Api\Application\Users\DeleteUserRequest;
+use Jexactyl\Http\Requests\Api\Application\Users\UpdateUserRequest;
+use Jexactyl\Http\Controllers\Api\Application\ApplicationApiController;
 
 class UserController extends ApplicationApiController
 {
@@ -43,48 +35,24 @@ class UserController extends ApplicationApiController
      */
     public function index(GetUsersRequest $request): array
     {
-        $perPage = (int) $request->query('per_page', '20');
-        if ($perPage < 1 || $perPage > 100) {
-            throw new QueryValueOutOfRangeHttpException('per_page', 1, 100);
-        }
-
         $users = QueryBuilder::for(User::query())
-            ->allowedFilters([
-                'username',
-                'email',
-                AllowedFilter::exact('id'),
-                AllowedFilter::exact('uuid'),
-                AllowedFilter::exact('external_id'),
-                AllowedFilter::callback('*', function (Builder $builder, $value) {
-                    foreach (Arr::wrap($value) as $datum) {
-                        $datum = '%' . $datum . '%';
-                        $builder->orWhere(function (Builder $builder) use ($datum) {
-                            $builder->where('uuid', 'LIKE', $datum)
-                                ->orWhere('username', 'LIKE', $datum)
-                                ->orWhere('email', 'LIKE', $datum)
-                                ->orWhere('external_id', 'LIKE', $datum);
-                        });
-                    }
-                }),
-            ])
-            ->allowedSorts(['id', 'uuid', 'username', 'email', 'admin_role_id', 'use_totp', 'root_admin', 'state', 'created_at'])
-            ->paginate($perPage);
+            ->allowedFilters(['email', 'uuid', 'username', 'external_id'])
+            ->allowedSorts(['id', 'uuid'])
+            ->paginate($request->query('per_page') ?? 50);
 
         return $this->fractal->collection($users)
-            ->transformWith(UserTransformer::class)
+            ->transformWith($this->getTransformer(UserTransformer::class))
             ->toArray();
     }
 
     /**
      * Handle a request to view a single user. Includes any relations that
      * were defined in the request.
-     *
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    public function view(GetUserRequest $request, User $user): array
+    public function view(GetUsersRequest $request, User $user): array
     {
         return $this->fractal->item($user)
-            ->transformWith(UserTransformer::class)
+            ->transformWith($this->getTransformer(UserTransformer::class))
             ->toArray();
     }
 
@@ -96,91 +64,51 @@ class UserController extends ApplicationApiController
      * Revocation errors are returned under the 'revocation_errors' key in the response
      * meta. If there are no errors this is an empty array.
      *
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function update(UpdateUserRequest $request, User $user): array
     {
-        if (
-            !$request->user()->root_admin &&
-            (
-                $request->input('root_admin') ||
-                $request->input('admin_role_id') !== $user->admin_role_id
-            )
-        ) {
-            throw new DisplayException('You must be a root administrator to grant another user permissions.');
-        }
-
         $this->updateService->setUserLevel(User::USER_LEVEL_ADMIN);
         $user = $this->updateService->handle($user, $request->validated());
 
-        Activity::event('admin:users:update')
-            ->property('user', $user)
-            ->property('new_data', $request->all())
-            ->description('A user was updated')
-            ->log();
+        $response = $this->fractal->item($user)
+            ->transformWith($this->getTransformer(UserTransformer::class));
 
-        return $this->fractal->item($user)
-            ->transformWith(UserTransformer::class)
-            ->toArray();
+        return $response->toArray();
     }
 
     /**
-     * Store a new user on the system. Returns the created user and a HTTP/201
+     * Store a new user on the system. Returns the created user and an HTTP/201
      * header on successful creation.
      *
      * @throws \Exception
-     * @throws \Everest\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
      */
     public function store(StoreUserRequest $request): JsonResponse
     {
         $user = $this->creationService->handle($request->validated());
 
-        Activity::event('admin:users:create')
-            ->property('user', $user)
-            ->description('A user was created')
-            ->log();
-
         return $this->fractal->item($user)
-            ->transformWith(UserTransformer::class)
+            ->transformWith($this->getTransformer(UserTransformer::class))
+            ->addMeta([
+                'resource' => route('api.application.users.view', [
+                    'user' => $user->id,
+                ]),
+            ])
             ->respond(201);
-    }
-
-    /**
-     * Toggles the suspension state of a user account.
-     *
-     * @throws \Throwable
-     */
-    public function suspend(User $user): Response
-    {
-        if ($user->root_admin) {
-            throw new \Exception('You cannot suspend an administrator.');
-        }
-
-        $user->update(['state' => $user->isSuspended() ? '' : 'suspended']);
-
-        Activity::event('admin:users:suspend')
-            ->property('user', $user)
-            ->description('A user was suspended')
-            ->log();
-
-        return $this->returnNoContent();
     }
 
     /**
      * Handle a request to delete a user from the Panel. Returns a HTTP/204 response
      * on successful deletion.
      *
-     * @throws \Everest\Exceptions\DisplayException
+     * @throws \Jexactyl\Exceptions\DisplayException
      */
-    public function delete(DeleteUserRequest $request, User $user): Response
+    public function delete(DeleteUserRequest $request, User $user): JsonResponse
     {
         $this->deletionService->handle($user);
 
-        Activity::event('admin:users:delete')
-            ->property('user', $user)
-            ->description('A user was deleted')
-            ->log();
-
-        return $this->returnNoContent();
+        return new JsonResponse([], JsonResponse::HTTP_NO_CONTENT);
     }
 }

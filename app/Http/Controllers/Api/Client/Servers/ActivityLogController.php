@@ -1,18 +1,18 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Client\Servers;
+namespace Jexactyl\Http\Controllers\Api\Client\Servers;
 
-use Everest\Models\User;
-use Everest\Models\Server;
-use Everest\Models\Permission;
-use Everest\Models\ActivityLog;
+use Jexactyl\Models\User;
+use Jexactyl\Models\Server;
+use Jexactyl\Models\Permission;
+use Jexactyl\Models\ActivityLog;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\JoinClause;
-use Everest\Http\Requests\Api\Client\ClientApiRequest;
-use Everest\Transformers\Api\Client\ActivityLogTransformer;
-use Everest\Http\Controllers\Api\Client\ClientApiController;
+use Jexactyl\Http\Requests\Api\Client\ClientApiRequest;
+use Jexactyl\Transformers\Api\Client\ActivityLogTransformer;
+use Jexactyl\Http\Controllers\Api\Client\ClientApiController;
 
 class ActivityLogController extends ClientApiController
 {
@@ -48,7 +48,7 @@ class ActivityLogController extends ClientApiController
             ->appends($request->query());
 
         return $this->fractal->collection($activity)
-            ->transformWith(ActivityLogTransformer::class)
+            ->transformWith($this->getTransformer(ActivityLogTransformer::class))
             ->toArray();
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Everest\Exceptions;
+namespace Jexactyl\Exceptions;
 
 use Exception;
 use Illuminate\Http\Request;
@@ -9,9 +9,10 @@ use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Container\Container;
 use Illuminate\Http\RedirectResponse;
+use Prologue\Alerts\AlertsMessageBag;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
-class DisplayException extends PterodactylException implements HttpExceptionInterface
+class DisplayException extends JexactylException implements HttpExceptionInterface
 {
     public const LEVEL_DEBUG = 'debug';
     public const LEVEL_INFO = 'info';
@@ -51,6 +52,8 @@ class DisplayException extends PterodactylException implements HttpExceptionInte
         if ($request->expectsJson()) {
             return response()->json(Handler::toArray($this), $this->getStatusCode(), $this->getHeaders());
         }
+
+        app(AlertsMessageBag::class)->danger($this->getMessage())->flash();
 
         return redirect()->back()->withInput();
     }

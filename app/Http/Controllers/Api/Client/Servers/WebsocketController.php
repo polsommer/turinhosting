@@ -1,16 +1,16 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Client\Servers;
+namespace Jexactyl\Http\Controllers\Api\Client\Servers;
 
-use Everest\Models\Server;
 use Carbon\CarbonImmutable;
-use Everest\Models\Permission;
+use Jexactyl\Models\Server;
+use Jexactyl\Models\Permission;
 use Illuminate\Http\JsonResponse;
-use Everest\Services\Nodes\NodeJWTService;
-use Everest\Exceptions\Http\HttpForbiddenException;
-use Everest\Http\Requests\Api\Client\ClientApiRequest;
-use Everest\Services\Servers\GetUserPermissionsService;
-use Everest\Http\Controllers\Api\Client\ClientApiController;
+use Jexactyl\Services\Nodes\NodeJWTService;
+use Jexactyl\Exceptions\Http\HttpForbiddenException;
+use Jexactyl\Http\Requests\Api\Client\ClientApiRequest;
+use Jexactyl\Services\Servers\GetUserPermissionsService;
+use Jexactyl\Http\Controllers\Api\Client\ClientApiController;
 
 class WebsocketController extends ClientApiController
 {

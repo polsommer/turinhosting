@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Traits\Services;
+namespace Jexactyl\Traits\Services;
 
-use Everest\Models\User;
+use Jexactyl\Models\User;
 
 trait HasUserLevels
 {

@@ -1,18 +1,19 @@
 <?php
 
-namespace Everest\Jobs\Schedule;
+namespace Jexactyl\Jobs\Schedule;
 
-use Everest\Jobs\Job;
-use Everest\Models\Task;
+use Exception;
+use Jexactyl\Jobs\Job;
+use Jexactyl\Models\Task;
 use Carbon\CarbonImmutable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Everest\Services\Backups\InitiateBackupService;
-use Everest\Repositories\Wings\DaemonPowerRepository;
-use Everest\Repositories\Wings\DaemonCommandRepository;
-use Everest\Exceptions\Http\Connection\DaemonConnectionException;
+use Jexactyl\Services\Backups\InitiateBackupService;
+use Jexactyl\Repositories\Wings\DaemonPowerRepository;
+use Jexactyl\Repositories\Wings\DaemonCommandRepository;
+use Jexactyl\Exceptions\Http\Connection\DaemonConnectionException;
 
 class RunTaskJob extends Job implements ShouldQueue
 {
@@ -98,7 +99,7 @@ class RunTaskJob extends Job implements ShouldQueue
      */
     private function queueNextTask()
     {
-        /** @var \Everest\Models\Task|null $nextTask */
+        /** @var \Jexactyl\Models\Task|null $nextTask */
         $nextTask = Task::query()->where('schedule_id', $this->task->schedule_id)
             ->orderBy('sequence_id', 'asc')
             ->where('sequence_id', '>', $this->task->sequence_id)

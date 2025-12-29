@@ -1,6 +1,6 @@
 <?php
 
-namespace Everest\Http\Middleware;
+namespace Jexactyl\Http\Middleware;
 
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as BaseVerifier;
 
@@ -11,5 +11,5 @@ class VerifyCsrfToken extends BaseVerifier
      * never hit by the front-end, and require specific token validation
      * to work.
      */
-    protected $except = ['remote/*', 'daemon/*'];
+    protected $except = ['remote/*', 'daemon/*', 'stripe/*'];
 }

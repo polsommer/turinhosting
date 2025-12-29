@@ -6,7 +6,7 @@ return [
     | Lockout Configuration
     |--------------------------------------------------------------------------
     |
-    | These options are Pterodactyl specific and allow you to configure how
+    | These options are Jexactyl specific and allow you to configure how
     | long a user should be locked out for if they input a username or
     | password incorrectly.
     |
@@ -81,7 +81,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => Everest\Models\User::class,
+            'model' => Jexactyl\Models\User::class,
         ],
     ],
 
@@ -90,8 +90,8 @@ return [
     | Resetting Passwords
     |--------------------------------------------------------------------------
     |
-    | Here you may set the options for resetting passwords.
-    | You may also set the name of the
+    | Here you may set the options for resetting passwords including the view
+    | that is your password reset e-mail. You may also set the name of the
     | table that maintains all of the reset tokens for your application.
     |
     | You may specify multiple password reset configurations if you have more

@@ -1,8 +1,7 @@
 <?php
 
-namespace Everest\Models;
+namespace Jexactyl\Models;
 
-use Everest\Models\Billing\Product;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Query\JoinClause;
 use Znck\Eloquent\Traits\BelongsToThrough;
@@ -11,17 +10,19 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Everest\Exceptions\Http\Server\ServerStateConflictException;
+use Jexactyl\Exceptions\Http\Server\ServerStateConflictException;
 
 /**
- * \Everest\Models\Server.
+ * \Jexactyl\Models\Server.
  *
  * @property int $id
  * @property string|null $external_id
- * @property int|null $group_id
  * @property string $uuid
  * @property string $uuidShort
  * @property int $node_id
+ * @property bool $renewable
+ * @property int $renewal
+ * @property string|null $bg
  * @property string $name
  * @property string $description
  * @property string|null $status
@@ -33,44 +34,41 @@ use Everest\Exceptions\Http\Server\ServerStateConflictException;
  * @property int $io
  * @property int $cpu
  * @property string|null $threads
- * @property bool $oom_killer
+ * @property bool $oom_disabled
  * @property int $allocation_id
  * @property int $nest_id
  * @property int $egg_id
- * @property string|null $startup
+ * @property string $startup
  * @property string $image
- * @property int|null $billing_product_id
- * @property \Illuminate\Support\Carbon|null $renewal_date
  * @property int|null $allocation_limit
  * @property int|null $database_limit
  * @property int $backup_limit
- * @property int $subuser_limit
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $installed_at
- * @property \Illuminate\Database\Eloquent\Collection|\Everest\Models\ActivityLog[] $activity
+ * @property \Illuminate\Database\Eloquent\Collection|\Jexactyl\Models\ActivityLog[] $activity
  * @property int|null $activity_count
- * @property \Everest\Models\Allocation|null $allocation
- * @property \Illuminate\Database\Eloquent\Collection|\Everest\Models\Allocation[] $allocations
+ * @property \Jexactyl\Models\Allocation|null $allocation
+ * @property \Illuminate\Database\Eloquent\Collection|\Jexactyl\Models\Allocation[] $allocations
  * @property int|null $allocations_count
- * @property \Illuminate\Database\Eloquent\Collection|\Everest\Models\Backup[] $backups
+ * @property \Illuminate\Database\Eloquent\Collection|\Jexactyl\Models\Backup[] $backups
  * @property int|null $backups_count
- * @property \Illuminate\Database\Eloquent\Collection|\Everest\Models\Database[] $databases
+ * @property \Illuminate\Database\Eloquent\Collection|\Jexactyl\Models\Database[] $databases
  * @property int|null $databases_count
- * @property \Everest\Models\Egg|null $egg
- * @property \Illuminate\Database\Eloquent\Collection|\Everest\Models\Mount[] $mounts
+ * @property \Jexactyl\Models\Egg|null $egg
+ * @property \Illuminate\Database\Eloquent\Collection|\Jexactyl\Models\Mount[] $mounts
  * @property int|null $mounts_count
- * @property \Everest\Models\Nest $nest
- * @property \Everest\Models\Node $node
+ * @property \Jexactyl\Models\Nest $nest
+ * @property \Jexactyl\Models\Node $node
  * @property \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
  * @property int|null $notifications_count
- * @property \Illuminate\Database\Eloquent\Collection|\Everest\Models\Schedule[] $schedules
+ * @property \Illuminate\Database\Eloquent\Collection|\Jexactyl\Models\Schedule[] $schedules
  * @property int|null $schedules_count
- * @property \Illuminate\Database\Eloquent\Collection|\Everest\Models\Subuser[] $subusers
+ * @property \Illuminate\Database\Eloquent\Collection|\Jexactyl\Models\Subuser[] $subusers
  * @property int|null $subusers_count
- * @property \Everest\Models\ServerTransfer|null $transfer
- * @property \Everest\Models\User $user
- * @property \Illuminate\Database\Eloquent\Collection|\Everest\Models\EggVariable[] $variables
+ * @property \Jexactyl\Models\ServerTransfer|null $transfer
+ * @property \Jexactyl\Models\User $user
+ * @property \Illuminate\Database\Eloquent\Collection|\Jexactyl\Models\EggVariable[] $variables
  * @property int|null $variables_count
  *
  * @method static \Database\Factories\ServerFactory factory(...$parameters)
@@ -94,7 +92,7 @@ use Everest\Exceptions\Http\Server\ServerStateConflictException;
  * @method static \Illuminate\Database\Eloquent\Builder|Server whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Server whereNestId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Server whereNodeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Server whereOomKiller($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Server whereOomDisabled($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Server whereOwnerId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Server whereSkipScripts($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Server whereStartup($value)
@@ -135,7 +133,7 @@ class Server extends Model
      */
     protected $attributes = [
         'status' => self::STATUS_INSTALLING,
-        'oom_killer' => false,
+        'oom_disabled' => true,
         'installed_at' => null,
     ];
 
@@ -145,6 +143,11 @@ class Server extends Model
     protected $with = ['allocation'];
 
     /**
+     * The attributes that should be mutated to dates.
+     */
+    protected $dates = [self::CREATED_AT, self::UPDATED_AT, 'deleted_at', 'installed_at'];
+
+    /**
      * Fields that are not mass assignable.
      */
     protected $guarded = ['id', self::CREATED_AT, self::UPDATED_AT, 'deleted_at', 'installed_at'];
@@ -152,9 +155,11 @@ class Server extends Model
     public static array $validationRules = [
         'external_id' => 'sometimes|nullable|string|between:1,191|unique:servers',
         'owner_id' => 'required|integer|exists:users,id',
-        'group_id' => 'nullable|integer|exists:server_groups,id',
         'name' => 'required|string|min:1|max:191',
         'node_id' => 'required|exists:nodes,id',
+        'renewable' => 'sometimes|boolean',
+        'renewal' => 'sometimes|integer',
+        'bg' => 'nullable|string',
         'description' => 'string',
         'status' => 'nullable|string',
         'memory' => 'required|numeric|min:0',
@@ -162,20 +167,17 @@ class Server extends Model
         'io' => 'required|numeric|between:10,1000',
         'cpu' => 'required|numeric|min:0',
         'threads' => 'nullable|regex:/^[0-9-,]+$/',
-        'oom_killer' => 'sometimes|boolean',
+        'oom_disabled' => 'sometimes|boolean',
         'disk' => 'required|numeric|min:0',
         'allocation_id' => 'required|bail|unique:servers|exists:allocations,id',
         'nest_id' => 'required|exists:nests,id',
         'egg_id' => 'required|exists:eggs,id',
-        'startup' => 'nullable|string',
+        'startup' => 'required|string',
         'skip_scripts' => 'sometimes|boolean',
         'image' => 'required|string|max:191',
-        'billing_product_id' => 'nullable|int|exists:products,id',
-        'renewal_date' => 'nullable|date',
         'database_limit' => 'present|nullable|integer|min:0',
         'allocation_limit' => 'sometimes|nullable|integer|min:0',
         'backup_limit' => 'present|nullable|integer|min:0',
-        'subuser_limit' => 'nullable|integer|min:-1',
     ];
 
     /**
@@ -183,7 +185,9 @@ class Server extends Model
      */
     protected $casts = [
         'node_id' => 'integer',
-        'group_id' => 'integer',
+        'renewable' => 'boolean',
+        'renewal' => 'integer',
+        'bg' => 'string',
         'skip_scripts' => 'boolean',
         'owner_id' => 'integer',
         'memory' => 'integer',
@@ -191,20 +195,13 @@ class Server extends Model
         'disk' => 'integer',
         'io' => 'integer',
         'cpu' => 'integer',
-        'oom_killer' => 'boolean',
+        'oom_disabled' => 'boolean',
         'allocation_id' => 'integer',
         'nest_id' => 'integer',
         'egg_id' => 'integer',
-        'billing_product_id' => 'integer',
-        'renewal_date' => 'datetime',
         'database_limit' => 'integer',
         'allocation_limit' => 'integer',
         'backup_limit' => 'integer',
-        'subuser_limit' => 'integer',
-        self::CREATED_AT => 'datetime',
-        self::UPDATED_AT => 'datetime',
-        'deleted_at' => 'datetime',
-        'installed_at' => 'datetime',
     ];
 
     /**
@@ -249,14 +246,6 @@ class Server extends Model
     public function allocation(): HasOne
     {
         return $this->hasOne(Allocation::class, 'id', 'allocation_id');
-    }
-
-    /**
-     * Gets information for the product associated with this server.
-     */
-    public function product(): HasOne
-    {
-        return $this->hasOne(Product::class, 'id', 'billing_product_id');
     }
 
     /**
@@ -326,6 +315,16 @@ class Server extends Model
     }
 
     /**
+     * Returns the location that a server belongs to.
+     *
+     * @throws \Exception
+     */
+    public function location(): \Znck\Eloquent\Relations\BelongsToThrough
+    {
+        return $this->belongsToThrough(Location::class, Node::class);
+    }
+
+    /**
      * Returns the associated server transfer.
      */
     public function transfer(): HasOne
@@ -355,19 +354,11 @@ class Server extends Model
     }
 
     /**
-     * Finds out whether a server is billable.
-     */
-    public function billable(): bool
-    {
-        return $this->order_id ? true : false;
-    }
-
-    /**
      * Checks if the server is currently in a user-accessible state. If not, an
      * exception is raised. This should be called whenever something needs to make
      * sure the server is not in a weird state that should block user access.
      *
-     * @throws \Everest\Exceptions\Http\Server\ServerStateConflictException
+     * @throws \Jexactyl\Exceptions\Http\Server\ServerStateConflictException
      */
     public function validateCurrentState()
     {

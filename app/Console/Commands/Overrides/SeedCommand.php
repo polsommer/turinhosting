@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Console\Commands\Overrides;
+namespace Jexactyl\Console\Commands\Overrides;
 
-use Everest\Console\RequiresDatabaseMigrations;
+use Jexactyl\Console\RequiresDatabaseMigrations;
 use Illuminate\Database\Console\Seeds\SeedCommand as BaseSeedCommand;
 
 class SeedCommand extends BaseSeedCommand

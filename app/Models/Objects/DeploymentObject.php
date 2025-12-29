@@ -1,6 +1,6 @@
 <?php
 
-namespace Everest\Models\Objects;
+namespace Jexactyl\Models\Objects;
 
 class DeploymentObject
 {

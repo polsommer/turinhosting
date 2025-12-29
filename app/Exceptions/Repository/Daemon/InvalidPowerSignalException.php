@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Exceptions\Repository\Daemon;
+namespace Jexactyl\Exceptions\Repository\Daemon;
 
-use Everest\Exceptions\Repository\RepositoryException;
+use Jexactyl\Exceptions\Repository\RepositoryException;
 
 class InvalidPowerSignalException extends RepositoryException
 {

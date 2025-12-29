@@ -1,17 +1,17 @@
-import { updateAccountEmail } from '@/api/account';
 import { Action, action, Thunk, thunk } from 'easy-peasy';
+import updateAccountEmail from '@/api/account/updateAccountEmail';
 
 export interface UserData {
     uuid: string;
     username: string;
     email: string;
+    approved: boolean;
+    verified: boolean;
+    discordId: string;
     language: string;
     rootAdmin: boolean;
     useTotp: boolean;
-    avatarURL: string;
-    roleName: string;
-    admin_role_id?: number;
-    state: string;
+    referralCode: string;
     createdAt: Date;
     updatedAt: Date;
 }

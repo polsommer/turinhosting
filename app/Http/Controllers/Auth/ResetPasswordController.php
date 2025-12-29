@@ -1,19 +1,18 @@
 <?php
 
-namespace Everest\Http\Controllers\Auth;
+namespace Jexactyl\Http\Controllers\Auth;
 
-use Everest\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\JsonResponse;
-use Everest\Exceptions\DisplayException;
-use Everest\Http\Controllers\Controller;
 use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
+use Jexactyl\Exceptions\DisplayException;
+use Jexactyl\Http\Controllers\Controller;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Foundation\Auth\ResetsPasswords;
-use Everest\Http\Requests\Auth\ResetPasswordRequest;
-use Everest\Contracts\Repository\UserRepositoryInterface;
+use Jexactyl\Http\Requests\Auth\ResetPasswordRequest;
+use Jexactyl\Contracts\Repository\UserRepositoryInterface;
 
 class ResetPasswordController extends Controller
 {
@@ -39,7 +38,7 @@ class ResetPasswordController extends Controller
     /**
      * Reset the given user's password.
      *
-     * @throws \Everest\Exceptions\DisplayException
+     * @throws \Jexactyl\Exceptions\DisplayException
      */
     public function __invoke(ResetPasswordRequest $request): JsonResponse
     {
@@ -68,12 +67,13 @@ class ResetPasswordController extends Controller
      * account do not automatically log them in. In those cases, send the user back to the login
      * form with a note telling them their password was changed and to log back in.
      *
+     * @param \Illuminate\Contracts\Auth\CanResetPassword|\Jexactyl\Models\User $user
      * @param string $password
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
-    protected function resetPassword(User $user, $password)
+    protected function resetPassword($user, $password)
     {
         $user = $this->userRepository->update($user->id, [
             'password' => $this->hasher->make($password),

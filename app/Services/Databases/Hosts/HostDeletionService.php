@@ -1,10 +1,10 @@
 <?php
 
-namespace Everest\Services\Databases\Hosts;
+namespace Jexactyl\Services\Databases\Hosts;
 
-use Everest\Exceptions\Service\HasActiveServersException;
-use Everest\Contracts\Repository\DatabaseRepositoryInterface;
-use Everest\Contracts\Repository\DatabaseHostRepositoryInterface;
+use Jexactyl\Exceptions\Service\HasActiveServersException;
+use Jexactyl\Contracts\Repository\DatabaseRepositoryInterface;
+use Jexactyl\Contracts\Repository\DatabaseHostRepositoryInterface;
 
 class HostDeletionService
 {
@@ -21,7 +21,7 @@ class HostDeletionService
      * Delete a specified host from the Panel if no databases are
      * attached to it.
      *
-     * @throws \Everest\Exceptions\Service\HasActiveServersException
+     * @throws \Jexactyl\Exceptions\Service\HasActiveServersException
      */
     public function handle(int $host): int
     {

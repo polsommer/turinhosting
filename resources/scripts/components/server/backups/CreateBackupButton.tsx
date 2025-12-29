@@ -1,18 +1,19 @@
-import { useEffect, useState } from 'react';
-import Modal, { RequiredModalProps } from '@elements/Modal';
-import { Field as FormikField, Form, Formik, FormikHelpers, useFormikContext } from 'formik';
-import { boolean, object, string } from 'yup';
-import Field from '@elements/Field';
-import FormikFieldWrapper from '@elements/FormikFieldWrapper';
-import useFlash from '@/plugins/useFlash';
-import { createBackup, getBackups } from '@/api/server/backups';
-import FlashMessageRender from '@/components/FlashMessageRender';
-import { Button } from '@elements/button';
 import tw from 'twin.macro';
-import { Textarea } from '@elements/Input';
+import useFlash from '@/plugins/useFlash';
+import Can from '@/components/elements/Can';
+import { boolean, object, string } from 'yup';
 import { ServerContext } from '@/state/server';
-import FormikSwitch from '@elements/FormikSwitch';
-import Can from '@elements/Can';
+import Field from '@/components/elements/Field';
+import React, { useEffect, useState } from 'react';
+import { Textarea } from '@/components/elements/Input';
+import getServerBackups from '@/api/swr/getServerBackups';
+import { Button } from '@/components/elements/button/index';
+import FormikSwitch from '@/components/elements/FormikSwitch';
+import FlashMessageRender from '@/components/FlashMessageRender';
+import Modal, { RequiredModalProps } from '@/components/elements/Modal';
+import createServerBackup from '@/api/server/backups/createServerBackup';
+import FormikFieldWrapper from '@/components/elements/FormikFieldWrapper';
+import { Field as FormikField, Form, Formik, FormikHelpers, useFormikContext } from 'formik';
 
 interface Values {
     name: string;
@@ -48,7 +49,7 @@ const ModalContent = ({ ...props }: RequiredModalProps) => {
                     </FormikFieldWrapper>
                 </div>
                 <Can action={'backup.delete'}>
-                    <div css={tw`bg-black/25 mt-6 border-2 border-black/25 shadow-inner p-4 rounded`}>
+                    <div css={tw`mt-6 bg-neutral-700 border border-neutral-800 shadow-inner p-4 rounded`}>
                         <FormikSwitch
                             name={'isLocked'}
                             label={'Locked'}
@@ -67,10 +68,10 @@ const ModalContent = ({ ...props }: RequiredModalProps) => {
 };
 
 export default () => {
-    const uuid = ServerContext.useStoreState(state => state.server.data!.uuid);
+    const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
     const { clearFlashes, clearAndAddHttpError } = useFlash();
     const [visible, setVisible] = useState(false);
-    const { mutate } = getBackups();
+    const { mutate } = getServerBackups();
 
     useEffect(() => {
         clearFlashes('backups:create');
@@ -78,15 +79,15 @@ export default () => {
 
     const submit = (values: Values, { setSubmitting }: FormikHelpers<Values>) => {
         clearFlashes('backups:create');
-        createBackup(uuid, values)
-            .then(async backup => {
-                await mutate(
-                    data => ({ ...data!, items: data!.items.concat(backup), backupCount: data!.backupCount + 1 }),
-                    false,
+        createServerBackup(uuid, values)
+            .then((backup) => {
+                mutate(
+                    (data) => ({ ...data, items: data.items.concat(backup), backupCount: data.backupCount + 1 }),
+                    false
                 );
                 setVisible(false);
             })
-            .catch(error => {
+            .catch((error) => {
                 clearAndAddHttpError({ key: 'backups:create', error });
                 setSubmitting(false);
             });

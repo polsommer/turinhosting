@@ -1,16 +1,18 @@
 <?php
 
-namespace Everest\Transformers\Api\Application;
+namespace Jexactyl\Transformers\Api\Application;
 
-use Everest\Models\DatabaseHost;
-use Everest\Services\Acl\Api\AdminAcl;
+use Jexactyl\Models\Database;
+use Jexactyl\Models\DatabaseHost;
+use Jexactyl\Services\Acl\Api\AdminAcl;
 use League\Fractal\Resource\Collection;
-use Everest\Transformers\Api\Transformer;
 use League\Fractal\Resource\NullResource;
 
-class DatabaseHostTransformer extends Transformer
+class DatabaseHostTransformer extends BaseTransformer
 {
-    protected array $availableIncludes = ['databases'];
+    protected array $availableIncludes = [
+        'databases',
+    ];
 
     /**
      * Return the resource name for the JSONAPI output.
@@ -31,13 +33,16 @@ class DatabaseHostTransformer extends Transformer
             'host' => $model->host,
             'port' => $model->port,
             'username' => $model->username,
-            'created_at' => self::formatTimestamp($model->created_at),
-            'updated_at' => self::formatTimestamp($model->updated_at),
+            'node' => $model->node_id,
+            'created_at' => $model->created_at->toAtomString(),
+            'updated_at' => $model->updated_at->toAtomString(),
         ];
     }
 
     /**
      * Include the databases associated with this host.
+     *
+     * @throws \Jexactyl\Exceptions\Transformer\InvalidTransformerLevelException
      */
     public function includeDatabases(DatabaseHost $model): Collection|NullResource
     {
@@ -45,7 +50,8 @@ class DatabaseHostTransformer extends Transformer
             return $this->null();
         }
 
-        // TODO
-        return $this->collection($model->databases, new ServerDatabaseTransformer());
+        $model->loadMissing('databases');
+
+        return $this->collection($model->getRelation('databases'), $this->makeTransformer(ServerDatabaseTransformer::class), Database::RESOURCE_NAME);
     }
 }

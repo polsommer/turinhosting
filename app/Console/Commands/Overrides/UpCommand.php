@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Console\Commands\Overrides;
+namespace Jexactyl\Console\Commands\Overrides;
 
-use Everest\Console\RequiresDatabaseMigrations;
+use Jexactyl\Console\RequiresDatabaseMigrations;
 use Illuminate\Foundation\Console\UpCommand as BaseUpCommand;
 
 class UpCommand extends BaseUpCommand
@@ -21,6 +21,6 @@ class UpCommand extends BaseUpCommand
             return 1;
         }
 
-        return parent::handle();
+        return parent::handle() ?? 0;
     }
 }

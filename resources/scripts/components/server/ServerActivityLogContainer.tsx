@@ -1,17 +1,16 @@
-import { useEffect, useState } from 'react';
-import { useActivityLogs } from '@/api/server/activity';
-import { useFlashKey } from '@/plugins/useFlash';
-import FlashMessageRender from '@/components/FlashMessageRender';
-import Spinner from '@elements/Spinner';
-import ActivityLogEntry from '@elements/activity/ActivityLogEntry';
-import PaginationFooter from '@elements/table/PaginationFooter';
-import { ActivityLogFilters } from '@/api/account/activity';
-import { Link } from 'react-router-dom';
 import classNames from 'classnames';
-import { styles as btnStyles } from '@elements/button/index';
-import { XCircleIcon } from '@heroicons/react/solid';
+import * as Icon from 'react-feather';
+import { Link } from 'react-router-dom';
+import { useFlashKey } from '@/plugins/useFlash';
+import React, { useEffect, useState } from 'react';
+import Spinner from '@/components/elements/Spinner';
 import useLocationHash from '@/plugins/useLocationHash';
-import PageContentBlock from '../elements/PageContentBlock';
+import { useActivityLogs } from '@/api/server/activity';
+import { ActivityLogFilters } from '@/api/account/activity';
+import { styles as btnStyles } from '@/components/elements/button/index';
+import ServerContentBlock from '@/components/elements/ServerContentBlock';
+import PaginationFooter from '@/components/elements/table/PaginationFooter';
+import ActivityLogEntry from '@/components/elements/activity/ActivityLogEntry';
 
 export default () => {
     const { hash } = useLocationHash();
@@ -24,7 +23,7 @@ export default () => {
     });
 
     useEffect(() => {
-        setFilters(value => ({ ...value, filters: { ip: hash.ip, event: hash.event } }));
+        setFilters((value) => ({ ...value, filters: { ip: hash.ip, event: hash.event } }));
     }, [hash]);
 
     useEffect(() => {
@@ -32,26 +31,29 @@ export default () => {
     }, [error]);
 
     return (
-        <PageContentBlock title={'Activity Log'} header description={'View recent activity on your server.'}>
-            <FlashMessageRender byKey={'server:activity'} />
+        <ServerContentBlock
+            title={'Server Activity'}
+            description={'View activity on this server.'}
+            showFlashKey={'server:activity'}
+        >
             {(filters.filters?.event || filters.filters?.ip) && (
-                <div className={'mb-2 flex justify-end'}>
+                <div className={'flex justify-end mb-2'}>
                     <Link
                         to={'#'}
                         className={classNames(btnStyles.button, btnStyles.text, 'w-full sm:w-auto')}
-                        onClick={() => setFilters(value => ({ ...value, filters: {} }))}
+                        onClick={() => setFilters((value) => ({ ...value, filters: {} }))}
                     >
-                        Clear Filters <XCircleIcon className={'ml-2 h-4 w-4'} />
+                        Clear Filters <Icon.XCircle className={'w-4 h-4 ml-2'} />
                     </Link>
                 </div>
             )}
             {!data && isValidating ? (
                 <Spinner centered />
             ) : !data?.items.length ? (
-                <p className={'text-center text-sm text-slate-400'}>No activity logs available for this server.</p>
+                <p className={'text-sm text-center text-gray-400'}>No activity logs available for this server.</p>
             ) : (
-                <div className={'bg-slate-700'}>
-                    {data?.items.map(activity => (
+                <div className={'bg-neutral-900 j-up'}>
+                    {data?.items.map((activity) => (
                         <ActivityLogEntry key={activity.id} activity={activity}>
                             <span />
                         </ActivityLogEntry>
@@ -61,9 +63,9 @@ export default () => {
             {data && (
                 <PaginationFooter
                     pagination={data.pagination}
-                    onPageSelect={page => setFilters(value => ({ ...value, page }))}
+                    onPageSelect={(page) => setFilters((value) => ({ ...value, page }))}
                 />
             )}
-        </PageContentBlock>
+        </ServerContentBlock>
     );
 };

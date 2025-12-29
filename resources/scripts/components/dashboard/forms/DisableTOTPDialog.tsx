@@ -1,11 +1,10 @@
-import { useContext, useEffect, useState } from 'react';
-import * as React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import asDialog from '@/hoc/asDialog';
-import { Dialog, DialogWrapperContext } from '@elements/dialog';
-import { Button } from '@elements/button/index';
-import { Input } from '@elements/inputs';
-import Tooltip from '@elements/tooltip/Tooltip';
-import { disableTwoFactor } from '@/api/account/two-factor';
+import { Dialog, DialogWrapperContext } from '@/components/elements/dialog';
+import { Button } from '@/components/elements/button/index';
+import { Input } from '@/components/elements/inputs';
+import Tooltip from '@/components/elements/tooltip/Tooltip';
+import disableAccountTwoFactor from '@/api/account/disableAccountTwoFactor';
 import { useFlashKey } from '@/plugins/useFlash';
 import { useStoreActions } from '@/state/hooks';
 import FlashMessageRender from '@/components/FlashMessageRender';
@@ -15,10 +14,10 @@ const DisableTOTPDialog = () => {
     const [password, setPassword] = useState('');
     const { clearAndAddHttpError } = useFlashKey('account:two-step');
     const { close, setProps } = useContext(DialogWrapperContext);
-    const updateUserData = useStoreActions(actions => actions.user.updateUserData);
+    const updateUserData = useStoreActions((actions) => actions.user.updateUserData);
 
     useEffect(() => {
-        setProps(state => ({ ...state, preventExternalClose: submitting }));
+        setProps((state) => ({ ...state, preventExternalClose: submitting }));
     }, [submitting]);
 
     const submit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -29,7 +28,7 @@ const DisableTOTPDialog = () => {
 
         setSubmitting(true);
         clearAndAddHttpError();
-        disableTwoFactor(password)
+        disableAccountTwoFactor(password)
             .then(() => {
                 updateUserData({ useTotp: false });
                 close();
@@ -49,7 +48,7 @@ const DisableTOTPDialog = () => {
                 type={'password'}
                 variant={Input.Text.Variants.Loose}
                 value={password}
-                onChange={e => setPassword(e.currentTarget.value)}
+                onChange={(e) => setPassword(e.currentTarget.value)}
             />
             <Dialog.Footer>
                 <Button.Text onClick={close}>Cancel</Button.Text>

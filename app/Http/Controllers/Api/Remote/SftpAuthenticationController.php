@@ -1,21 +1,21 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Remote;
+namespace Jexactyl\Http\Controllers\Api\Remote;
 
-use Everest\Models\User;
-use Everest\Models\Server;
+use Jexactyl\Models\User;
+use Jexactyl\Models\Server;
 use Illuminate\Http\Request;
-use Everest\Facades\Activity;
-use Everest\Models\Permission;
+use Jexactyl\Facades\Activity;
+use Jexactyl\Models\Permission;
 use Illuminate\Http\JsonResponse;
 use phpseclib3\Crypt\PublicKeyLoader;
-use Everest\Http\Controllers\Controller;
+use Jexactyl\Http\Controllers\Controller;
 use phpseclib3\Exception\NoKeyLoadedException;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
-use Everest\Exceptions\Http\HttpForbiddenException;
-use Everest\Services\Servers\GetUserPermissionsService;
-use Everest\Http\Requests\Api\Remote\SftpAuthenticationFormRequest;
+use Jexactyl\Exceptions\Http\HttpForbiddenException;
+use Jexactyl\Services\Servers\GetUserPermissionsService;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Jexactyl\Http\Requests\Api\Remote\SftpAuthenticationFormRequest;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 class SftpAuthenticationController extends Controller

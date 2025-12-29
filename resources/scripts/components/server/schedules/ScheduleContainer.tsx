@@ -1,32 +1,35 @@
-import { useEffect, useState } from 'react';
-import { getSchedules } from '@/api/server/schedules';
-import { ServerContext } from '@/state/server';
-import Spinner from '@elements/Spinner';
-import FlashMessageRender from '@/components/FlashMessageRender';
-import ScheduleRow from '@/components/server/schedules/ScheduleRow';
-import { httpErrorToHuman } from '@/api/http';
-import EditScheduleModal from '@/components/server/schedules/EditScheduleModal';
-import Can from '@elements/Can';
-import useFlash from '@/plugins/useFlash';
 import tw from 'twin.macro';
-import { Button } from '@elements/button/index';
-import PageContentBlock from '@/components/elements/PageContentBlock';
+import useFlash from '@/plugins/useFlash';
+import Can from '@/components/elements/Can';
+import { httpErrorToHuman } from '@/api/http';
+import { ServerContext } from '@/state/server';
+import React, { useEffect, useState } from 'react';
+import Spinner from '@/components/elements/Spinner';
+import GreyRowBox from '@/components/elements/GreyRowBox';
+import { Button } from '@/components/elements/button/index';
+import { useHistory, useRouteMatch } from 'react-router-dom';
+import ScheduleRow from '@/components/server/schedules/ScheduleRow';
+import ServerContentBlock from '@/components/elements/ServerContentBlock';
+import getServerSchedules from '@/api/server/schedules/getServerSchedules';
+import EditScheduleModal from '@/components/server/schedules/EditScheduleModal';
 
-function ScheduleContainer() {
-    const server = ServerContext.useStoreState(state => state.server.data!);
+export default () => {
+    const match = useRouteMatch();
+    const history = useHistory();
+
+    const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
     const { clearFlashes, addError } = useFlash();
     const [loading, setLoading] = useState(true);
     const [visible, setVisible] = useState(false);
 
-    const schedules = ServerContext.useStoreState(state => state.schedules.data);
-    const setSchedules = ServerContext.useStoreActions(actions => actions.schedules.setSchedules);
+    const schedules = ServerContext.useStoreState((state) => state.schedules.data);
+    const setSchedules = ServerContext.useStoreActions((actions) => actions.schedules.setSchedules);
 
     useEffect(() => {
         clearFlashes('schedules');
-
-        getSchedules(server.uuid)
-            .then(schedules => setSchedules(schedules))
-            .catch(error => {
+        getServerSchedules(uuid)
+            .then((schedules) => setSchedules(schedules))
+            .catch((error) => {
                 addError({ message: httpErrorToHuman(error), key: 'schedules' });
                 console.error(error);
             })
@@ -34,8 +37,11 @@ function ScheduleContainer() {
     }, []);
 
     return (
-        <PageContentBlock title={'Schedules'} header description={'Create and edit automatic tasks for your server.'}>
-            <FlashMessageRender byKey={'schedules'} css={tw`mb-4`} />
+        <ServerContentBlock
+            title={'Schedules'}
+            description={'Manage scheduled functions for your server.'}
+            showFlashKey={'schedules'}
+        >
             {!schedules.length && loading ? (
                 <Spinner size={'large'} centered />
             ) : (
@@ -45,12 +51,19 @@ function ScheduleContainer() {
                             There are no schedules configured for this server.
                         </p>
                     ) : (
-                        schedules.map(schedule => (
-                            <ScheduleRow
+                        schedules.map((schedule) => (
+                            <GreyRowBox
+                                as={'a'}
                                 key={schedule.id}
-                                schedule={schedule}
-                                to={`/server/${server.id}/schedules/${schedule.id}`}
-                            />
+                                href={`${match.url}/${schedule.id}`}
+                                css={tw`cursor-pointer mb-2 flex-wrap`}
+                                onClick={(e: any) => {
+                                    e.preventDefault();
+                                    history.push(`${match.url}/${schedule.id}`);
+                                }}
+                            >
+                                <ScheduleRow schedule={schedule} />
+                            </GreyRowBox>
                         ))
                     )}
                     <Can action={'schedule.create'}>
@@ -63,8 +76,6 @@ function ScheduleContainer() {
                     </Can>
                 </>
             )}
-        </PageContentBlock>
+        </ServerContentBlock>
     );
-}
-
-export default ScheduleContainer;
+};

@@ -1,11 +1,11 @@
 <?php
 
-namespace Everest\Providers;
+namespace Jexactyl\Providers;
 
-use Everest\Models\ApiKey;
-use Everest\Models\Server;
+use Jexactyl\Models\ApiKey;
+use Jexactyl\Models\Server;
 use Laravel\Sanctum\Sanctum;
-use Everest\Policies\ServerPolicy;
+use Jexactyl\Policies\ServerPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -17,12 +17,14 @@ class AuthServiceProvider extends ServiceProvider
         Server::class => ServerPolicy::class,
     ];
 
-    public function boot(): void
+    public function boot()
     {
         Sanctum::usePersonalAccessTokenModel(ApiKey::class);
+
+        $this->registerPolicies();
     }
 
-    public function register(): void
+    public function register()
     {
         Sanctum::ignoreMigrations();
     }

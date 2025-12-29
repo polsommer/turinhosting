@@ -1,6 +1,6 @@
 <?php
 
-namespace Everest\Models;
+namespace Jexactyl\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,7 +21,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Carbon\CarbonImmutable $created_at
  * @property \Carbon\CarbonImmutable $updated_at
  * @property \Carbon\CarbonImmutable|null $deleted_at
- * @property \Everest\Models\Server $server
+ * @property \Jexactyl\Models\Server $server
+ * @property \Jexactyl\Models\AuditLog[] $audits
  */
 class Backup extends Model
 {
@@ -42,7 +43,10 @@ class Backup extends Model
         'is_locked' => 'bool',
         'ignored_files' => 'array',
         'bytes' => 'int',
-        'completed_at' => 'datetime',
+    ];
+
+    protected $dates = [
+        'completed_at',
     ];
 
     protected $attributes = [

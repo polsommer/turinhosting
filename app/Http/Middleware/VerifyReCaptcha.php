@@ -1,11 +1,11 @@
 <?php
 
-namespace Everest\Http\Middleware;
+namespace Jexactyl\Http\Middleware;
 
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Everest\Events\Auth\FailedCaptcha;
+use Jexactyl\Events\Auth\FailedCaptcha;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -28,27 +28,12 @@ class VerifyReCaptcha
             return $next($request);
         }
 
-        $recaptchaResponse = $request->input('g-recaptcha-response');
-        $recaptchaState = $request->input('state');
-
-        if ($recaptchaState) {
-            $recaptchaResponse = decrypt($recaptchaState);
-        }
-
-        if (filter_var($recaptchaResponse, FILTER_VALIDATE_IP)) {
-            return $next($request);
-        }
-
-        if (!$recaptchaResponse) {
-            return response()->json(['error' => 'Missing ReCaptcha token'], 400);
-        }
-
-        try {
+        if ($request->filled('g-recaptcha-response')) {
             $client = new Client();
             $res = $client->post($this->config->get('recaptcha.domain'), [
                 'form_params' => [
                     'secret' => $this->config->get('recaptcha.secret_key'),
-                    'response' => $recaptchaResponse,
+                    'response' => $request->input('g-recaptcha-response'),
                 ],
             ]);
 
@@ -59,8 +44,6 @@ class VerifyReCaptcha
                     return $next($request);
                 }
             }
-        } catch (\Exception $e) {
-            // Handle the exception silently
         }
 
         $this->dispatcher->dispatch(

@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Events\Server;
+namespace Jexactyl\Events\Server;
 
-use Everest\Events\Event;
-use Everest\Models\Server;
+use Jexactyl\Events\Event;
+use Jexactyl\Models\Server;
 use Illuminate\Queue\SerializesModels;
 
 class Updated extends Event

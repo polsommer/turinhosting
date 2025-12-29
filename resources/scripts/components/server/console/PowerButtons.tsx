@@ -1,12 +1,9 @@
-import { useEffect, useState } from 'react';
-import * as React from 'react';
-import { Button } from '@elements/button/index';
-import Can from '@elements/Can';
+import React, { useEffect, useState } from 'react';
+import { Button } from '@/components/elements/button/index';
+import Can from '@/components/elements/Can';
 import { ServerContext } from '@/state/server';
 import { PowerAction } from '@/components/server/console/ServerConsoleContainer';
-import { Dialog } from '@elements/dialog';
-import { PlayIcon, StopIcon, BanIcon, RefreshIcon } from '@heroicons/react/outline';
-import SaveButton from '@/components/server/console/SaveButton';
+import { Dialog } from '@/components/elements/dialog';
 
 interface PowerButtonProps {
     className?: string;
@@ -14,13 +11,13 @@ interface PowerButtonProps {
 
 export default ({ className }: PowerButtonProps) => {
     const [open, setOpen] = useState(false);
-    const status = ServerContext.useStoreState(state => state.status.value);
-    const instance = ServerContext.useStoreState(state => state.socket.instance);
+    const status = ServerContext.useStoreState((state) => state.status.value);
+    const instance = ServerContext.useStoreState((state) => state.socket.instance);
 
     const killable = status === 'stopping';
     const onButtonClick = (
         action: PowerAction | 'kill-confirmed',
-        e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+        e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ): void => {
         e.preventDefault();
         if (action === 'kill') {
@@ -51,31 +48,27 @@ export default ({ className }: PowerButtonProps) => {
             >
                 Forcibly stopping a server can lead to data corruption.
             </Dialog.Confirm>
-            <SaveButton />
             <Can action={'control.start'}>
-                <Button.Success disabled={status !== 'offline'} onClick={onButtonClick.bind(this, 'start')}>
-                    <PlayIcon className={'w-5 mr-1'} /> Start
+                <Button.Success
+                    className={'flex-1'}
+                    disabled={status !== 'offline'}
+                    onClick={onButtonClick.bind(this, 'start')}
+                >
+                    Start
                 </Button.Success>
             </Can>
             <Can action={'control.restart'}>
-                <Button.Dark disabled={!status} onClick={onButtonClick.bind(this, 'restart')}>
-                    <RefreshIcon className={'w-5 mr-1'} /> Restart
-                </Button.Dark>
+                <Button.Text className={'flex-1'} disabled={!status} onClick={onButtonClick.bind(this, 'restart')}>
+                    Restart
+                </Button.Text>
             </Can>
             <Can action={'control.stop'}>
                 <Button.Danger
+                    className={'flex-1'}
                     disabled={status === 'offline'}
                     onClick={onButtonClick.bind(this, killable ? 'kill' : 'stop')}
                 >
-                    {killable ? (
-                        <>
-                            <BanIcon className={'w-5 mr-1'} /> Kill
-                        </>
-                    ) : (
-                        <>
-                            <StopIcon className={'w-5 mr-1'} /> Stop
-                        </>
-                    )}
+                    {killable ? 'Kill' : 'Stop'}
                 </Button.Danger>
             </Can>
         </div>

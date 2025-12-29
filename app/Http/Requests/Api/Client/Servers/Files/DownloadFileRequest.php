@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Client\Servers\Files;
+namespace Jexactyl\Http\Requests\Api\Client\Servers\Files;
 
-use Everest\Models\Server;
-use Everest\Http\Requests\Api\Client\ClientApiRequest;
+use Jexactyl\Models\Server;
+use Jexactyl\Http\Requests\Api\Client\ClientApiRequest;
 
 class DownloadFileRequest extends ClientApiRequest
 {
@@ -13,6 +13,6 @@ class DownloadFileRequest extends ClientApiRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->can('file.read', $this->route()->parameter('server'));
+        return $this->user()->can('file.read', $this->parameter('server', Server::class));
     }
 }

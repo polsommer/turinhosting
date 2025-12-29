@@ -1,21 +1,21 @@
-import { useEffect, useState } from 'react';
-import { ServerContext } from '@/state/server';
-import Modal from '@elements/Modal';
 import tw from 'twin.macro';
-import { Button } from '@elements/button';
-import { saveFileContents } from '@/api/server/files';
-import FlashMessageRender from '@/components/FlashMessageRender';
 import useFlash from '@/plugins/useFlash';
+import { ServerContext } from '@/state/server';
+import Modal from '@/components/elements/Modal';
+import React, { useEffect, useState } from 'react';
+import { Button } from '@/components/elements/button/index';
+import FlashMessageRender from '@/components/FlashMessageRender';
+import saveFileContents from '@/api/server/files/saveFileContents';
 import { SocketEvent, SocketRequest } from '@/components/server/events';
 
 const EulaModalFeature = () => {
     const [visible, setVisible] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const uuid = ServerContext.useStoreState(state => state.server.data!.uuid);
-    const status = ServerContext.useStoreState(state => state.status.value);
+    const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
+    const status = ServerContext.useStoreState((state) => state.status.value);
     const { clearFlashes, clearAndAddHttpError } = useFlash();
-    const { connected, instance } = ServerContext.useStoreState(state => state.socket);
+    const { connected, instance } = ServerContext.useStoreState((state) => state.socket);
 
     useEffect(() => {
         if (!connected || !instance || status === 'running') return;
@@ -46,7 +46,7 @@ const EulaModalFeature = () => {
                 setLoading(false);
                 setVisible(false);
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error(error);
                 clearAndAddHttpError({ key: 'feature:eula', error });
             })
@@ -72,14 +72,18 @@ const EulaModalFeature = () => {
                     target={'_blank'}
                     css={tw`text-primary-300 underline transition-colors duration-150 hover:text-primary-400`}
                     rel={'noreferrer noopener'}
-                    href="https://account.mojang.com/documents/minecraft_eula"
+                    href='https://account.mojang.com/documents/minecraft_eula'
                 >
                     Minecraft&reg; EULA
                 </a>
                 .
             </p>
             <div css={tw`mt-8 sm:flex items-center justify-end`}>
-                <Button onClick={() => setVisible(false)} css={tw`w-full sm:w-auto border-transparent`}>
+                <Button
+                    variant={Button.Variants.Secondary}
+                    onClick={() => setVisible(false)}
+                    css={tw`w-full sm:w-auto border-transparent`}
+                >
                     Cancel
                 </Button>
                 <Button onClick={onAcceptEULA} css={tw`mt-4 sm:mt-0 sm:ml-4 w-full sm:w-auto`}>

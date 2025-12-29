@@ -1,13 +1,13 @@
 <?php
 
-namespace Everest\Extensions\Spatie\Fractalistic;
+namespace Jexactyl\Extensions\Spatie\Fractalistic;
 
 use League\Fractal\Scope;
-use Everest\Transformers\Api\Transformer;
+use League\Fractal\TransformerAbstract;
 use Spatie\Fractal\Fractal as SpatieFractal;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-use Everest\Extensions\League\Fractal\Serializers\PterodactylSerializer;
+use Jexactyl\Extensions\League\Fractal\Serializers\JexactylSerializer;
 
 class Fractal extends SpatieFractal
 {
@@ -21,7 +21,7 @@ class Fractal extends SpatieFractal
     {
         // Set the serializer by default.
         if (is_null($this->serializer)) {
-            $this->serializer = new PterodactylSerializer();
+            $this->serializer = new JexactylSerializer();
         }
 
         // Automatically set the paginator on the response object if the
@@ -32,9 +32,12 @@ class Fractal extends SpatieFractal
 
         // If the resource name is not set attempt to pull it off the transformer
         // itself and set it automatically.
-        $class = is_string($this->transformer) ? new $this->transformer() : $this->transformer;
-        if (is_null($this->resourceName) && $class instanceof Transformer) {
-            $this->resourceName = $class->getResourceName();
+        if (
+            is_null($this->resourceName)
+            && $this->transformer instanceof TransformerAbstract
+            && method_exists($this->transformer, 'getResourceName')
+        ) {
+            $this->resourceName = $this->transformer->getResourceName();
         }
 
         return parent::createData();

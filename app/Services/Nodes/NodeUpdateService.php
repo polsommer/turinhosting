@@ -1,16 +1,16 @@
 <?php
 
-namespace Everest\Services\Nodes;
+namespace Jexactyl\Services\Nodes;
 
-use Everest\Models\Node;
+use Jexactyl\Models\Node;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Contracts\Encryption\Encrypter;
-use Everest\Repositories\Eloquent\NodeRepository;
-use Everest\Repositories\Wings\DaemonConfigurationRepository;
-use Everest\Exceptions\Http\Connection\DaemonConnectionException;
-use Everest\Exceptions\Service\Node\ConfigurationNotPersistedException;
+use Jexactyl\Repositories\Eloquent\NodeRepository;
+use Jexactyl\Repositories\Wings\DaemonConfigurationRepository;
+use Jexactyl\Exceptions\Http\Connection\DaemonConnectionException;
+use Jexactyl\Exceptions\Service\Node\ConfigurationNotPersistedException;
 
 class NodeUpdateService
 {
@@ -38,7 +38,7 @@ class NodeUpdateService
         }
 
         [$updated, $exception] = $this->connection->transaction(function () use ($data, $node) {
-            /** @var \Everest\Models\Node $updated */
+            /** @var \Jexactyl\Models\Node $updated */
             $updated = $this->repository->withFreshModel()->update($node->id, $data, true, true);
 
             try {

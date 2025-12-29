@@ -1,14 +1,14 @@
-import { Fragment } from 'react';
-import { Actions, State, useStoreActions, useStoreState } from 'easy-peasy';
-import { Form, Formik, FormikHelpers } from 'formik';
-import Field from '@elements/Field';
+import React from 'react';
 import * as Yup from 'yup';
-import SpinnerOverlay from '@elements/SpinnerOverlay';
-import { updateAccountPassword } from '@/api/account';
-import { httpErrorToHuman } from '@/api/http';
-import { ApplicationStore } from '@/state';
 import tw from 'twin.macro';
-import { Button } from '@elements/button/index';
+import { ApplicationStore } from '@/state';
+import { httpErrorToHuman } from '@/api/http';
+import Field from '@/components/elements/Field';
+import { Form, Formik, FormikHelpers } from 'formik';
+import { Button } from '@/components/elements/button/index';
+import SpinnerOverlay from '@/components/elements/SpinnerOverlay';
+import updateAccountPassword from '@/api/account/updateAccountPassword';
+import { Actions, State, useStoreActions, useStoreState } from 'easy-peasy';
 
 interface Values {
     current: string;
@@ -24,7 +24,7 @@ const schema = Yup.object().shape({
         'Password confirmation does not match the password you entered.',
         function (value) {
             return value === this.parent.password;
-        },
+        }
     ),
 });
 
@@ -43,26 +43,26 @@ export default () => {
                 // @ts-expect-error this is valid
                 window.location = '/auth/login';
             })
-            .catch(error =>
+            .catch((error) =>
                 addFlash({
                     key: 'account:password',
-                    type: 'error',
+                    type: 'danger',
                     title: 'Error',
                     message: httpErrorToHuman(error),
-                }),
+                })
             )
             .then(() => setSubmitting(false));
     };
 
     return (
-        <Fragment>
+        <React.Fragment>
             <Formik
                 onSubmit={submit}
                 validationSchema={schema}
                 initialValues={{ current: '', password: '', confirmPassword: '' }}
             >
                 {({ isSubmitting, isValid }) => (
-                    <Fragment>
+                    <React.Fragment>
                         <SpinnerOverlay size={'large'} visible={isSubmitting} />
                         <Form css={tw`m-0`}>
                             <Field
@@ -94,9 +94,9 @@ export default () => {
                                 <Button disabled={isSubmitting || !isValid}>Update Password</Button>
                             </div>
                         </Form>
-                    </Fragment>
+                    </React.Fragment>
                 )}
             </Formik>
-        </Fragment>
+        </React.Fragment>
     );
 };

@@ -1,12 +1,12 @@
 <?php
 
-namespace Everest\Services\Nodes;
+namespace Jexactyl\Services\Nodes;
 
 use Ramsey\Uuid\Uuid;
-use Everest\Models\Node;
+use Jexactyl\Models\Node;
 use Illuminate\Support\Str;
 use Illuminate\Contracts\Encryption\Encrypter;
-use Everest\Contracts\Repository\NodeRepositoryInterface;
+use Jexactyl\Contracts\Repository\NodeRepositoryInterface;
 
 class NodeCreationService
 {
@@ -20,7 +20,7 @@ class NodeCreationService
     /**
      * Create a new node on the panel.
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
      */
     public function handle(array $data): Node
     {

@@ -1,9 +1,9 @@
-import { useContext } from 'react';
 import tw from 'twin.macro';
-import { Button } from '@elements/button';
 import asModal from '@/hoc/asModal';
+import React, { useContext } from 'react';
 import ModalContext from '@/context/ModalContext';
-import CopyOnClick from '@elements/CopyOnClick';
+import { Button } from '@/components/elements/button/index';
+import CopyOnClick from '@/components/elements/CopyOnClick';
 
 interface Props {
     apiKey: string;

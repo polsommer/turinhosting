@@ -1,12 +1,12 @@
 <?php
 
-namespace Everest\Http\Middleware\Api\Daemon;
+namespace Jexactyl\Http\Middleware\Api\Daemon;
 
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Encryption\Encrypter;
-use Everest\Repositories\Eloquent\NodeRepository;
+use Jexactyl\Repositories\Eloquent\NodeRepository;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Everest\Exceptions\Repository\RecordNotFoundException;
+use Jexactyl\Exceptions\Repository\RecordNotFoundException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -48,7 +48,7 @@ class DaemonAuthenticate
         }
 
         try {
-            /** @var \Everest\Models\Node $node */
+            /** @var \Jexactyl\Models\Node $node */
             $node = $this->repository->findFirstWhere([
                 'daemon_token_id' => $parts[0],
             ]);

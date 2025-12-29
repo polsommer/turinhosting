@@ -1,48 +1,40 @@
 <?php
 
-namespace Everest\Http\Controllers\Auth;
+namespace Jexactyl\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
-use Everest\Exceptions\DisplayException;
-use Everest\Services\Users\UserUpdateService;
+use Illuminate\Support\Facades\Password;
+use Jexactyl\Http\Controllers\Controller;
+use Jexactyl\Events\Auth\FailedPasswordReset;
+use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 
-class ForgotPasswordController extends AbstractLoginController
+class ForgotPasswordController extends Controller
 {
+    use SendsPasswordResetEmails;
+
     /**
-     * ForgotPasswordController constructor.
+     * Get the response for a failed password reset link.
      */
-    public function __construct(private UserUpdateService $updateService)
+    protected function sendResetLinkFailedResponse(Request $request, $response): JsonResponse
     {
-        parent::__construct();
+        // As noted in #358 we will return success even if it failed
+        // to avoid pointing out that an account does or does not
+        // exist on the system.
+        event(new FailedPasswordReset($request->ip(), $request->input('email')));
+
+        return $this->sendResetLinkResponse($request, Password::RESET_LINK_SENT);
     }
 
     /**
-     * Validate the information provided for resetting a password.
+     * Get the response for a successful password reset link.
+     *
+     * @param string $response
      */
-    protected function verify(Request $request): JsonResponse|RedirectResponse
+    protected function sendResetLinkResponse(Request $request, $response): JsonResponse
     {
-        try {
-            $user = User::where('email', $request->input('email'))->firstOrFail();
-        } catch (DisplayException $ex) {
-            throw new DisplayException('The information provided was incorrect.');
-        }
-
-        if (!$user->recovery_code || !password_verify($request->input('code'), $user->recovery_code)) {
-            throw new DisplayException('The information provided was incorrect.');
-        }
-
-        if ($request->input('password') !== $request->input('password_confirm')) {
-            throw new DisplayException('The passwords entered do not match.');
-        }
-
-        $user = $this->updateService->handle($user, ['password' => $request->input('password')]);
-
-        if (!$user->use_totp) {
-            $this->sendLoginResponse($user, $request);
-        } else {
-            redirect()->route('auth.login');
-        }
+        return response()->json([
+            'status' => trans($response),
+        ]);
     }
 }

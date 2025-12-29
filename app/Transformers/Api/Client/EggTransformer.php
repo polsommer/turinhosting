@@ -1,11 +1,10 @@
 <?php
 
-namespace Everest\Transformers\Api\Client;
+namespace Jexactyl\Transformers\Api\Client;
 
-use Everest\Models\Egg;
-use Everest\Transformers\Api\Transformer;
+use Jexactyl\Models\Egg;
 
-class EggTransformer extends Transformer
+class EggTransformer extends BaseClientTransformer
 {
     /**
      * Return the resource name for the JSONAPI output.
@@ -15,11 +14,10 @@ class EggTransformer extends Transformer
         return Egg::RESOURCE_NAME;
     }
 
-    public function transform(Egg $model): array
+    public function transform(Egg $egg): array
     {
         return [
-            'uuid' => $model->uuid,
-            'name' => $model->name,
+            'name' => $egg->name,
         ];
     }
 }

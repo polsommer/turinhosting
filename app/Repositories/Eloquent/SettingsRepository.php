@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Repositories\Eloquent;
+namespace Jexactyl\Repositories\Eloquent;
 
-use Everest\Models\Setting;
-use Everest\Contracts\Repository\SettingsRepositoryInterface;
+use Jexactyl\Models\Setting;
+use Jexactyl\Contracts\Repository\SettingsRepositoryInterface;
 
 class SettingsRepository extends EloquentRepository implements SettingsRepositoryInterface
 {
@@ -22,7 +22,7 @@ class SettingsRepository extends EloquentRepository implements SettingsRepositor
     /**
      * Store a new persistent setting in the database.
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
      */
     public function set(string $key, string $value = null)
     {
@@ -46,7 +46,6 @@ class SettingsRepository extends EloquentRepository implements SettingsRepositor
             return value($default);
         }
 
-        /** @var Setting $instance */
         $instance = $this->getBuilder()->where('key', $key)->first();
         if (is_null($instance)) {
             self::$databaseMiss[$key] = true;

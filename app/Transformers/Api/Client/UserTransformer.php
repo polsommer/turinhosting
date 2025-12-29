@@ -1,11 +1,11 @@
 <?php
 
-namespace Everest\Transformers\Api\Client;
+namespace Jexactyl\Transformers\Api\Client;
 
-use Everest\Models\User;
-use Everest\Transformers\Api\Transformer;
+use Jexactyl\Models\User;
+use Illuminate\Support\Str;
 
-class UserTransformer extends Transformer
+class UserTransformer extends BaseClientTransformer
 {
     /**
      * Return the resource name for the JSONAPI output.
@@ -25,9 +25,9 @@ class UserTransformer extends Transformer
             'uuid' => $model->uuid,
             'username' => $model->username,
             'email' => $model->email,
-            'image' => $model->avatar_url,
+            'image' => 'https://gravatar.com/avatar/' . md5(Str::lower($model->email)),
             '2fa_enabled' => $model->use_totp,
-            'created_at' => self::formatTimestamp($model->created_at),
+            'created_at' => $model->created_at->toAtomString(),
         ];
     }
 }

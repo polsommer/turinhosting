@@ -1,46 +1,34 @@
 <?php
 
-namespace Everest\Services\Eggs\Sharing;
+namespace Jexactyl\Services\Eggs\Sharing;
 
-use Everest\Models\Egg;
-use Everest\Models\EggVariable;
+use Jexactyl\Models\Egg;
+use Jexactyl\Models\EggVariable;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
-use Everest\Services\Eggs\EggParserService;
 use Illuminate\Database\ConnectionInterface;
-use Everest\Exceptions\Service\Egg\BadJsonFormatException;
-use Everest\Exceptions\Service\InvalidFileUploadException;
+use Jexactyl\Services\Eggs\EggParserService;
 
 class EggUpdateImporterService
 {
     /**
      * EggUpdateImporterService constructor.
      */
-    public function __construct(
-        private ConnectionInterface $connection,
-        private EggParserService $eggParserService
-    ) {
+    public function __construct(protected ConnectionInterface $connection, protected EggParserService $parser)
+    {
     }
 
     /**
      * Update an existing Egg using an uploaded JSON file.
      *
-     * @throws \Everest\Exceptions\Service\InvalidFileUploadException|\Throwable
+     * @throws \Jexactyl\Exceptions\Service\InvalidFileUploadException|\Throwable
      */
     public function handle(Egg $egg, UploadedFile $file): Egg
     {
-        if ($file->getError() !== UPLOAD_ERR_OK || !$file->isFile()) {
-            throw new InvalidFileUploadException(sprintf('The selected file ["%s"] was not in a valid format to import. (is_file: %s is_valid: %s err_code: %s err: %s)', $file->getFilename(), $file->isFile() ? 'true' : 'false', $file->isValid() ? 'true' : 'false', $file->getError(), $file->getErrorMessage()));
-        }
-
-        $parsed = json_decode($file->openFile()->fread($file->getSize()), true);
-        if (json_last_error() !== 0) {
-            throw new BadJsonFormatException(trans('exceptions.nest.importer.json_error', ['error' => json_last_error_msg()]));
-        }
-        $parsed = $this->eggParserService->handle($parsed);
+        $parsed = $this->parser->handle($file);
 
         return $this->connection->transaction(function () use ($egg, $parsed) {
-            $egg = $this->eggParserService->fillFromParsed($egg, $parsed);
+            $egg = $this->parser->fillFromParsed($egg, $parsed);
             $egg->save();
 
             // Update existing variables or create new ones.

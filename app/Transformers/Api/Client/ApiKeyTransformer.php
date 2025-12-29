@@ -1,11 +1,10 @@
 <?php
 
-namespace Everest\Transformers\Api\Client;
+namespace Jexactyl\Transformers\Api\Client;
 
-use Everest\Models\ApiKey;
-use Everest\Transformers\Api\Transformer;
+use Jexactyl\Models\ApiKey;
 
-class ApiKeyTransformer extends Transformer
+class ApiKeyTransformer extends BaseClientTransformer
 {
     /**
      * {@inheritdoc}

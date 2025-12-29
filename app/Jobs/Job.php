@@ -1,6 +1,6 @@
 <?php
 
-namespace Everest\Jobs;
+namespace Jexactyl\Jobs;
 
 use Illuminate\Bus\Queueable;
 

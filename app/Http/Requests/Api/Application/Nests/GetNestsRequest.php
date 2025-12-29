@@ -1,14 +1,13 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Application\Nests;
+namespace Jexactyl\Http\Requests\Api\Application\Nests;
 
-use Everest\Models\AdminRole;
-use Everest\Http\Requests\Api\Application\ApplicationApiRequest;
+use Jexactyl\Services\Acl\Api\AdminAcl;
+use Jexactyl\Http\Requests\Api\Application\ApplicationApiRequest;
 
 class GetNestsRequest extends ApplicationApiRequest
 {
-    public function permission(): string
-    {
-        return AdminRole::NESTS_READ;
-    }
+    protected ?string $resource = AdminAcl::RESOURCE_NESTS;
+
+    protected int $permission = AdminAcl::READ;
 }

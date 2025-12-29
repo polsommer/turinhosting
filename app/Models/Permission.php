@@ -1,6 +1,6 @@
 <?php
 
-namespace Everest\Models;
+namespace Jexactyl\Models;
 
 use Illuminate\Support\Collection;
 
@@ -65,10 +65,6 @@ class Permission extends Model
 
     public const ACTION_ACTIVITY_READ = 'activity.read';
 
-    public const ACTION_BILLING_READ = 'billing.read';
-    public const ACTION_BILLING_RENEW = 'billing.renew';
-    public const ACTION_BILLING_UPDATE = 'billing.update';
-
     /**
      * Should timestamps be used on this model.
      */
@@ -100,7 +96,7 @@ class Permission extends Model
      * All the permissions available on the system. You should use self::permissions()
      * to retrieve them, and not directly access this array as it is subject to change.
      *
-     * @see \Everest\Models\Permission::permissions()
+     * @see \Jexactyl\Models\Permission::permissions()
      */
     protected static array $permissions = [
         'websocket' => [
@@ -140,6 +136,14 @@ class Permission extends Model
                 'delete' => 'Allows a user to delete files or directories.',
                 'archive' => 'Allows a user to archive the contents of a directory as well as decompress existing archives on the system.',
                 'sftp' => 'Allows a user to connect to SFTP and manage server files using the other assigned file permissions.',
+            ],
+        ],
+
+        'plugin' => [
+            'description' => 'Permissions that control a user\'s ability to view and install Spigot plugins.',
+            'keys' => [
+                'read' => 'Allows a user to view Spigot plugins.',
+                'download' => 'Allows a user to download Spigot plugins.',
             ],
         ],
 
@@ -208,15 +212,6 @@ class Permission extends Model
             'description' => 'Permissions that control a user\'s access to the server activity logs.',
             'keys' => [
                 'read' => 'Allows a user to view the activity logs for the server.',
-            ],
-        ],
-
-        'billing' => [
-            'description' => 'Permissions that control whether a user can interact with the billing system.',
-            'keys' => [
-                'read' => 'Allows a user to view billing details for the server.',
-                'renew' => 'Allows a user to renew the server with their payment details.',
-                'update' => 'Update general billing settings for the server.',
             ],
         ],
     ];

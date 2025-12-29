@@ -1,10 +1,10 @@
 <?php
 
-namespace Everest\Repositories;
+namespace Jexactyl\Repositories;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Database\Eloquent\Model;
-use Everest\Contracts\Repository\RepositoryInterface;
+use Jexactyl\Contracts\Repository\RepositoryInterface;
 
 abstract class Repository implements RepositoryInterface
 {

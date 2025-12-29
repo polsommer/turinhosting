@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Exceptions\Service\Egg;
+namespace Jexactyl\Exceptions\Service\Egg;
 
-use Everest\Exceptions\DisplayException;
+use Jexactyl\Exceptions\DisplayException;
 
 class HasChildrenException extends DisplayException
 {

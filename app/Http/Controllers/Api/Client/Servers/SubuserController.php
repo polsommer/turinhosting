@@ -1,24 +1,23 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Client\Servers;
+namespace Jexactyl\Http\Controllers\Api\Client\Servers;
 
-use Everest\Models\Server;
+use Jexactyl\Models\Server;
 use Illuminate\Http\Request;
-use Everest\Facades\Activity;
-use Everest\Models\Permission;
+use Jexactyl\Facades\Activity;
+use Jexactyl\Models\Permission;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
-use Everest\Exceptions\DisplayException;
-use Everest\Repositories\Eloquent\SubuserRepository;
-use Everest\Services\Subusers\SubuserCreationService;
-use Everest\Repositories\Wings\DaemonServerRepository;
-use Everest\Transformers\Api\Client\SubuserTransformer;
-use Everest\Http\Controllers\Api\Client\ClientApiController;
-use Everest\Exceptions\Http\Connection\DaemonConnectionException;
-use Everest\Http\Requests\Api\Client\Servers\Subusers\GetSubuserRequest;
-use Everest\Http\Requests\Api\Client\Servers\Subusers\StoreSubuserRequest;
-use Everest\Http\Requests\Api\Client\Servers\Subusers\DeleteSubuserRequest;
-use Everest\Http\Requests\Api\Client\Servers\Subusers\UpdateSubuserRequest;
+use Jexactyl\Repositories\Eloquent\SubuserRepository;
+use Jexactyl\Services\Subusers\SubuserCreationService;
+use Jexactyl\Repositories\Wings\DaemonServerRepository;
+use Jexactyl\Transformers\Api\Client\SubuserTransformer;
+use Jexactyl\Http\Controllers\Api\Client\ClientApiController;
+use Jexactyl\Exceptions\Http\Connection\DaemonConnectionException;
+use Jexactyl\Http\Requests\Api\Client\Servers\Subusers\GetSubuserRequest;
+use Jexactyl\Http\Requests\Api\Client\Servers\Subusers\StoreSubuserRequest;
+use Jexactyl\Http\Requests\Api\Client\Servers\Subusers\DeleteSubuserRequest;
+use Jexactyl\Http\Requests\Api\Client\Servers\Subusers\UpdateSubuserRequest;
 
 class SubuserController extends ClientApiController
 {
@@ -39,7 +38,7 @@ class SubuserController extends ClientApiController
     public function index(GetSubuserRequest $request, Server $server): array
     {
         return $this->fractal->collection($server->subusers)
-            ->transformWith(SubuserTransformer::class)
+            ->transformWith($this->getTransformer(SubuserTransformer::class))
             ->toArray();
     }
 
@@ -51,24 +50,20 @@ class SubuserController extends ClientApiController
         $subuser = $request->attributes->get('subuser');
 
         return $this->fractal->item($subuser)
-            ->transformWith(SubuserTransformer::class)
+            ->transformWith($this->getTransformer(SubuserTransformer::class))
             ->toArray();
     }
 
     /**
      * Create a new subuser for the given server.
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
-     * @throws \Everest\Exceptions\Service\Subuser\ServerSubuserExistsException
-     * @throws \Everest\Exceptions\Service\Subuser\UserIsServerOwnerException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Service\Subuser\ServerSubuserExistsException
+     * @throws \Jexactyl\Exceptions\Service\Subuser\UserIsServerOwnerException
      * @throws \Throwable
      */
     public function store(StoreSubuserRequest $request, Server $server): array
     {
-        if ($server->subuser_limit > -1 && $server->subusers->count() >= $server->subuser_limit) {
-            throw new DisplayException('You cannot add any more subusers to this server.');
-        }
-
         $response = $this->creationService->handle(
             $server,
             $request->input('email'),
@@ -81,19 +76,19 @@ class SubuserController extends ClientApiController
             ->log();
 
         return $this->fractal->item($response)
-            ->transformWith(SubuserTransformer::class)
+            ->transformWith($this->getTransformer(SubuserTransformer::class))
             ->toArray();
     }
 
     /**
      * Update a given subuser in the system for the server.
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function update(UpdateSubuserRequest $request, Server $server): array
     {
-        /** @var \Everest\Models\Subuser $subuser */
+        /** @var \Jexactyl\Models\Subuser $subuser */
         $subuser = $request->attributes->get('subuser');
 
         $permissions = $this->getDefaultPermissions($request);
@@ -134,7 +129,7 @@ class SubuserController extends ClientApiController
         $log->reset();
 
         return $this->fractal->item($subuser->refresh())
-            ->transformWith(SubuserTransformer::class)
+            ->transformWith($this->getTransformer(SubuserTransformer::class))
             ->toArray();
     }
 
@@ -143,7 +138,7 @@ class SubuserController extends ClientApiController
      */
     public function delete(DeleteSubuserRequest $request, Server $server): JsonResponse
     {
-        /** @var \Everest\Models\Subuser $subuser */
+        /** @var \Jexactyl\Models\Subuser $subuser */
         $subuser = $request->attributes->get('subuser');
 
         $log = Activity::event('server:subuser.delete')

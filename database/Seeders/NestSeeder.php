@@ -3,18 +3,18 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Everest\Services\Nests\NestCreationService;
-use Everest\Contracts\Repository\NestRepositoryInterface;
+use Jexactyl\Services\Nests\NestCreationService;
+use Jexactyl\Contracts\Repository\NestRepositoryInterface;
 
 class NestSeeder extends Seeder
 {
     /**
-     * @var \Everest\Services\Nests\NestCreationService
+     * @var \Jexactyl\Services\Nests\NestCreationService
      */
     private $creationService;
 
     /**
-     * @var \Everest\Contracts\Repository\NestRepositoryInterface
+     * @var \Jexactyl\Contracts\Repository\NestRepositoryInterface
      */
     private $repository;
 
@@ -32,12 +32,12 @@ class NestSeeder extends Seeder
     /**
      * Run the seeder to add missing nests to the Panel.
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
      */
     public function run()
     {
         $items = $this->repository->findWhere([
-            'author' => 'support@pterodactyl.io',
+            'author' => 'support@jexactyl.com',
         ])->keyBy('name')->toArray();
 
         $this->createMinecraftNest(array_get($items, 'Minecraft'));
@@ -49,60 +49,64 @@ class NestSeeder extends Seeder
     /**
      * Create the Minecraft nest to be used later on.
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
      */
     private function createMinecraftNest(array $nest = null)
     {
         if (is_null($nest)) {
             $this->creationService->handle([
+                'private' => false,
                 'name' => 'Minecraft',
-                'description' => 'Minecraft - the classic game from Mojang. With support for Vanilla MC, Spigot, and many others!',
-            ], 'support@pterodactyl.io');
+                'description' => 'Minecraft - the classic game from Mojang. With support for Vanilla MC, Spigot, and many others',
+            ], 'support@jexactyl.com');
         }
     }
 
     /**
      * Create the Source Engine Games nest to be used later on.
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
      */
     private function createSourceEngineNest(array $nest = null)
     {
         if (is_null($nest)) {
             $this->creationService->handle([
+                'private' => false,
                 'name' => 'Source Engine',
-                'description' => 'Includes support for most Source Dedicated Server games.',
-            ], 'support@pterodactyl.io');
+                'description' => 'Includes support for most Source Dedicated Server games',
+            ], 'support@jexactyl.com');
         }
     }
 
     /**
      * Create the Voice Servers nest to be used later on.
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
      */
     private function createVoiceServersNest(array $nest = null)
     {
         if (is_null($nest)) {
             $this->creationService->handle([
+                'private' => false,
                 'name' => 'Voice Servers',
-                'description' => 'Voice servers such as Mumble and Teamspeak 3.',
-            ], 'support@pterodactyl.io');
+                'description' => 'Voice servers such as Mumble and Teamspeak 3',
+            ], 'support@jexactyl.com');
         }
     }
 
     /**
      * Create the Rust nest to be used later on.
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
      */
     private function createRustNest(array $nest = null)
     {
         if (is_null($nest)) {
             $this->creationService->handle([
+                'private' => false,
                 'name' => 'Rust',
-                'description' => 'Rust - A game where you must fight to survive.',
-            ], 'support@pterodactyl.io');
+                'description' => 'Rust - A game where you must fight to survive',
+            ], 'support@jexactyl.com');
         }
     }
 }

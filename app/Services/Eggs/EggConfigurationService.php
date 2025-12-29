@@ -1,11 +1,11 @@
 <?php
 
-namespace Everest\Services\Eggs;
+namespace Jexactyl\Services\Eggs;
 
-use Everest\Models\Server;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Everest\Services\Servers\ServerConfigurationStructureService;
+use Jexactyl\Models\Server;
+use Jexactyl\Services\Servers\ServerConfigurationStructureService;
 
 class EggConfigurationService
 {

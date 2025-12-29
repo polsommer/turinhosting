@@ -1,10 +1,10 @@
 <?php
 
-namespace Everest\Services\Nests;
+namespace Jexactyl\Services\Nests;
 
-use Everest\Contracts\Repository\NestRepositoryInterface;
-use Everest\Exceptions\Service\HasActiveServersException;
-use Everest\Contracts\Repository\ServerRepositoryInterface;
+use Jexactyl\Contracts\Repository\NestRepositoryInterface;
+use Jexactyl\Exceptions\Service\HasActiveServersException;
+use Jexactyl\Contracts\Repository\ServerRepositoryInterface;
 
 class NestDeletionService
 {
@@ -20,7 +20,7 @@ class NestDeletionService
     /**
      * Delete a nest from the system only if there are no servers attached to it.
      *
-     * @throws \Everest\Exceptions\Service\HasActiveServersException
+     * @throws \Jexactyl\Exceptions\Service\HasActiveServersException
      */
     public function handle(int $nest): int
     {

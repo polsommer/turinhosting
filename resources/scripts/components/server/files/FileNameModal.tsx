@@ -1,14 +1,12 @@
-import type { FormikHelpers } from 'formik';
-import { Form, Formik } from 'formik';
-import { join } from 'pathe';
+import React from 'react';
+import { join } from 'path';
 import tw from 'twin.macro';
 import { object, string } from 'yup';
-
-import { Button } from '@elements/button';
-import Field from '@elements/Field';
-import type { RequiredModalProps } from '@elements/Modal';
-import Modal from '@elements/Modal';
 import { ServerContext } from '@/state/server';
+import Field from '@/components/elements/Field';
+import { Form, Formik, FormikHelpers } from 'formik';
+import { Button } from '@/components/elements/button/index';
+import Modal, { RequiredModalProps } from '@/components/elements/Modal';
 
 type Props = RequiredModalProps & {
     onFileNamed: (name: string) => void;
@@ -19,10 +17,10 @@ interface Values {
 }
 
 export default ({ onFileNamed, onDismissed, ...props }: Props) => {
-    const directory = ServerContext.useStoreState(state => state.files.directory);
+    const directory = ServerContext.useStoreState((state) => state.files.directory);
 
     const submit = (values: Values, { setSubmitting }: FormikHelpers<Values>) => {
-        onFileNamed(join(directory, values.fileName).replace(/^\//, ''));
+        onFileNamed(join(directory, values.fileName));
         setSubmitting(false);
     };
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Exceptions\Service\Deployment;
+namespace Jexactyl\Exceptions\Service\Deployment;
 
-use Everest\Exceptions\DisplayException;
+use Jexactyl\Exceptions\DisplayException;
 
 class NoViableAllocationException extends DisplayException
 {

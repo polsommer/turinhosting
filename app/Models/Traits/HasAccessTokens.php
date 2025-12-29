@@ -1,16 +1,16 @@
 <?php
 
-namespace Everest\Models\Traits;
+namespace Jexactyl\Models\Traits;
 
-use Everest\Models\ApiKey;
 use Illuminate\Support\Str;
+use Jexactyl\Models\ApiKey;
 use Laravel\Sanctum\Sanctum;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Everest\Extensions\Laravel\Sanctum\NewAccessToken;
+use Jexactyl\Extensions\Laravel\Sanctum\NewAccessToken;
 
 /**
- * @mixin \Everest\Models\Model
+ * @mixin \Jexactyl\Models\Model
  */
 trait HasAccessTokens
 {
@@ -26,7 +26,7 @@ trait HasAccessTokens
 
     public function createToken(?string $memo, ?array $ips): NewAccessToken
     {
-        /** @var \Everest\Models\ApiKey $token */
+        /** @var \Jexactyl\Models\ApiKey $token */
         $token = $this->tokens()->forceCreate([
             'user_id' => $this->id,
             'key_type' => ApiKey::TYPE_ACCOUNT,

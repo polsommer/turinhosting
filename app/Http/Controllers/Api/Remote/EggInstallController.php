@@ -1,12 +1,12 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Remote;
+namespace Jexactyl\Http\Controllers\Api\Remote;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Everest\Http\Controllers\Controller;
-use Everest\Services\Servers\EnvironmentService;
-use Everest\Contracts\Repository\ServerRepositoryInterface;
+use Jexactyl\Http\Controllers\Controller;
+use Jexactyl\Services\Servers\EnvironmentService;
+use Jexactyl\Contracts\Repository\ServerRepositoryInterface;
 
 class EggInstallController extends Controller
 {
@@ -21,13 +21,13 @@ class EggInstallController extends Controller
      * Handle request to get script and installation information for a server
      * that is being created on the node.
      *
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function index(Request $request, string $uuid): JsonResponse
     {
         $node = $request->attributes->get('node');
 
-        /** @var \Everest\Models\Server $server */
+        /** @var \Jexactyl\Models\Server $server */
         $server = $this->repository->findFirstWhere([
             ['uuid', '=', $uuid],
             ['node_id', '=', $node->id],

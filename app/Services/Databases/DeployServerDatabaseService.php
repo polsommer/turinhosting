@@ -1,12 +1,12 @@
 <?php
 
-namespace Everest\Services\Databases;
+namespace Jexactyl\Services\Databases;
 
-use Everest\Models\Server;
-use Everest\Models\Database;
+use Jexactyl\Models\Server;
 use Webmozart\Assert\Assert;
-use Everest\Models\DatabaseHost;
-use Everest\Exceptions\Service\Database\NoSuitableDatabaseHostException;
+use Jexactyl\Models\Database;
+use Jexactyl\Models\DatabaseHost;
+use Jexactyl\Exceptions\Service\Database\NoSuitableDatabaseHostException;
 
 class DeployServerDatabaseService
 {
@@ -19,32 +19,29 @@ class DeployServerDatabaseService
 
     /**
      * @throws \Throwable
-     * @throws \Everest\Exceptions\Service\Database\TooManyDatabasesException
-     * @throws \Everest\Exceptions\Service\Database\DatabaseClientFeatureNotEnabledException
+     * @throws \Jexactyl\Exceptions\Service\Database\TooManyDatabasesException
+     * @throws \Jexactyl\Exceptions\Service\Database\DatabaseClientFeatureNotEnabledException
      */
     public function handle(Server $server, array $data): Database
     {
         Assert::notEmpty($data['database'] ?? null);
         Assert::notEmpty($data['remote'] ?? null);
 
-        $databaseHostId = $server->node->database_host_id;
-        if (is_null($databaseHostId)) {
-            if (!config('everest.client_features.databases.allow_random')) {
+        $hosts = DatabaseHost::query()->get()->toBase();
+        if ($hosts->isEmpty()) {
+            throw new NoSuitableDatabaseHostException();
+        } else {
+            $nodeHosts = $hosts->where('node_id', $server->node_id)->toBase();
+
+            if ($nodeHosts->isEmpty() && !config('jexactyl.client_features.databases.allow_random')) {
                 throw new NoSuitableDatabaseHostException();
             }
-
-            $hosts = DatabaseHost::query()->get()->toBase();
-            if ($hosts->isEmpty()) {
-                throw new NoSuitableDatabaseHostException();
-            }
-
-            /** @var \Everest\Models\DatabaseHost $databaseHost */
-            $databaseHost = $hosts->random();
-            $databaseHostId = $databaseHost->id;
         }
 
         return $this->managementService->create($server, [
-            'database_host_id' => $databaseHostId,
+            'database_host_id' => $nodeHosts->isEmpty()
+                ? $hosts->random()->id
+                : $nodeHosts->random()->id,
             'database' => DatabaseManagementService::generateUniqueDatabaseName($data['database'], $server->id),
             'remote' => $data['remote'],
         ]);

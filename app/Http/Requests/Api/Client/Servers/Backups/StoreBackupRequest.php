@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Client\Servers\Backups;
+namespace Jexactyl\Http\Requests\Api\Client\Servers\Backups;
 
-use Everest\Models\Permission;
-use Everest\Http\Requests\Api\Client\ClientApiRequest;
+use Jexactyl\Models\Permission;
+use Jexactyl\Http\Requests\Api\Client\ClientApiRequest;
 
 class StoreBackupRequest extends ClientApiRequest
 {

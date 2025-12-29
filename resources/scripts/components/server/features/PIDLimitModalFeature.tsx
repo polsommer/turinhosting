@@ -1,23 +1,22 @@
-import { useEffect, useState } from 'react';
-import { ServerContext } from '@/state/server';
-import Modal from '@elements/Modal';
 import tw from 'twin.macro';
-import { Button } from '@elements/button';
-import FlashMessageRender from '@/components/FlashMessageRender';
+import * as Icon from 'react-feather';
 import useFlash from '@/plugins/useFlash';
-import { SocketEvent } from '@/components/server/events';
 import { useStoreState } from 'easy-peasy';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { ServerContext } from '@/state/server';
+import Modal from '@/components/elements/Modal';
+import React, { useEffect, useState } from 'react';
+import { SocketEvent } from '@/components/server/events';
+import { Button } from '@/components/elements/button/index';
+import FlashMessageRender from '@/components/FlashMessageRender';
 
 const PIDLimitModalFeature = () => {
     const [visible, setVisible] = useState(false);
     const [loading] = useState(false);
 
-    const status = ServerContext.useStoreState(state => state.status.value);
+    const status = ServerContext.useStoreState((state) => state.status.value);
     const { clearFlashes } = useFlash();
-    const { connected, instance } = ServerContext.useStoreState(state => state.socket);
-    const isAdmin = useStoreState(state => state.user.data!.rootAdmin);
+    const { connected, instance } = ServerContext.useStoreState((state) => state.socket);
+    const isAdmin = useStoreState((state) => state.user.data!.rootAdmin);
 
     useEffect(() => {
         if (!connected || !instance || status === 'running') return;
@@ -32,7 +31,7 @@ const PIDLimitModalFeature = () => {
         ];
 
         const listener = (line: string) => {
-            if (errors.some(p => line.toLowerCase().includes(p))) {
+            if (errors.some((p) => line.toLowerCase().includes(p))) {
                 setVisible(true);
             }
         };
@@ -59,7 +58,7 @@ const PIDLimitModalFeature = () => {
             {isAdmin ? (
                 <>
                     <div css={tw`mt-4 sm:flex items-center`}>
-                        <FontAwesomeIcon css={tw`pr-4`} icon={faExclamationTriangle} color={'orange'} size={'4x'} />
+                        <Icon.AlertTriangle css={tw`pr-4`} color={'orange'} size={'4x'} />
                         <h2 css={tw`text-2xl mb-4 text-neutral-100 `}>Memory or process limit reached...</h2>
                     </div>
                     <p css={tw`mt-4`}>This server has reached the maximum process or memory limit.</p>
@@ -80,7 +79,7 @@ const PIDLimitModalFeature = () => {
             ) : (
                 <>
                     <div css={tw`mt-4 sm:flex items-center`}>
-                        <FontAwesomeIcon css={tw`pr-4`} icon={faExclamationTriangle} color={'orange'} size={'4x'} />
+                        <Icon.AlertTriangle css={tw`pr-4`} color={'orange'} size={'4x'} />
                         <h2 css={tw`text-2xl mb-4 text-neutral-100`}>Possible resource limit reached...</h2>
                     </div>
                     <p css={tw`mt-4`}>

@@ -1,11 +1,11 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Client\Servers\Settings;
+namespace Jexactyl\Http\Requests\Api\Client\Servers\Settings;
 
-use Everest\Models\Server;
-use Everest\Models\Permission;
-use Everest\Contracts\Http\ClientPermissionsRequest;
-use Everest\Http\Requests\Api\Client\ClientApiRequest;
+use Jexactyl\Models\Server;
+use Jexactyl\Models\Permission;
+use Jexactyl\Contracts\Http\ClientPermissionsRequest;
+use Jexactyl\Http\Requests\Api\Client\ClientApiRequest;
 
 class RenameServerRequest extends ClientApiRequest implements ClientPermissionsRequest
 {

@@ -1,37 +1,37 @@
 <?php
 
-namespace Everest\Http;
+namespace Jexactyl\Http;
 
-use Everest\Http\Middleware\TrimStrings;
 use Illuminate\Auth\Middleware\Authorize;
+use Jexactyl\Http\Middleware\TrimStrings;
 use Illuminate\Http\Middleware\HandleCors;
-use Everest\Http\Middleware\EncryptCookies;
-use Everest\Http\Middleware\Api\IsValidJson;
-use Everest\Http\Middleware\VerifyCsrfToken;
-use Everest\Http\Middleware\VerifyReCaptcha;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Http\Middleware\TrustProxies;
-use Everest\Http\Middleware\LanguageMiddleware;
+use Jexactyl\Http\Middleware\EncryptCookies;
+use Jexactyl\Http\Middleware\Api\IsValidJson;
+use Jexactyl\Http\Middleware\VerifyCsrfToken;
+use Jexactyl\Http\Middleware\VerifyReCaptcha;
 use Illuminate\Session\Middleware\StartSession;
-use Everest\Http\Middleware\Activity\TrackAPIKey;
-use Everest\Http\Middleware\MaintenanceMiddleware;
-use Everest\Http\Middleware\EnsureStatefulRequests;
+use Jexactyl\Http\Middleware\LanguageMiddleware;
+use Jexactyl\Http\Middleware\Activity\TrackAPIKey;
 use Illuminate\Routing\Middleware\ThrottleRequests;
-use Everest\Http\Middleware\RedirectIfAuthenticated;
+use Jexactyl\Http\Middleware\MaintenanceMiddleware;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
-use Everest\Http\Middleware\Api\AuthenticateIPAccess;
+use Jexactyl\Http\Middleware\EnsureStatefulRequests;
 use Illuminate\Routing\Middleware\SubstituteBindings;
+use Jexactyl\Http\Middleware\RedirectIfAuthenticated;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Jexactyl\Http\Middleware\Api\AuthenticateIPAccess;
 use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
-use Everest\Http\Middleware\Api\Daemon\DaemonAuthenticate;
-use Everest\Http\Middleware\Api\Client\RequireClientApiKey;
-use Everest\Http\Middleware\RequireTwoFactorAuthentication;
 use Illuminate\Foundation\Http\Middleware\ValidatePostSize;
+use Jexactyl\Http\Middleware\Api\Daemon\DaemonAuthenticate;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use Everest\Http\Middleware\Api\Client\SubstituteClientBindings;
+use Jexactyl\Http\Middleware\Api\Client\RequireClientApiKey;
+use Jexactyl\Http\Middleware\RequireTwoFactorAuthentication;
+use Jexactyl\Http\Middleware\Api\Client\SubstituteClientBindings;
 use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
-use Everest\Http\Middleware\Api\Application\AuthenticateApplicationUser;
+use Jexactyl\Http\Middleware\Api\Application\AuthenticateApplicationUser;
 use Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance;
 
 class Kernel extends HttpKernel
@@ -81,15 +81,12 @@ class Kernel extends HttpKernel
             SubstituteBindings::class,
             DaemonAuthenticate::class,
         ],
-        'stripe-webhook' => [
-            IsValidJson::class,
-        ],
     ];
 
     /**
      * The application's route middleware.
      */
-    protected $middlewareAliases = [
+    protected $routeMiddleware = [
         'auth' => Authenticate::class,
         'auth.basic' => AuthenticateWithBasicAuth::class,
         'auth.session' => AuthenticateSession::class,

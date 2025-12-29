@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Exceptions\Service;
+namespace Jexactyl\Exceptions\Service;
 
-use Everest\Exceptions\DisplayException;
+use Jexactyl\Exceptions\DisplayException;
 
 class ServiceLimitExceededException extends DisplayException
 {

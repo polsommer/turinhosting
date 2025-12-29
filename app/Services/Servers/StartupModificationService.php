@@ -1,13 +1,13 @@
 <?php
 
-namespace Everest\Services\Servers;
+namespace Jexactyl\Services\Servers;
 
-use Everest\Models\Egg;
-use Everest\Models\User;
-use Everest\Models\Server;
+use Jexactyl\Models\Egg;
+use Jexactyl\Models\User;
 use Illuminate\Support\Arr;
-use Everest\Models\ServerVariable;
-use Everest\Traits\Services\HasUserLevels;
+use Jexactyl\Models\Server;
+use Jexactyl\Models\ServerVariable;
+use Jexactyl\Traits\Services\HasUserLevels;
 use Illuminate\Database\ConnectionInterface;
 
 class StartupModificationService
@@ -70,7 +70,7 @@ class StartupModificationService
         $eggId = Arr::get($data, 'egg_id');
 
         if (is_digit($eggId) && $server->egg_id !== (int) $eggId) {
-            /** @var \Everest\Models\Egg $egg */
+            /** @var \Jexactyl\Models\Egg $egg */
             $egg = Egg::query()->findOrFail($data['egg_id']);
 
             $server = $server->forceFill([

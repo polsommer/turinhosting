@@ -1,6 +1,6 @@
 <?php
 
-namespace Everest\Contracts\Repository;
+namespace Jexactyl\Contracts\Repository;
 
 use Illuminate\Support\Collection;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;

@@ -1,10 +1,10 @@
 <?php
 
-namespace Everest\Services\Nests;
+namespace Jexactyl\Services\Nests;
 
 use Ramsey\Uuid\Uuid;
-use Everest\Models\Nest;
-use Everest\Contracts\Repository\NestRepositoryInterface;
+use Jexactyl\Models\Nest;
+use Jexactyl\Contracts\Repository\NestRepositoryInterface;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
 class NestCreationService
@@ -19,15 +19,16 @@ class NestCreationService
     /**
      * Create a new nest on the system.
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
      */
     public function handle(array $data, string $author = null): Nest
     {
         return $this->repository->create([
             'uuid' => Uuid::uuid4()->toString(),
-            'author' => $author ?? $this->config->get('everest.service.author'),
+            'author' => $author ?? $this->config->get('jexactyl.service.author'),
             'name' => array_get($data, 'name'),
             'description' => array_get($data, 'description'),
+            'private' => array_get($data, 'private'),
         ], true, true);
     }
 }

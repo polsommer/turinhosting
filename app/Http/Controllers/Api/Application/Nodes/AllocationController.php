@@ -1,22 +1,20 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Application\Nodes;
+namespace Jexactyl\Http\Controllers\Api\Application\Nodes;
 
-use Everest\Models\Node;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Everest\Models\Allocation;
+use Jexactyl\Models\Node;
+use Jexactyl\Models\Allocation;
+use Illuminate\Http\JsonResponse;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
 use Illuminate\Database\Eloquent\Builder;
-use Everest\Services\Allocations\AssignmentService;
-use Everest\Services\Allocations\AllocationDeletionService;
-use Everest\Exceptions\Http\QueryValueOutOfRangeHttpException;
-use Everest\Transformers\Api\Application\AllocationTransformer;
-use Everest\Http\Controllers\Api\Application\ApplicationApiController;
-use Everest\Http\Requests\Api\Application\Allocations\GetAllocationsRequest;
-use Everest\Http\Requests\Api\Application\Allocations\StoreAllocationRequest;
-use Everest\Http\Requests\Api\Application\Allocations\DeleteAllocationRequest;
+use Jexactyl\Services\Allocations\AssignmentService;
+use Jexactyl\Services\Allocations\AllocationDeletionService;
+use Jexactyl\Transformers\Api\Application\AllocationTransformer;
+use Jexactyl\Http\Controllers\Api\Application\ApplicationApiController;
+use Jexactyl\Http\Requests\Api\Application\Allocations\GetAllocationsRequest;
+use Jexactyl\Http\Requests\Api\Application\Allocations\StoreAllocationRequest;
+use Jexactyl\Http\Requests\Api\Application\Allocations\DeleteAllocationRequest;
 
 class AllocationController extends ApplicationApiController
 {
@@ -35,77 +33,51 @@ class AllocationController extends ApplicationApiController
      */
     public function index(GetAllocationsRequest $request, Node $node): array
     {
-        $perPage = (int) $request->query('per_page', '20');
-        if ($perPage < 1 || $perPage > 100) {
-            throw new QueryValueOutOfRangeHttpException('per_page', 1, 100);
-        }
-
-        $allocations = QueryBuilder::for(Allocation::query()->where('node_id', '=', $node->id))
+        $allocations = QueryBuilder::for($node->allocations())
             ->allowedFilters([
-                'id', 'ip', 'port', 'alias',
-                AllowedFilter::callback('server_id', function (Builder $query, $value) {
-                    if ($value === '0') {
-                        $query->whereNull('server_id');
-                    } else {
-                        $query->where('server_id', '=', $value);
+                AllowedFilter::exact('ip'),
+                AllowedFilter::exact('port'),
+                'ip_alias',
+                AllowedFilter::callback('server_id', function (Builder $builder, $value) {
+                    if (empty($value) || is_bool($value) || !ctype_digit((string) $value)) {
+                        return $builder->whereNull('server_id');
                     }
-                }),
-                AllowedFilter::callback('search', function (Builder $query, $value) {
-                    $query->where(function ($q) use ($value) {
-                        $q->where('ip', 'like', "%{$value}%")
-                        ->orWhere('port', 'like', "%{$value}%")
-                        ->orWhere('ip_alias', 'like', "%{$value}%");
-                    });
+
+                    return $builder->where('server_id', $value);
                 }),
             ])
-            ->allowedSorts(['id', 'ip', 'port', 'server_id'])
-            ->paginate($perPage);
+            ->paginate($request->query('per_page') ?? 50);
 
         return $this->fractal->collection($allocations)
-            ->transformWith(AllocationTransformer::class)
+            ->transformWith($this->getTransformer(AllocationTransformer::class))
             ->toArray();
     }
 
     /**
      * Store new allocations for a given node.
      *
-     * @throws \Everest\Exceptions\DisplayException
-     * @throws \Everest\Exceptions\Service\Allocation\CidrOutOfRangeException
-     * @throws \Everest\Exceptions\Service\Allocation\InvalidPortMappingException
-     * @throws \Everest\Exceptions\Service\Allocation\PortOutOfRangeException
-     * @throws \Everest\Exceptions\Service\Allocation\TooManyPortsInRangeException
+     * @throws \Jexactyl\Exceptions\DisplayException
+     * @throws \Jexactyl\Exceptions\Service\Allocation\CidrOutOfRangeException
+     * @throws \Jexactyl\Exceptions\Service\Allocation\InvalidPortMappingException
+     * @throws \Jexactyl\Exceptions\Service\Allocation\PortOutOfRangeException
+     * @throws \Jexactyl\Exceptions\Service\Allocation\TooManyPortsInRangeException
      */
-    public function store(StoreAllocationRequest $request, Node $node): Response
+    public function store(StoreAllocationRequest $request, Node $node): JsonResponse
     {
-        $request->merge(['allocation_ports' => $request['end_port'] ? range($request['start_port'], $request['end_port']) : [$request['start_port']],
-        ]);
+        $this->assignmentService->handle($node, $request->validated());
 
-        $this->assignmentService->handle($node, $request->all());
-
-        return $this->returnNoContent();
+        return new JsonResponse([], JsonResponse::HTTP_NO_CONTENT);
     }
 
     /**
      * Delete a specific allocation from the Panel.
      *
-     * @throws \Everest\Exceptions\Service\Allocation\ServerUsingAllocationException
+     * @throws \Jexactyl\Exceptions\Service\Allocation\ServerUsingAllocationException
      */
-    public function delete(DeleteAllocationRequest $request, Node $node, Allocation $allocation): Response
+    public function delete(DeleteAllocationRequest $request, Node $node, Allocation $allocation): JsonResponse
     {
         $this->deletionService->handle($allocation);
 
-        return $this->returnNoContent();
-    }
-
-    /**
-     * Delete all unused allocations on a node.
-     */
-    public function deleteAll(Request $request, Node $node): Response
-    {
-        $allocations = Allocation::where('server_id', null)->get();
-
-        $allocations->map->delete();
-
-        return $this->returnNoContent();
+        return new JsonResponse([], JsonResponse::HTTP_NO_CONTENT);
     }
 }

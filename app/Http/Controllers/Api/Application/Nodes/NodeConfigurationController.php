@@ -1,11 +1,11 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Application\Nodes;
+namespace Jexactyl\Http\Controllers\Api\Application\Nodes;
 
-use Everest\Models\Node;
+use Jexactyl\Models\Node;
 use Illuminate\Http\JsonResponse;
-use Everest\Http\Requests\Api\Application\Nodes\GetNodeRequest;
-use Everest\Http\Controllers\Api\Application\ApplicationApiController;
+use Jexactyl\Http\Requests\Api\Application\Nodes\GetNodeRequest;
+use Jexactyl\Http\Controllers\Api\Application\ApplicationApiController;
 
 class NodeConfigurationController extends ApplicationApiController
 {
@@ -14,12 +14,8 @@ class NodeConfigurationController extends ApplicationApiController
      * to remote machines so long as an API key is provided to the machine to make the request
      * with, and the node is known.
      */
-    public function __invoke(GetNodeRequest $request, Node $node): JsonResponse|string
+    public function __invoke(GetNodeRequest $request, Node $node): JsonResponse
     {
-        if ($request->query('format') === 'yaml') {
-            return $node->getYamlConfiguration();
-        }
-
         return new JsonResponse($node->getConfiguration());
     }
 }

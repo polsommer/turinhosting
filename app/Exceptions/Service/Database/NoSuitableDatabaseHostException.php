@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Exceptions\Service\Database;
+namespace Jexactyl\Exceptions\Service\Database;
 
-use Everest\Exceptions\DisplayException;
+use Jexactyl\Exceptions\DisplayException;
 
 class NoSuitableDatabaseHostException extends DisplayException
 {

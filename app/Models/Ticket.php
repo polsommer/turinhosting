@@ -1,22 +1,25 @@
 <?php
 
-namespace Everest\Models;
+namespace Jexactyl\Models;
 
 use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * Everest\Models\Ticket.
+ * Jexactyl\Models\Ticket.
  *
  * @property int $id
- * @property User $user
- * @property User|null $assigned
- * @property int $user_id
- * @property int|null $assigned_to
+ * @property User $client
+ * @property User|null $staff
+ * @property int $client_id
+ * @property int|null $staff_id
  * @property string $title
  * @property string $status
+ * @property string $content
+ * @property int|null $message_count
  * @property Collection|TicketMessage[] $messages
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -58,36 +61,38 @@ class Ticket extends Model
      * Fields that are mass-assignable.
      */
     protected $fillable = [
-        'user_id',
+        'client_id',
+        'staff_id',
         'title',
-        'assigned_to',
         'status',
+        'content',
     ];
 
     /**
      * Rules verifying that the data being stored matches the expectations of the database.
      */
     public static array $validationRules = [
-        'user_id' => 'required|int|exists:users,id',
+        'client_id' => 'required|int|unique:users,id',
+        'staff_id' => 'sometimes|int|unique:users,id',
         'title' => 'required|string|min:3|max:191',
-        'assigned_to' => 'nullable|int|exists:users,id',
-        'status' => 'required|string|in:pending,resolved,unresolved,in-progress',
+        'status' => 'required|string',
+        'content' => 'required|string|min:3|max:191',
     ];
 
     /**
-     * Gets the user who made the ticket.
+     * Gets the client who made the ticket.
      */
-    public function user(): BelongsTo
+    public function client(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'client_id');
     }
 
     /**
      * Gets the staff member who this ticket has been assigned to.
      */
-    public function assignedTo(): BelongsTo
+    public function staff(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'assigned_to');
+        return $this->belongsTo(User::class, 'staff_id');
     }
 
     /**
@@ -96,6 +101,14 @@ class Ticket extends Model
     public function isResolved(): bool
     {
         return $this->status === self::STATUS_RESOLVED;
+    }
+
+    /**
+     * Gets the user associated with this ticket.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'client_id');
     }
 
     /**

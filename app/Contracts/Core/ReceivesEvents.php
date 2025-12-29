@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Contracts\Core;
+namespace Jexactyl\Contracts\Core;
 
-use Everest\Events\Event;
+use Jexactyl\Events\Event;
 
 interface ReceivesEvents
 {

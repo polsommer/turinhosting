@@ -1,18 +1,17 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Remote\Servers;
+namespace Jexactyl\Http\Controllers\Api\Remote\Servers;
 
-use Everest\Models\Backup;
-use Everest\Models\Server;
+use Jexactyl\Models\Server;
 use Illuminate\Http\Request;
-use Everest\Facades\Activity;
+use Jexactyl\Facades\Activity;
 use Illuminate\Http\JsonResponse;
-use Everest\Http\Controllers\Controller;
+use Jexactyl\Http\Controllers\Controller;
 use Illuminate\Database\ConnectionInterface;
-use Everest\Services\Eggs\EggConfigurationService;
-use Everest\Repositories\Eloquent\ServerRepository;
-use Everest\Http\Resources\Wings\ServerConfigurationCollection;
-use Everest\Services\Servers\ServerConfigurationStructureService;
+use Jexactyl\Services\Eggs\EggConfigurationService;
+use Jexactyl\Repositories\Eloquent\ServerRepository;
+use Jexactyl\Http\Resources\Wings\ServerConfigurationCollection;
+use Jexactyl\Services\Servers\ServerConfigurationStructureService;
 
 class ServerDetailsController extends Controller
 {
@@ -31,7 +30,7 @@ class ServerDetailsController extends Controller
      * Returns details about the server that allows Wings to self-recover and ensure
      * that the state of the server matches the Panel at all times.
      *
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function __invoke(Request $request, string $uuid): JsonResponse
     {
@@ -48,12 +47,12 @@ class ServerDetailsController extends Controller
      */
     public function list(Request $request): ServerConfigurationCollection
     {
-        /** @var \Everest\Models\Node $node */
+        /** @var \Jexactyl\Models\Node $node */
         $node = $request->attributes->get('node');
 
         // Avoid run-away N+1 SQL queries by preloading the relationships that are used
         // within each of the services called below.
-        $servers = Server::query()->with('allocations', 'egg', 'mounts', 'variables')
+        $servers = Server::query()->with('allocations', 'egg', 'mounts', 'variables', 'location')
             ->where('node_id', $node->id)
             // If you don't cast this to a string you'll end up with a stringified per_page returned in
             // the metadata, and then Wings will panic crash as a result.
@@ -91,19 +90,17 @@ class ServerDetailsController extends Controller
             ->get();
 
         $this->connection->transaction(function () use ($node, $servers) {
-            /** @var \Everest\Models\Server $server */
+            /** @var \Jexactyl\Models\Server $server */
             foreach ($servers as $server) {
-                /** @var \Everest\Models\ActivityLog|null $activity */
+                /** @var \Jexactyl\Models\ActivityLog|null $activity */
                 $activity = $server->activity->first();
                 if (!is_null($activity)) {
                     if ($subject = $activity->subjects->where('subject_type', 'backup')->first()) {
                         // Just create a new audit entry for this event and update the server state
                         // so that power actions, file management, and backups can resume as normal.
-                        /** @var Backup $actualSubject */
-                        $actualSubject = $subject->subject;
                         Activity::event('server:backup.restore-failed')
-                            ->subject($server, $actualSubject)
-                            ->property('name', $actualSubject->name)
+                            ->subject($server, $subject->subject)
+                            ->property('name', $subject->subject->name)
                             ->log();
                     }
                 }

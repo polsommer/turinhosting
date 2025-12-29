@@ -1,22 +1,23 @@
-import { useContext, useEffect, useRef } from 'react';
-import { type Subuser } from '@/api/definitions/server';
-import { Form, Formik } from 'formik';
-import { array, object, string } from 'yup';
-import Field from '@elements/Field';
-import { Actions, useStoreActions, useStoreState } from 'easy-peasy';
-import { ApplicationStore } from '@/state';
-import { modifySubuser } from '@/api/server/subusers';
-import { ServerContext } from '@/state/server';
-import FlashMessageRender from '@/components/FlashMessageRender';
-import Can from '@elements/Can';
-import { usePermissions } from '@/plugins/usePermissions';
-import { useDeepCompareMemo } from '@/plugins/useDeepCompareMemo';
 import tw from 'twin.macro';
-import { Button } from '@elements/button';
-import PermissionTitleBox from '@/components/server/users/PermissionTitleBox';
 import asModal from '@/hoc/asModal';
-import PermissionRow from '@/components/server/users/PermissionRow';
+import { Form, Formik } from 'formik';
+import { ApplicationStore } from '@/state';
+import { array, object, string } from 'yup';
+import Can from '@/components/elements/Can';
+import { ServerContext } from '@/state/server';
+import Field from '@/components/elements/Field';
+import { Subuser } from '@/state/server/subusers';
 import ModalContext from '@/context/ModalContext';
+import { usePermissions } from '@/plugins/usePermissions';
+import { Button } from '@/components/elements/button/index';
+import React, { useContext, useEffect, useRef } from 'react';
+import FlashMessageRender from '@/components/FlashMessageRender';
+import { useDeepCompareMemo } from '@/plugins/useDeepCompareMemo';
+import PermissionRow from '@/components/server/users/PermissionRow';
+import { Actions, useStoreActions, useStoreState } from 'easy-peasy';
+import createOrUpdateSubuser from '@/api/server/users/createOrUpdateSubuser';
+import PermissionTitleBox from '@/components/server/users/PermissionTitleBox';
+import SelectAllPermissions from '@/components/server/users/SelectAllPermissions';
 
 type Props = {
     subuser?: Subuser;
@@ -29,24 +30,24 @@ interface Values {
 
 const EditSubuserModal = ({ subuser }: Props) => {
     const ref = useRef<HTMLHeadingElement>(null);
-    const uuid = ServerContext.useStoreState(state => state.server.data!.uuid);
-    const appendSubuser = ServerContext.useStoreActions(actions => actions.subusers.appendSubuser);
+    const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
+    const appendSubuser = ServerContext.useStoreActions((actions) => actions.subusers.appendSubuser);
     const { clearFlashes, clearAndAddHttpError } = useStoreActions(
-        (actions: Actions<ApplicationStore>) => actions.flashes,
+        (actions: Actions<ApplicationStore>) => actions.flashes
     );
     const { dismiss, setPropOverrides } = useContext(ModalContext);
 
-    const isRootAdmin = useStoreState(state => state.user.data!.rootAdmin);
-    const permissions = useStoreState(state => state.permissions.data);
+    const isRootAdmin = useStoreState((state) => state.user.data!.rootAdmin);
+    const permissions = useStoreState((state) => state.permissions.data);
     // The currently logged in user's permissions. We're going to filter out any permissions
     // that they should not need.
-    const loggedInPermissions = ServerContext.useStoreState(state => state.server.permissions);
+    const loggedInPermissions = ServerContext.useStoreState((state) => state.server.permissions);
     const [canEditUser] = usePermissions(subuser ? ['user.update'] : ['user.create']);
 
     // The permissions that can be modified by this user.
     const editablePermissions = useDeepCompareMemo(() => {
-        const cleaned = Object.keys(permissions).map(key =>
-            Object.keys(permissions[key]?.keys ?? {}).map(pkey => `${key}.${pkey}`),
+        const cleaned = Object.keys(permissions).map((key) =>
+            Object.keys(permissions[key].keys).map((pkey) => `${key}.${pkey}`)
         );
 
         const list: string[] = ([] as string[]).concat.apply([], Object.values(cleaned));
@@ -55,19 +56,19 @@ const EditSubuserModal = ({ subuser }: Props) => {
             return list;
         }
 
-        return list.filter(key => loggedInPermissions.indexOf(key) >= 0);
+        return list.filter((key) => loggedInPermissions.indexOf(key) >= 0);
     }, [isRootAdmin, permissions, loggedInPermissions]);
 
     const submit = (values: Values) => {
         setPropOverrides({ showSpinnerOverlay: true });
         clearFlashes('user:edit');
 
-        modifySubuser(uuid, values, subuser)
-            .then(subuser => {
+        createOrUpdateSubuser(uuid, values, subuser)
+            .then((subuser) => {
                 appendSubuser(subuser);
                 dismiss();
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error(error);
                 setPropOverrides(null);
                 clearAndAddHttpError({ key: 'user:edit', error });
@@ -82,7 +83,7 @@ const EditSubuserModal = ({ subuser }: Props) => {
         () => () => {
             clearFlashes('user:edit');
         },
-        [],
+        []
     );
 
     return (
@@ -136,18 +137,24 @@ const EditSubuserModal = ({ subuser }: Props) => {
                     </div>
                 )}
                 <div css={tw`my-6`}>
+                    <div css={tw`flex items-center mb-4 p-2 bg-gray-800 rounded shadow-sm`}>
+                        <p css={tw`flex-1 ml-1`}>Select all permissions?</p>
+                        {canEditUser && (
+                            <SelectAllPermissions isEditable={canEditUser} permissions={editablePermissions} />
+                        )}
+                    </div>
                     {Object.keys(permissions)
-                        .filter(key => key !== 'websocket')
+                        .filter((key) => key !== 'websocket')
                         .map((key, index) => (
                             <PermissionTitleBox
                                 key={`permission_${key}`}
                                 title={key}
                                 isEditable={canEditUser}
-                                permissions={Object.keys(permissions[key]?.keys ?? {}).map(pkey => `${key}.${pkey}`)}
+                                permissions={Object.keys(permissions[key].keys).map((pkey) => `${key}.${pkey}`)}
                                 css={index > 0 ? tw`mt-4` : undefined}
                             >
-                                <p css={tw`text-neutral-400 mb-4`}>{permissions[key]?.description}</p>
-                                {Object.keys(permissions[key]?.keys ?? {}).map(pkey => (
+                                <p css={tw`text-sm text-neutral-400 mb-4`}>{permissions[key].description}</p>
+                                {Object.keys(permissions[key].keys).map((pkey) => (
                                     <PermissionRow
                                         key={`permission_${key}.${pkey}`}
                                         permission={`${key}.${pkey}`}

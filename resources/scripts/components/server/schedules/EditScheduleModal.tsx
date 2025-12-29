@@ -1,20 +1,19 @@
-import { useContext, useEffect, useState } from 'react';
-import { type Schedule } from '@/api/definitions/server';
-import Field from '@elements/Field';
-import { Form, Formik, FormikHelpers } from 'formik';
-import FormikSwitch from '@elements/FormikSwitch';
-import { modifySchedule } from '@/api/server/schedules';
-import { ServerContext } from '@/state/server';
-import { httpErrorToHuman } from '@/api/http';
-import FlashMessageRender from '@/components/FlashMessageRender';
-import useFlash from '@/plugins/useFlash';
 import tw from 'twin.macro';
-import { Button } from '@elements/button/index';
-import ModalContext from '@/context/ModalContext';
 import asModal from '@/hoc/asModal';
-import Switch from '@elements/Switch';
+import useFlash from '@/plugins/useFlash';
+import { httpErrorToHuman } from '@/api/http';
+import { ServerContext } from '@/state/server';
+import Field from '@/components/elements/Field';
+import ModalContext from '@/context/ModalContext';
+import Switch from '@/components/elements/Switch';
+import { Form, Formik, FormikHelpers } from 'formik';
+import { Button } from '@/components/elements/button/index';
+import FormikSwitch from '@/components/elements/FormikSwitch';
+import React, { useContext, useEffect, useState } from 'react';
+import FlashMessageRender from '@/components/FlashMessageRender';
+import { Schedule } from '@/api/server/schedules/getServerSchedules';
+import createOrUpdateSchedule from '@/api/server/schedules/createOrUpdateSchedule';
 import ScheduleCheatsheetCards from '@/components/server/schedules/ScheduleCheatsheetCards';
-import { useStoreState } from '@/state/hooks';
 
 interface Props {
     schedule?: Schedule;
@@ -35,9 +34,8 @@ const EditScheduleModal = ({ schedule }: Props) => {
     const { addError, clearFlashes } = useFlash();
     const { dismiss } = useContext(ModalContext);
 
-    const { colors } = useStoreState(state => state.theme.data!);
-    const uuid = ServerContext.useStoreState(state => state.server.data!.uuid);
-    const appendSchedule = ServerContext.useStoreActions(actions => actions.schedules.appendSchedule);
+    const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
+    const appendSchedule = ServerContext.useStoreActions((actions) => actions.schedules.appendSchedule);
     const [showCheatsheet, setShowCheetsheet] = useState(false);
 
     useEffect(() => {
@@ -48,7 +46,7 @@ const EditScheduleModal = ({ schedule }: Props) => {
 
     const submit = (values: Values, { setSubmitting }: FormikHelpers<Values>) => {
         clearFlashes('schedule:edit');
-        modifySchedule(uuid, {
+        createOrUpdateSchedule(uuid, {
             id: schedule?.id,
             name: values.name,
             cron: {
@@ -61,12 +59,12 @@ const EditScheduleModal = ({ schedule }: Props) => {
             onlyWhenOnline: values.onlyWhenOnline,
             isActive: values.enabled,
         })
-            .then(schedule => {
+            .then((schedule) => {
                 setSubmitting(false);
                 appendSchedule(schedule);
                 dismiss();
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error(error);
 
                 setSubmitting(false);
@@ -110,16 +108,13 @@ const EditScheduleModal = ({ schedule }: Props) => {
                         The schedule system supports the use of Cronjob syntax when defining when tasks should begin
                         running. Use the fields above to specify when these tasks should begin running.
                     </p>
-                    <div
-                        css={tw`mt-6 border-2 border-black/25 shadow-inner p-4 rounded`}
-                        style={{ backgroundColor: colors.secondary }}
-                    >
+                    <div css={tw`mt-6 bg-neutral-900 border border-neutral-800 shadow-inner p-4 rounded`}>
                         <Switch
                             name={'show_cheatsheet'}
                             description={'Show the cron cheatsheet for some examples.'}
                             label={'Show Cheatsheet'}
                             defaultChecked={showCheatsheet}
-                            onChange={() => setShowCheetsheet(s => !s)}
+                            onChange={() => setShowCheetsheet((s) => !s)}
                         />
                         {showCheatsheet && (
                             <div css={tw`block md:flex w-full`}>
@@ -127,20 +122,14 @@ const EditScheduleModal = ({ schedule }: Props) => {
                             </div>
                         )}
                     </div>
-                    <div
-                        css={tw`mt-6 border-2 border-black/25 shadow-inner p-4 rounded`}
-                        style={{ backgroundColor: colors.secondary }}
-                    >
+                    <div css={tw`mt-6 bg-neutral-900 border border-neutral-800 shadow-inner p-4 rounded`}>
                         <FormikSwitch
                             name={'onlyWhenOnline'}
                             description={'Only execute this schedule when the server is in a running state.'}
                             label={'Only When Server Is Online'}
                         />
                     </div>
-                    <div
-                        css={tw`mt-6 border-2 border-black/25 shadow-inner p-4 rounded`}
-                        style={{ backgroundColor: colors.secondary }}
-                    >
+                    <div css={tw`mt-6 bg-neutral-900 border border-neutral-800 shadow-inner p-4 rounded`}>
                         <FormikSwitch
                             name={'enabled'}
                             description={'This schedule will be executed automatically if enabled.'}

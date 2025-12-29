@@ -1,12 +1,12 @@
 <?php
 
-namespace Everest\Services\Users;
+namespace Jexactyl\Services\Users;
 
-use Everest\Models\User;
-use Everest\Exceptions\DisplayException;
+use Jexactyl\Models\User;
+use Jexactyl\Exceptions\DisplayException;
 use Illuminate\Contracts\Translation\Translator;
-use Everest\Contracts\Repository\UserRepositoryInterface;
-use Everest\Contracts\Repository\ServerRepositoryInterface;
+use Jexactyl\Contracts\Repository\UserRepositoryInterface;
+use Jexactyl\Contracts\Repository\ServerRepositoryInterface;
 
 class UserDeletionService
 {
@@ -23,9 +23,9 @@ class UserDeletionService
     /**
      * Delete a user from the panel only if they have no servers attached to their account.
      *
-     * @throws \Everest\Exceptions\DisplayException
+     * @throws \Jexactyl\Exceptions\DisplayException
      */
-    public function handle(int|User $user): void
+    public function handle(int|User $user): ?bool
     {
         if ($user instanceof User) {
             $user = $user->id;
@@ -36,6 +36,6 @@ class UserDeletionService
             throw new DisplayException($this->translator->get('admin/user.exceptions.user_has_servers'));
         }
 
-        $this->repository->delete($user);
+        return $this->repository->delete($user);
     }
 }

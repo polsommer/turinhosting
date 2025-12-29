@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Contracts\Repository;
+namespace Jexactyl\Contracts\Repository;
 
-use Everest\Models\Node;
+use Jexactyl\Models\Node;
 use Illuminate\Support\Collection;
 
 interface NodeRepositoryInterface extends RepositoryInterface
@@ -19,6 +19,11 @@ interface NodeRepositoryInterface extends RepositoryInterface
      * Return the usage stats for a single node.
      */
     public function getUsageStatsRaw(Node $node): array;
+
+    /**
+     * Return a single node with location and server information.
+     */
+    public function loadLocationAndServerCount(Node $node, bool $refresh = false): Node;
 
     /**
      * Attach a paginated set of allocations to a node mode including

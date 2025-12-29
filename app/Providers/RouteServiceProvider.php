@@ -1,15 +1,15 @@
 <?php
 
-namespace Everest\Providers;
+namespace Jexactyl\Providers;
 
-use Everest\Models\Database;
 use Illuminate\Http\Request;
+use Jexactyl\Models\Database;
 use Illuminate\Support\Facades\Route;
-use Everest\Http\Middleware\TrimStrings;
 use Illuminate\Cache\RateLimiting\Limit;
+use Jexactyl\Http\Middleware\TrimStrings;
 use Illuminate\Support\Facades\RateLimiter;
-use Everest\Http\Middleware\AdminAuthenticate;
-use Everest\Http\Middleware\RequireTwoFactorAuthentication;
+use Jexactyl\Http\Middleware\AdminAuthenticate;
+use Jexactyl\Http\Middleware\RequireTwoFactorAuthentication;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
 class RouteServiceProvider extends ServiceProvider
@@ -19,7 +19,7 @@ class RouteServiceProvider extends ServiceProvider
     /**
      * Define your route model bindings, pattern filters, etc.
      */
-    public function boot(): void
+    public function boot()
     {
         $this->configureRateLimiting();
 
@@ -30,7 +30,7 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         // This is needed to make use of the "resolveRouteBinding" functionality in the
-        // model. Without it, you'll never trigger that logic flow thus resulting in a 404
+        // model. Without it you'll never trigger that logic flow thus resulting in a 404
         // error because we request databases with a HashID, and not with a normal ID.
         Route::model('database', Database::class);
 
@@ -62,18 +62,13 @@ class RouteServiceProvider extends ServiceProvider
                 ->prefix('/api/remote')
                 ->scopeBindings()
                 ->group(base_path('routes/api-remote.php'));
-
-            Route::middleware('stripe-webhook')
-                ->prefix('/api/stripe')
-                ->scopeBindings()
-                ->group(base_path('routes/api-stripe.php'));
         });
     }
 
     /**
      * Configure the rate limiters for the application.
      */
-    protected function configureRateLimiting(): void
+    protected function configureRateLimiting()
     {
         // Authentication rate limiting. For login and checkpoint endpoints we'll apply
         // a limit of 10 requests per minute, for the forgot password endpoint apply a
@@ -85,6 +80,22 @@ class RouteServiceProvider extends ServiceProvider
             }
 
             return Limit::perMinute(10);
+        });
+
+        // Store & Server Creation rate limiting. Stops users from abusing the endpoint(s)
+        // associated with creating/deleting servers as well as resources via Storefront.
+        RateLimiter::for('storefront', function (Request $request) {
+            return Limit::perMinute(1)->by($request->user()->id);
+        });
+
+        // Credit earning ratelimiting.
+        RateLimiter::for('earn', function (Request $request) {
+            return Limit::perMinute(1)->by($request->user()->id);
+        });
+
+        // Stops users from renewing or editing servers many times in quick succession.
+        RateLimiter::for('server-edit', function (Request $request) {
+            return Limit::perMinute(5)->by($request->user()->id);
         });
 
         // Configure the throttles for both the application and client APIs below.
@@ -110,16 +121,6 @@ class RouteServiceProvider extends ServiceProvider
                 config('http.rate_limit.application_period'),
                 config('http.rate_limit.application')
             )->by($key);
-        });
-
-        RateLimiter::for('stripe.checkout', function (Request $request) {
-            $key = optional($request->user())->uuid ?: $request->ip();
-
-            return Limit::perMinute(10)->by($key);
-        });
-
-        RateLimiter::for('stripe.webhook', function (Request $request) {
-            return Limit::perMinute(30)->by($request->ip());
         });
     }
 }

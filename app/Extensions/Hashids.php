@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Extensions;
+namespace Jexactyl\Extensions;
 
 use Hashids\Hashids as VendorHashids;
-use Everest\Contracts\Extensions\HashidsInterface;
+use Jexactyl\Contracts\Extensions\HashidsInterface;
 
 class Hashids extends VendorHashids implements HashidsInterface
 {

@@ -1,34 +1,33 @@
-import { useCallback, useEffect, useState } from 'react';
-import * as React from 'react';
-import TitledGreyBox from '@elements/TitledGreyBox';
 import tw from 'twin.macro';
-import VariableBox from '@/components/server/startup/VariableBox';
-import Spinner from '@elements/Spinner';
-import { ServerError } from '@elements/ScreenBlock';
+import isEqual from 'react-fast-compare';
+import useFlash from '@/plugins/useFlash';
 import { httpErrorToHuman } from '@/api/http';
 import { ServerContext } from '@/state/server';
+import Input from '@/components/elements/Input';
+import Select from '@/components/elements/Select';
+import Spinner from '@/components/elements/Spinner';
+import getServerStartup from '@/api/swr/getServerStartup';
+import InputSpinner from '@/components/elements/InputSpinner';
+import React, { useCallback, useEffect, useState } from 'react';
+import TitledGreyBox from '@/components/elements/TitledGreyBox';
+import { ServerError } from '@/components/elements/ScreenBlock';
+import VariableBox from '@/components/server/startup/VariableBox';
 import { useDeepCompareEffect } from '@/plugins/useDeepCompareEffect';
-import Select from '@elements/Select';
-import isEqual from 'react-fast-compare';
-import Input from '@elements/Input';
-import { setImage, getServerStartup } from '@/api/server/startup';
-import InputSpinner from '@elements/InputSpinner';
-import useFlash from '@/plugins/useFlash';
-import PageContentBlock from '@/components/elements/PageContentBlock';
+import setSelectedDockerImage from '@/api/server/setSelectedDockerImage';
+import ServerContentBlock from '@/components/elements/ServerContentBlock';
 
 const StartupContainer = () => {
     const [loading, setLoading] = useState(false);
     const { clearFlashes, clearAndAddHttpError } = useFlash();
 
-    const uuid = ServerContext.useStoreState(state => state.server.data!.uuid);
-    const invo = ServerContext.useStoreState(state => state.server.data!.invocation);
+    const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
     const variables = ServerContext.useStoreState(
         ({ server }) => ({
             variables: server.data!.variables,
             invocation: server.data!.invocation,
             dockerImage: server.data!.dockerImage,
         }),
-        isEqual,
+        isEqual
     );
 
     const { data, error, isValidating, mutate } = getServerStartup(uuid, {
@@ -36,11 +35,11 @@ const StartupContainer = () => {
         dockerImages: { [variables.dockerImage]: variables.dockerImage },
     });
 
-    const setServerFromState = ServerContext.useStoreActions(actions => actions.server.setServerFromState);
+    const setServerFromState = ServerContext.useStoreActions((actions) => actions.server.setServerFromState);
     const isCustomImage =
         data &&
         !Object.values(data.dockerImages)
-            .map(v => v.toLowerCase())
+            .map((v) => v.toLowerCase())
             .includes(variables.dockerImage.toLowerCase());
 
     useEffect(() => {
@@ -53,8 +52,9 @@ const StartupContainer = () => {
     useDeepCompareEffect(() => {
         if (!data) return;
 
-        setServerFromState(s => ({
+        setServerFromState((s) => ({
             ...s,
+            invocation: data.invocation,
             variables: data.variables,
         }));
     }, [data]);
@@ -65,15 +65,15 @@ const StartupContainer = () => {
             clearFlashes('startup:image');
 
             const image = v.currentTarget.value;
-            setImage(uuid, image)
-                .then(() => setServerFromState(s => ({ ...s, dockerImage: image })))
-                .catch(error => {
+            setSelectedDockerImage(uuid, image)
+                .then(() => setServerFromState((s) => ({ ...s, dockerImage: image })))
+                .catch((error) => {
                     console.error(error);
                     clearAndAddHttpError({ key: 'startup:image', error });
                 })
                 .then(() => setLoading(false));
         },
-        [uuid],
+        [uuid]
     );
 
     return !data ? (
@@ -83,16 +83,15 @@ const StartupContainer = () => {
             <ServerError title={'Oops!'} message={httpErrorToHuman(error)} onRetry={() => mutate()} />
         )
     ) : (
-        <PageContentBlock
+        <ServerContentBlock
             title={'Startup Settings'}
-            header
-            description={'Control startup variables for your server.'}
+            description={'Fine-tune variables for your server during startup.'}
             showFlashKey={'startup:image'}
         >
-            <div css={tw`md:flex`}>
+            <div className={'md:flex j-up'}>
                 <TitledGreyBox title={'Startup Command'} css={tw`flex-1`}>
                     <div css={tw`px-1 py-2`}>
-                        <p css={tw`font-mono bg-neutral-900 rounded py-2 px-4`}>{invo}</p>
+                        <p css={tw`font-mono bg-neutral-900 rounded py-2 px-4`}>{data.invocation}</p>
                     </div>
                 </TitledGreyBox>
                 <TitledGreyBox title={'Docker Image'} css={tw`flex-1 lg:flex-none lg:w-1/3 mt-8 md:mt-0 md:ml-10`}>
@@ -104,7 +103,7 @@ const StartupContainer = () => {
                                     onChange={updateSelectedDockerImage}
                                     defaultValue={variables.dockerImage}
                                 >
-                                    {Object.keys(data.dockerImages).map(key => (
+                                    {Object.keys(data.dockerImages).map((key) => (
                                         <option key={data.dockerImages[key]} value={data.dockerImages[key]}>
                                             {key}
                                         </option>
@@ -130,12 +129,12 @@ const StartupContainer = () => {
                 </TitledGreyBox>
             </div>
             <h3 css={tw`mt-8 mb-2 text-2xl`}>Variables</h3>
-            <div css={tw`grid gap-8 md:grid-cols-2`}>
-                {data.variables.map(variable => (
+            <div className={'grid gap-8 md:grid-cols-2'}>
+                {data.variables.map((variable) => (
                     <VariableBox key={variable.envVariable} variable={variable} />
                 ))}
             </div>
-        </PageContentBlock>
+        </ServerContentBlock>
     );
 };
 

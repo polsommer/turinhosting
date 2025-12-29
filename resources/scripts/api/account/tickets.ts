@@ -1,71 +1,91 @@
-import { AxiosError } from 'axios';
-import useSWR, { SWRConfiguration, SWRResponse } from 'swr';
-import { useUserSWRKey } from '@/plugins/useSWRKey';
-import http, { FractalResponseList } from '@/api/http';
-import { Transformers, Ticket } from '@definitions/user';
-import { useParams } from 'react-router-dom';
+import http from '@/api/http';
 
-const useTickets = (config?: SWRConfiguration<Ticket[], AxiosError>) => {
-    const key = useUserSWRKey(['account', 'tickets']);
+export type TicketStatus = 'pending' | 'resolved' | 'unresolved' | 'in-progress';
 
-    return useSWR(
-        key,
-        async () => {
-            const { data } = await http.get('/api/client/account/tickets');
+export interface Ticket {
+    id: number;
+    staffEmail: string;
+    title: string;
+    status: TicketStatus;
+    content: string[];
+    createdAt: Date | null;
+    updatedAt: Date | null;
+}
 
-            return (data as FractalResponseList).data.map((datum: any) => {
-                return Transformers.toTicket(datum);
-            });
-        },
-        { revalidateOnMount: false, ...(config || {}) },
-    );
-};
+export interface TicketMessage {
+    id: number;
+    userEmail: string;
+    content: string[];
+    createdAt: Date | null;
+    updatedAt: Date | null;
+}
 
-const getTickets = (): Promise<Ticket[]> => {
+export const rawDataToTicket = (data: any): Ticket => ({
+    id: data.id,
+    staffEmail: data.staff_email,
+    title: data.title,
+    status: data.status,
+    content: data.content,
+    createdAt: data.created_at ? new Date(data.created_at) : null,
+    updatedAt: data.updated_at ? new Date(data.updated_at) : null,
+});
+
+export const rawDataToTicketMessage = (data: any): TicketMessage => ({
+    id: data.id,
+    userEmail: data.user_email,
+    content: data.content,
+    createdAt: data.created_at ? new Date(data.created_at) : null,
+    updatedAt: data.updated_at ? new Date(data.updated_at) : null,
+});
+
+// API actions for ticket handling.
+
+export const getTickets = (): Promise<Ticket[]> => {
     return new Promise((resolve, reject) => {
         http.get('/api/client/account/tickets')
-            .then(({ data }) => resolve((data.data || []).map(Transformers.toTicket)))
+            .then(({ data }) => resolve((data.data || []).map((d: any) => rawDataToTicket(d.attributes))))
             .catch(reject);
     });
 };
 
-const createTicket = async (title: string, message: string): Promise<Ticket> => {
-    const { data } = await http.post('/api/client/account/tickets', { title, message });
-
-    return Transformers.toTicket(data);
-};
-
-const createMessage = async (ticketId: number, message: string): Promise<Ticket> => {
-    const { data } = await http.post(`/api/client/account/tickets/${ticketId}/messages`, {
-        message,
-        params: {
-            include: ['messages'],
-        },
+export const getTicket = (id: number): Promise<Ticket> => {
+    return new Promise((resolve, reject) => {
+        http.get(`/api/client/account/tickets/${id}`)
+            .then(({ data }) => resolve(rawDataToTicket(data.attributes)))
+            .catch(reject);
     });
-
-    return Transformers.toTicket(data);
 };
 
-const getTicket = async (id: number): Promise<Ticket> => {
-    const { data } = await http.get(`/api/client/account/tickets/${id}`, {
-        params: {
-            include: ['messages'],
-        },
+export const deleteTicket = (id: number): Promise<void> => {
+    return new Promise((resolve, reject) => {
+        http.delete(`/api/client/account/tickets/${id}`)
+            .then((data) => resolve(data.data))
+            .catch(reject);
     });
-
-    return Transformers.toTicket(data);
 };
 
-/**
- * Returns an SWR instance by automatically loading in the ticket for the currently
- * loaded route match in the admin area.
- */
-const useTicketFromRoute = (): SWRResponse<Ticket, AxiosError> => {
-    const params = useParams<'id'>();
-
-    return useSWR(`/api/client/account/tickets/${params.id}`, async () => getTicket(Number(params.id)));
+export const createTicket = (title: string, description: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        http.post('/api/client/account/tickets', { title, description })
+            .then((data) => resolve(data.data))
+            .catch(reject);
+    });
 };
 
-const deleteTicket = async (id: number): Promise<void> => await http.delete(`/api/client/account/tickets/${id}`);
+// API actions for ticket messages.
 
-export { useTickets, getTickets, createTicket, getTicket, useTicketFromRoute, createMessage, deleteTicket };
+export const createMessage = (id: number, description: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+        http.post(`/api/client/account/tickets/${id}/messages`, { description })
+            .then((data) => resolve(data.data))
+            .catch(reject);
+    });
+};
+
+export const getMessages = (id: number): Promise<TicketMessage[]> => {
+    return new Promise((resolve, reject) => {
+        http.get(`/api/client/account/tickets/${id}/messages`)
+            .then(({ data }) => resolve((data.data || []).map((d: any) => rawDataToTicketMessage(d.attributes))))
+            .catch(reject);
+    });
+};

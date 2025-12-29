@@ -1,20 +1,20 @@
 <?php
 
-namespace Everest\Models;
+namespace Jexactyl\Models;
 
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * Everest\Models\TicketMessage.
+ * Jexactyl\Models\TicketMessage.
  *
  * @property int $id
- * @property Ticket $ticket
- * @property int $ticket_id
  * @property User $user
  * @property int $user_id
- * @property string $message
+ * @property Ticket $ticket
+ * @property int $ticket_id
+ * @property string $content
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
@@ -45,17 +45,18 @@ class TicketMessage extends Model
      * Fields that are mass-assignable.
      */
     protected $fillable = [
-        'ticket_id',
         'user_id',
-        'message',
+        'ticket_id',
+        'content',
     ];
 
     /**
      * Rules verifying that the data being stored matches the expectations of the database.
      */
     public static array $validationRules = [
+        'user_id' => 'required|int|unique:users,id',
         'ticket_id' => 'required|int',
-        'message' => 'required|string|min:3|max:500',
+        'content' => 'required|string|min:3|max:191',
     ];
 
     /**

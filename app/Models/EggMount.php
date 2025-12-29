@@ -1,6 +1,6 @@
 <?php
 
-namespace Everest\Models;
+namespace Jexactyl\Models;
 
 class EggMount extends Model
 {

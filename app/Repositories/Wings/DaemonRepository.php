@@ -1,10 +1,10 @@
 <?php
 
-namespace Everest\Repositories\Wings;
+namespace Jexactyl\Repositories\Wings;
 
 use GuzzleHttp\Client;
-use Everest\Models\Node;
-use Everest\Models\Server;
+use Jexactyl\Models\Node;
+use Jexactyl\Models\Server;
 use Webmozart\Assert\Assert;
 use Illuminate\Contracts\Foundation\Application;
 
@@ -53,8 +53,8 @@ abstract class DaemonRepository
         return new Client([
             'verify' => $this->app->environment('production'),
             'base_uri' => $this->node->getConnectionAddress(),
-            'timeout' => config('everest.guzzle.timeout'),
-            'connect_timeout' => config('everest.guzzle.connect_timeout'),
+            'timeout' => config('jexactyl.guzzle.timeout'),
+            'connect_timeout' => config('jexactyl.guzzle.connect_timeout'),
             'headers' => array_merge($headers, [
                 'Authorization' => 'Bearer ' . $this->node->getDecryptedKey(),
                 'Accept' => 'application/json',

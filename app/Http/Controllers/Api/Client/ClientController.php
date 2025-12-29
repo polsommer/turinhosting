@@ -1,15 +1,14 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Client;
+namespace Jexactyl\Http\Controllers\Api\Client;
 
-use Everest\Models\Server;
-use Illuminate\Http\Request;
-use Everest\Models\Permission;
+use Jexactyl\Models\Server;
+use Jexactyl\Models\Permission;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
-use Everest\Models\Filters\MultiFieldServerFilter;
-use Everest\Transformers\Api\Client\ServerTransformer;
-use Everest\Http\Requests\Api\Client\GetServersRequest;
+use Jexactyl\Models\Filters\MultiFieldServerFilter;
+use Jexactyl\Transformers\Api\Client\ServerTransformer;
+use Jexactyl\Http\Requests\Api\Client\GetServersRequest;
 
 class ClientController extends ClientApiController
 {
@@ -28,7 +27,7 @@ class ClientController extends ClientApiController
     public function index(GetServersRequest $request): array
     {
         $user = $request->user();
-        $transformer = new ServerTransformer();
+        $transformer = $this->getTransformer(ServerTransformer::class);
 
         // Start the query builder and ensure we eager load any requested relationships from the request.
         $builder = QueryBuilder::for(
@@ -40,11 +39,6 @@ class ClientController extends ClientApiController
             'external_id',
             AllowedFilter::custom('*', new MultiFieldServerFilter()),
         ]);
-
-        $loweredBindings = collect($builder->getBindings())
-            ->map(fn ($f, $key) => is_string($f) ? strtolower($f) : $f)
-            ->all();
-        $builder->setBindings($loweredBindings);
 
         $type = $request->input('type');
         // Either return all the servers the user has access to because they are an admin `?type=admin` or
@@ -75,7 +69,7 @@ class ClientController extends ClientApiController
     /**
      * Returns all the subuser permissions available on the system.
      */
-    public function permissions(Request $request): array
+    public function permissions(): array
     {
         return [
             'object' => 'system_permissions',

@@ -1,13 +1,16 @@
-import ContentBox from '@elements/ContentBox';
-import UpdatePasswordForm from '@/components/dashboard/forms/UpdatePasswordForm';
-import UpdateEmailAddressForm from '@/components/dashboard/forms/UpdateEmailAddressForm';
-import ConfigureTwoFactorForm from '@/components/dashboard/forms/ConfigureTwoFactorForm';
-import PageContentBlock from '@elements/PageContentBlock';
 import tw from 'twin.macro';
+import * as React from 'react';
 import { breakpoint } from '@/theme';
-import styled from 'styled-components';
-import MessageBox from '@/components/MessageBox';
+import styled from 'styled-components/macro';
+import { useStoreState } from '@/state/hooks';
 import { useLocation } from 'react-router-dom';
+import Alert from '@/components/elements/alert/Alert';
+import ContentBox from '@/components/elements/ContentBox';
+import PageContentBlock from '@/components/elements/PageContentBlock';
+import DiscordAccountForm from '@/components/dashboard/forms/DiscordAccountForm';
+import UpdateUsernameForm from '@/components/dashboard/forms/UpdateUsernameForm';
+import AddReferralCodeForm from '@/components/dashboard/forms/AddReferralCodeForm';
+import UpdateEmailAddressForm from '@/components/dashboard/forms/UpdateEmailAddressForm';
 
 const Container = styled.div`
     ${tw`flex flex-wrap`};
@@ -16,38 +19,47 @@ const Container = styled.div`
         ${tw`w-full`};
 
         ${breakpoint('sm')`
-      width: calc(50% - 1rem);
-    `}
+        width: calc(50% - 1rem);
+      `}
 
         ${breakpoint('md')`
-      ${tw`w-auto flex-1`};
-    `}
+        ${tw`w-auto flex-1`};
+      `}
     }
 `;
 
 export default () => {
-    const { state } = useLocation();
+    const { state } = useLocation<undefined | { twoFactorRedirect?: boolean }>();
+    const discord = useStoreState((state) => state.settings.data!.registration.discord);
+    const referrals = useStoreState((state) => state.storefront.data!.referrals.enabled);
 
     return (
-        <PageContentBlock title="Account Overview" header description={'Update your email, password, or setup 2-FA.'}>
+        <PageContentBlock title={'Account Overview'} description={'View and update account details.'}>
             {state?.twoFactorRedirect && (
-                <MessageBox title="2-Factor Required" type="error">
+                <Alert type={'danger'}>
                     Your account must have two-factor authentication enabled in order to continue.
-                </MessageBox>
+                </Alert>
             )}
-
-            <Container css={[tw`lg:grid lg:grid-cols-3 mb-10`, state?.twoFactorRedirect ? tw`mt-4` : tw`mt-10`]}>
-                <ContentBox title="Update Password" showFlashes="account:password">
-                    <UpdatePasswordForm />
+            <Container
+                className={'j-up'}
+                css={[tw`lg:grid lg:grid-cols-2 gap-8 mb-10`, state?.twoFactorRedirect ? tw`mt-4` : tw`mt-10`]}
+            >
+                <ContentBox title={'Update Username'} showFlashes={'account:username'}>
+                    <UpdateUsernameForm />
                 </ContentBox>
-
-                <ContentBox css={tw`mt-8 sm:mt-0 sm:ml-8`} title="Update Email Address" showFlashes="account:email">
+                <ContentBox title={'Update Email Address'} showFlashes={'account:email'}>
                     <UpdateEmailAddressForm />
                 </ContentBox>
-
-                <ContentBox css={tw`md:ml-8 mt-8 md:mt-0`} title="Two-Step Verification">
-                    <ConfigureTwoFactorForm />
-                </ContentBox>
+                {referrals && (
+                    <ContentBox title={'Referral Codes'} showFlashes={'account:referral'}>
+                        <AddReferralCodeForm />
+                    </ContentBox>
+                )}
+                {discord && (
+                    <ContentBox title={'Connect with Discord'} showFlashes={'account:discord'}>
+                        <DiscordAccountForm />
+                    </ContentBox>
+                )}
             </Container>
         </PageContentBlock>
     );

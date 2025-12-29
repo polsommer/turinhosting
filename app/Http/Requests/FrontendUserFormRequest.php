@@ -1,6 +1,6 @@
 <?php
 
-namespace Everest\Http\Requests;
+namespace Jexactyl\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 

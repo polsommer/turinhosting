@@ -1,14 +1,13 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Application\Nodes;
+namespace Jexactyl\Http\Requests\Api\Application\Nodes;
 
-use Everest\Models\AdminRole;
-use Everest\Http\Requests\Api\Application\ApplicationApiRequest;
+use Jexactyl\Services\Acl\Api\AdminAcl;
+use Jexactyl\Http\Requests\Api\Application\ApplicationApiRequest;
 
 class DeleteNodeRequest extends ApplicationApiRequest
 {
-    public function permission(): string
-    {
-        return AdminRole::NODES_DELETE;
-    }
+    protected ?string $resource = AdminAcl::RESOURCE_NODES;
+
+    protected int $permission = AdminAcl::WRITE;
 }

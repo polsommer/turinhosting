@@ -1,12 +1,12 @@
 <?php
 
-namespace Everest\Repositories\Eloquent;
+namespace Jexactyl\Repositories\Eloquent;
 
-use Everest\Models\Schedule;
+use Jexactyl\Models\Schedule;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Everest\Exceptions\Repository\RecordNotFoundException;
-use Everest\Contracts\Repository\ScheduleRepositoryInterface;
+use Jexactyl\Exceptions\Repository\RecordNotFoundException;
+use Jexactyl\Contracts\Repository\ScheduleRepositoryInterface;
 
 class ScheduleRepository extends EloquentRepository implements ScheduleRepositoryInterface
 {
@@ -29,7 +29,7 @@ class ScheduleRepository extends EloquentRepository implements ScheduleRepositor
     /**
      * Return a schedule model with all the associated tasks as a relationship.
      *
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function getScheduleWithTasks(int $schedule): Schedule
     {

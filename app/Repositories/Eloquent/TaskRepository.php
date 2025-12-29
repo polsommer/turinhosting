@@ -1,11 +1,11 @@
 <?php
 
-namespace Everest\Repositories\Eloquent;
+namespace Jexactyl\Repositories\Eloquent;
 
-use Everest\Models\Task;
+use Jexactyl\Models\Task;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Everest\Contracts\Repository\TaskRepositoryInterface;
-use Everest\Exceptions\Repository\RecordNotFoundException;
+use Jexactyl\Contracts\Repository\TaskRepositoryInterface;
+use Jexactyl\Exceptions\Repository\RecordNotFoundException;
 
 class TaskRepository extends EloquentRepository implements TaskRepositoryInterface
 {
@@ -20,7 +20,7 @@ class TaskRepository extends EloquentRepository implements TaskRepositoryInterfa
     /**
      * Get a task and the server relationship for that task.
      *
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function getTaskForJobProcess(int $id): Task
     {

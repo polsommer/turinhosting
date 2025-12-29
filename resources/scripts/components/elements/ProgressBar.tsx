@@ -1,23 +1,24 @@
-import { Transition } from '@headlessui/react';
-import { useStoreActions, useStoreState } from 'easy-peasy';
-import { Fragment, useEffect, useRef, useState } from 'react';
-
+import tw from 'twin.macro';
 import { randomInt } from '@/helpers';
+import styled from 'styled-components/macro';
+import { CSSTransition } from 'react-transition-group';
+import React, { useEffect, useRef, useState } from 'react';
+import { useStoreActions, useStoreState } from 'easy-peasy';
+
+const BarFill = styled.div`
+    ${tw`h-full bg-green-400 animate-pulse`};
+    transition: 500ms ease-in-out;
+`;
 
 type Timer = ReturnType<typeof setTimeout>;
 
-function ProgressBar() {
-    const interval = useRef<Timer>();
-    const timeout = useRef<Timer>();
+export default () => {
+    const interval = useRef<Timer>(null) as React.MutableRefObject<Timer>;
+    const timeout = useRef<Timer>(null) as React.MutableRefObject<Timer>;
     const [visible, setVisible] = useState(false);
-
-    const {
-        colors: { primary },
-    } = useStoreState(state => state.theme.data!);
-
-    const continuous = useStoreState(state => state.progress.continuous);
-    const progress = useStoreState(state => state.progress.progress);
-    const setProgress = useStoreActions(actions => actions.progress.setProgress);
+    const progress = useStoreState((state) => state.progress.progress);
+    const continuous = useStoreState((state) => state.progress.continuous);
+    const setProgress = useStoreActions((actions) => actions.progress.setProgress);
 
     useEffect(() => {
         return () => {
@@ -57,30 +58,10 @@ function ProgressBar() {
     }, [progress, continuous]);
 
     return (
-        <div className="fixed h-[2px] w-full">
-            <Transition
-                as={Fragment}
-                show={visible}
-                enter="transition-opacity duration-150"
-                enterFrom="opacity-0"
-                enterTo="opacity-100"
-                leave="transition-opacity duration-150"
-                leaveFrom="opacity-100"
-                leaveTo="opacity-0"
-                appear
-                unmount
-            >
-                <div
-                    className="h-px shadow-[0_-2px_10px_2px] transition-all duration-[250ms] ease-in-out"
-                    style={{
-                        width: progress === undefined ? '100%' : `${progress}%`,
-                        backgroundColor: primary,
-                        boxShadow: primary,
-                    }}
-                />
-            </Transition>
+        <div css={tw`w-20 fixed`} style={{ height: '3px' }}>
+            <CSSTransition timeout={150} appear in={visible} unmountOnExit classNames={'fade'}>
+                <BarFill style={{ width: progress === undefined ? '100%' : `${progress}%` }} />
+            </CSSTransition>
         </div>
     );
-}
-
-export default ProgressBar;
+};

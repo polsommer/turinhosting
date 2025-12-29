@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use Everest\Models\DatabaseHost;
+use Jexactyl\Models\DatabaseHost;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

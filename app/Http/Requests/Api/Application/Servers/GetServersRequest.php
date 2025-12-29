@@ -1,8 +1,6 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Application\Servers;
-
-use Everest\Models\AdminRole;
+namespace Jexactyl\Http\Requests\Api\Application\Servers;
 
 class GetServersRequest extends GetServerRequest
 {
@@ -11,10 +9,5 @@ class GetServersRequest extends GetServerRequest
         return [
             'search' => 'string|max:100',
         ];
-    }
-
-    public function permission(): string
-    {
-        return AdminRole::SERVERS_READ;
     }
 }

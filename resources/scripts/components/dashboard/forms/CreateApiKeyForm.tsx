@@ -1,18 +1,18 @@
-import { useState } from 'react';
-import { Field, Form, Formik, FormikHelpers } from 'formik';
-import { object, string } from 'yup';
-import FormikFieldWrapper from '@elements/FormikFieldWrapper';
-import { createApiKey } from '@/api/account/api-keys';
-import { Actions, useStoreActions } from 'easy-peasy';
-import { ApplicationStore } from '@/state';
-import { httpErrorToHuman } from '@/api/http';
-import SpinnerOverlay from '@elements/SpinnerOverlay';
-import { type ApiKey } from '@definitions/user';
 import tw from 'twin.macro';
-import { Button } from '@elements/button';
-import Input, { Textarea } from '@elements/Input';
-import styled from 'styled-components';
+import { object, string } from 'yup';
+import React, { useState } from 'react';
+import { ApplicationStore } from '@/state';
+import styled from 'styled-components/macro';
+import { httpErrorToHuman } from '@/api/http';
+import { ApiKey } from '@/api/account/getApiKeys';
+import createApiKey from '@/api/account/createApiKey';
+import { Actions, useStoreActions } from 'easy-peasy';
+import { Button } from '@/components/elements/button/index';
+import { Field, Form, Formik, FormikHelpers } from 'formik';
 import ApiKeyModal from '@/components/dashboard/ApiKeyModal';
+import Input, { Textarea } from '@/components/elements/Input';
+import SpinnerOverlay from '@/components/elements/SpinnerOverlay';
+import FormikFieldWrapper from '@/components/elements/FormikFieldWrapper';
 
 interface Values {
     description: string;
@@ -36,7 +36,7 @@ export default ({ onKeyCreated }: { onKeyCreated: (key: ApiKey) => void }) => {
                 setApiKey(`${key.identifier}${secretToken}`);
                 onKeyCreated(key);
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error(error);
 
                 addError({ key: 'account', message: httpErrorToHuman(error) });

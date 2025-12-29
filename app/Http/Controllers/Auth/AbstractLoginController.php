@@ -1,23 +1,19 @@
 <?php
 
-namespace Everest\Http\Controllers\Auth;
+namespace Jexactyl\Http\Controllers\Auth;
 
-use Carbon\Carbon;
-use Everest\Models\User;
+use Jexactyl\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Auth\Events\Failed;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Container\Container;
-use Everest\Events\Auth\DirectLogin;
 use Illuminate\Support\Facades\Event;
-use Everest\Exceptions\DisplayException;
-use Everest\Http\Controllers\Controller;
+use Jexactyl\Events\Auth\DirectLogin;
+use Jexactyl\Exceptions\DisplayException;
+use Jexactyl\Http\Controllers\Controller;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Everest\Services\Users\UserCreationService;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Everest\Contracts\Repository\SettingsRepositoryInterface;
 
 abstract class AbstractLoginController extends Controller
 {
@@ -41,22 +37,24 @@ abstract class AbstractLoginController extends Controller
     protected string $redirectTo = '/';
 
     /**
+     * @var \Jexactyl\Models\AccountLog
+     */
+    protected $log;
+
+    /**
      * LoginController constructor.
      */
     public function __construct()
     {
         $this->lockoutTime = config('auth.lockout.time');
-        $this->maxLoginAttempts = config('modules.auth.security.attempts');
+        $this->maxLoginAttempts = config('auth.lockout.attempts');
         $this->auth = Container::getInstance()->make(AuthManager::class);
-        $this->creation = Container::getInstance()->make(UserCreationService::class);
     }
 
     /**
      * Get the failed login response instance.
      *
-     * @return never
-     *
-     * @throws DisplayException
+     * @throws \Jexactyl\Exceptions\DisplayException
      */
     protected function sendFailedLoginResponse(Request $request, Authenticatable $user = null, string $message = null)
     {
@@ -74,6 +72,8 @@ abstract class AbstractLoginController extends Controller
 
     /**
      * Send the response after the user was authenticated.
+     *
+     * @throws DisplayException
      */
     protected function sendLoginResponse(User $user, Request $request): JsonResponse
     {
@@ -90,38 +90,9 @@ abstract class AbstractLoginController extends Controller
             'data' => [
                 'complete' => true,
                 'intended' => $this->redirectPath(),
-                'user' => $user->toReactObject(),
+                'user' => $user->toVueObject(),
             ],
         ]);
-    }
-
-    /**
-     * Create an account on the Panel if the details do not exist.
-     */
-    public function createAccount(SettingsRepositoryInterface $settings, array $data): User
-    {
-        $delay = $settings->get('settings:modules:auth:jguard:delay') ?? 0;
-        $guard = $settings->get('settings::modules:auth:jguard:enabled') ?? false;
-        $enabled = $settings->get('settings::modules:auth:registration:enabled') ?? false;
-
-        if (!boolval($enabled)) {
-            throw new DisplayException('User signup is disabled at this time.');
-        }
-
-        if (User::where('username', $data['username'])->exists()) {
-            throw new DisplayException('This username is already in use by another user.');
-        }
-
-        $user = $this->creation->handle($data);
-
-        if ($guard || $delay > 0) {
-            DB::table('jguard_delay')->insert([
-                'user_id' => $user->id,
-                'expires_at' => Carbon::now()->add($delay, 'minute'),
-            ]);
-        }
-
-        return $user;
     }
 
     /**

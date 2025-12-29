@@ -1,16 +1,16 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Client\Servers;
+namespace Jexactyl\Http\Controllers\Api\Client\Servers;
 
-use Everest\Models\Server;
-use Everest\Facades\Activity;
-use Everest\Services\Servers\StartupCommandService;
-use Everest\Repositories\Eloquent\ServerVariableRepository;
-use Everest\Transformers\Api\Client\EggVariableTransformer;
-use Everest\Http\Controllers\Api\Client\ClientApiController;
+use Jexactyl\Models\Server;
+use Jexactyl\Facades\Activity;
+use Jexactyl\Services\Servers\StartupCommandService;
+use Jexactyl\Repositories\Eloquent\ServerVariableRepository;
+use Jexactyl\Transformers\Api\Client\EggVariableTransformer;
+use Jexactyl\Http\Controllers\Api\Client\ClientApiController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Everest\Http\Requests\Api\Client\Servers\Startup\GetStartupRequest;
-use Everest\Http\Requests\Api\Client\Servers\Startup\UpdateStartupVariableRequest;
+use Jexactyl\Http\Requests\Api\Client\Servers\Startup\GetStartupRequest;
+use Jexactyl\Http\Requests\Api\Client\Servers\Startup\UpdateStartupVariableRequest;
 
 class StartupController extends ClientApiController
 {
@@ -34,7 +34,7 @@ class StartupController extends ClientApiController
         return $this->fractal->collection(
             $server->variables()->where('user_viewable', true)->get()
         )
-            ->transformWith(EggVariableTransformer::class)
+            ->transformWith($this->getTransformer(EggVariableTransformer::class))
             ->addMeta([
                 'startup_command' => $startup,
                 'docker_images' => $server->egg->docker_images,
@@ -47,11 +47,12 @@ class StartupController extends ClientApiController
      * Updates a single variable for a server.
      *
      * @throws \Illuminate\Validation\ValidationException
-     * @throws \Everest\Exceptions\Model\DataValidationException
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function update(UpdateStartupVariableRequest $request, Server $server): array
     {
+        /** @var \Jexactyl\Models\EggVariable $variable */
         $variable = $server->variables()->where('env_variable', $request->input('key'))->first();
         $original = $variable->server_value;
 
@@ -60,8 +61,6 @@ class StartupController extends ClientApiController
         } elseif (!$variable->user_editable) {
             throw new BadRequestHttpException('The environment variable you are trying to edit is read-only.');
         }
-
-        /* @var \Everest\Models\EggVariable $variable */
 
         // Revalidate the variable value using the egg variable specific validation rules for it.
         $this->validate($request, ['value' => $variable->rules]);
@@ -90,7 +89,7 @@ class StartupController extends ClientApiController
         }
 
         return $this->fractal->item($variable)
-            ->transformWith(EggVariableTransformer::class)
+            ->transformWith($this->getTransformer(EggVariableTransformer::class))
             ->addMeta([
                 'startup_command' => $startup,
                 'raw_startup_command' => $server->startup,

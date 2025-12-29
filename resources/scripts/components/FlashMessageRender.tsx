@@ -1,29 +1,28 @@
+import React from 'react';
+import tw from 'twin.macro';
 import { useStoreState } from 'easy-peasy';
-import { Fragment } from 'react';
-
-import MessageBox from '@/components/MessageBox';
-import classNames from 'classnames';
+import Alert from '@/components/elements/alert/Alert';
 
 type Props = Readonly<{
     byKey?: string;
     className?: string;
 }>;
 
-function FlashMessageRender({ byKey, className }: Props) {
-    const flashes = useStoreState(state => state.flashes.items.filter(flash => (byKey ? flash.key === byKey : true)));
+const FlashMessageRender = ({ byKey, className }: Props) => {
+    const flashes = useStoreState((state) =>
+        state.flashes.items.filter((flash) => (byKey ? flash.key === byKey : true))
+    );
 
     return flashes.length ? (
-        <div className={classNames(className, 'fixed bottom-2 right-2 z-50 m-4')}>
+        <div className={className}>
             {flashes.map((flash, index) => (
-                <Fragment key={flash.id || flash.type + flash.message}>
-                    {index > 0 && <div className="mt-2" />}
-                    <MessageBox type={flash.type} title={flash.title}>
-                        {flash.message}
-                    </MessageBox>
-                </Fragment>
+                <React.Fragment key={flash.id || flash.type + flash.message}>
+                    {index > 0 && <div css={tw`mt-2`}></div>}
+                    <Alert type={flash.type}>{flash.message}</Alert>
+                </React.Fragment>
             ))}
         </div>
     ) : null;
-}
+};
 
 export default FlashMessageRender;

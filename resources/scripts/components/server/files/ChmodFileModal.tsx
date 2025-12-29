@@ -1,13 +1,14 @@
-import { fileBitsToString } from '@/helpers';
-import useFileManagerSwr from '@/plugins/useFileManagerSwr';
-import Modal, { RequiredModalProps } from '@elements/Modal';
-import { Form, Formik, FormikHelpers } from 'formik';
-import Field from '@elements/Field';
-import { chmodFiles } from '@/api/server/files';
-import { ServerContext } from '@/state/server';
+import React from 'react';
 import tw from 'twin.macro';
-import { Button } from '@elements/button';
 import useFlash from '@/plugins/useFlash';
+import { fileBitsToString } from '@/helpers';
+import { ServerContext } from '@/state/server';
+import Field from '@/components/elements/Field';
+import { Form, Formik, FormikHelpers } from 'formik';
+import chmodFiles from '@/api/server/files/chmodFiles';
+import { Button } from '@/components/elements/button/index';
+import useFileManagerSwr from '@/plugins/useFileManagerSwr';
+import Modal, { RequiredModalProps } from '@/components/elements/Modal';
 
 interface FormikValues {
     mode: string;
@@ -21,29 +22,29 @@ interface File {
 type OwnProps = RequiredModalProps & { files: File[] };
 
 const ChmodFileModal = ({ files, ...props }: OwnProps) => {
-    const uuid = ServerContext.useStoreState(state => state.server.data!.uuid);
+    const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
     const { mutate } = useFileManagerSwr();
     const { clearFlashes, clearAndAddHttpError } = useFlash();
-    const directory = ServerContext.useStoreState(state => state.files.directory);
-    const setSelectedFiles = ServerContext.useStoreActions(actions => actions.files.setSelectedFiles);
+    const directory = ServerContext.useStoreState((state) => state.files.directory);
+    const setSelectedFiles = ServerContext.useStoreActions((actions) => actions.files.setSelectedFiles);
 
-    const submit = async ({ mode }: FormikValues, { setSubmitting }: FormikHelpers<FormikValues>) => {
+    const submit = ({ mode }: FormikValues, { setSubmitting }: FormikHelpers<FormikValues>) => {
         clearFlashes('files');
 
-        await mutate(
-            data =>
-                data!.map(f =>
-                    f.name === files[0]?.file ? { ...f, mode: fileBitsToString(mode, !f.isFile), modeBits: mode } : f,
+        mutate(
+            (data) =>
+                data.map((f) =>
+                    f.name === files[0].file ? { ...f, mode: fileBitsToString(mode, !f.isFile), modeBits: mode } : f
                 ),
-            false,
+            false
         );
 
-        const data = files.map(f => ({ file: f.file, mode: mode }));
+        const data = files.map((f) => ({ file: f.file, mode: mode }));
 
         chmodFiles(uuid, directory, data)
             .then((): Promise<any> => (files.length > 0 ? mutate() : Promise.resolve()))
             .then(() => setSelectedFiles([]))
-            .catch(error => {
+            .catch((error) => {
                 mutate();
                 setSubmitting(false);
                 clearAndAddHttpError({ key: 'files', error });
@@ -52,7 +53,7 @@ const ChmodFileModal = ({ files, ...props }: OwnProps) => {
     };
 
     return (
-        <Formik onSubmit={submit} initialValues={{ mode: files.length > 1 ? '' : files[0]?.mode ?? '' }}>
+        <Formik onSubmit={submit} initialValues={{ mode: files.length > 1 ? '' : files[0].mode || '' }}>
             {({ isSubmitting }) => (
                 <Modal {...props} dismissable={!isSubmitting} showSpinnerOverlay={isSubmitting}>
                     <Form css={tw`m-0`}>

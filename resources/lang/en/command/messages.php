@@ -1,6 +1,13 @@
 <?php
 
 return [
+    'location' => [
+        'no_location_found' => 'Could not locate a record matching the provided short code.',
+        'ask_short' => 'Location Short Code',
+        'ask_long' => 'Location Description',
+        'created' => 'Successfully created a new location (:name) with an ID of :id.',
+        'deleted' => 'Successfully deleted the requested location.',
+    ],
     'user' => [
         'search_users' => 'Enter a Username, User ID, or Email Address',
         'select_search_user' => 'ID of user to delete (Enter \'0\' to re-search)',
@@ -37,6 +44,23 @@ return [
         'power' => [
             'confirm' => 'You are about to perform a :action against :count servers. Do you wish to continue?',
             'action_failed' => 'Power action request for ":name" (#:id) on node ":node" failed with error: :message',
+        ],
+    ],
+    'environment' => [
+        'mail' => [
+            'ask_smtp_host' => 'SMTP Host (e.g. smtp.gmail.com)',
+            'ask_smtp_port' => 'SMTP Port',
+            'ask_smtp_username' => 'SMTP Username',
+            'ask_smtp_password' => 'SMTP Password',
+            'ask_mailgun_domain' => 'Mailgun Domain',
+            'ask_mailgun_endpoint' => 'Mailgun Endpoint',
+            'ask_mailgun_secret' => 'Mailgun Secret',
+            'ask_mandrill_secret' => 'Mandrill Secret',
+            'ask_postmark_username' => 'Postmark API Key',
+            'ask_driver' => 'Which driver should be used for sending emails?',
+            'ask_mail_from' => 'Email address emails should originate from',
+            'ask_mail_name' => 'Name that emails should appear from',
+            'ask_encryption' => 'Encryption method to use',
         ],
     ],
 ];

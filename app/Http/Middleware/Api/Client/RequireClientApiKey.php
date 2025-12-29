@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Http\Middleware\Api\Client;
+namespace Jexactyl\Http\Middleware\Api\Client;
 
-use Everest\Models\ApiKey;
+use Jexactyl\Models\ApiKey;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 

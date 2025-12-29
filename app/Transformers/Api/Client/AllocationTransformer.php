@@ -1,11 +1,10 @@
 <?php
 
-namespace Everest\Transformers\Api\Client;
+namespace Jexactyl\Transformers\Api\Client;
 
-use Everest\Models\Allocation;
-use Everest\Transformers\Api\Transformer;
+use Jexactyl\Models\Allocation;
 
-class AllocationTransformer extends Transformer
+class AllocationTransformer extends BaseClientTransformer
 {
     /**
      * Return the resource name for the JSONAPI output.

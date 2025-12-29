@@ -1,10 +1,10 @@
 <?php
 
-namespace Everest\Services\Eggs\Scripts;
+namespace Jexactyl\Services\Eggs\Scripts;
 
-use Everest\Models\Egg;
-use Everest\Contracts\Repository\EggRepositoryInterface;
-use Everest\Exceptions\Service\Egg\InvalidCopyFromException;
+use Jexactyl\Models\Egg;
+use Jexactyl\Contracts\Repository\EggRepositoryInterface;
+use Jexactyl\Exceptions\Service\Egg\InvalidCopyFromException;
 
 class InstallScriptService
 {
@@ -18,9 +18,9 @@ class InstallScriptService
     /**
      * Modify the install script for a given Egg.
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
-     * @throws \Everest\Exceptions\Service\Egg\InvalidCopyFromException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Service\Egg\InvalidCopyFromException
      */
     public function handle(Egg $egg, array $data): void
     {

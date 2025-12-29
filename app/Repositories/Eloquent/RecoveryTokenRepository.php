@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Repositories\Eloquent;
+namespace Jexactyl\Repositories\Eloquent;
 
-use Everest\Models\RecoveryToken;
+use Jexactyl\Models\RecoveryToken;
 
 class RecoveryTokenRepository extends EloquentRepository
 {

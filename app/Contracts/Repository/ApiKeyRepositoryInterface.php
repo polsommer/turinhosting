@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Contracts\Repository;
+namespace Jexactyl\Contracts\Repository;
 
-use Everest\Models\User;
+use Jexactyl\Models\User;
 use Illuminate\Support\Collection;
 
 interface ApiKeyRepositoryInterface extends RepositoryInterface

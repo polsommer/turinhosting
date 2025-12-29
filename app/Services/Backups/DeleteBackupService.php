@@ -1,15 +1,15 @@
 <?php
 
-namespace Everest\Services\Backups;
+namespace Jexactyl\Services\Backups;
 
-use Everest\Models\Backup;
+use Jexactyl\Models\Backup;
 use Illuminate\Http\Response;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Database\ConnectionInterface;
-use Everest\Extensions\Backups\BackupManager;
-use Everest\Repositories\Wings\DaemonBackupRepository;
-use Everest\Exceptions\Service\Backup\BackupLockedException;
-use Everest\Exceptions\Http\Connection\DaemonConnectionException;
+use Jexactyl\Extensions\Backups\BackupManager;
+use Jexactyl\Repositories\Wings\DaemonBackupRepository;
+use Jexactyl\Exceptions\Service\Backup\BackupLockedException;
+use Jexactyl\Exceptions\Http\Connection\DaemonConnectionException;
 
 class DeleteBackupService
 {
@@ -70,13 +70,10 @@ class DeleteBackupService
         $this->connection->transaction(function () use ($backup) {
             $backup->delete();
 
-            /** @var \Everest\Extensions\Filesystem\S3Filesystem $adapter */
+            /** @var \Jexactyl\Extensions\Filesystem\S3Filesystem $adapter */
             $adapter = $this->manager->adapter(Backup::ADAPTER_AWS_S3);
 
-            /** @var \Aws\S3\S3Client $client */
-            $client = $adapter->getClient();
-
-            $client->deleteObject([
+            $adapter->getClient()->deleteObject([
                 'Bucket' => $adapter->getBucket(),
                 'Key' => sprintf('%s/%s.tar.gz', $backup->server->uuid, $backup->uuid),
             ]);

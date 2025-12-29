@@ -1,21 +1,19 @@
 <?php
 
-namespace Everest\Providers;
+namespace Jexactyl\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Everest\Http\ViewComposers\AssetComposer;
-use Everest\Http\ViewComposers\ThemeComposer;
-use Everest\Http\ViewComposers\EverestComposer;
+use Jexactyl\Http\ViewComposers\StoreComposer;
+use Jexactyl\Http\ViewComposers\SettingComposer;
 
 class ViewComposerServiceProvider extends ServiceProvider
 {
     /**
      * Register bindings in the container.
      */
-    public function boot(): void
+    public function boot()
     {
-        $this->app->make('view')->composer('*', AssetComposer::class);
-        $this->app->make('view')->composer('*', ThemeComposer::class);
-        $this->app->make('view')->composer('*', EverestComposer::class);
+        $this->app->make('view')->composer('*', SettingComposer::class);
+        $this->app->make('view')->composer('*', StoreComposer::class);
     }
 }

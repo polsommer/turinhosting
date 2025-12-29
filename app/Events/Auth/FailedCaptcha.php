@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Events\Auth;
+namespace Jexactyl\Events\Auth;
 
-use Everest\Events\Event;
+use Jexactyl\Events\Event;
 use Illuminate\Queue\SerializesModels;
 
 class FailedCaptcha extends Event

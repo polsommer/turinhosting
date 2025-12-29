@@ -1,11 +1,11 @@
 <?php
 
-namespace Everest\Repositories\Eloquent;
+namespace Jexactyl\Repositories\Eloquent;
 
-use Everest\Models\User;
-use Everest\Models\ApiKey;
+use Jexactyl\Models\User;
+use Jexactyl\Models\ApiKey;
 use Illuminate\Support\Collection;
-use Everest\Contracts\Repository\ApiKeyRepositoryInterface;
+use Jexactyl\Contracts\Repository\ApiKeyRepositoryInterface;
 
 class ApiKeyRepository extends EloquentRepository implements ApiKeyRepositoryInterface
 {

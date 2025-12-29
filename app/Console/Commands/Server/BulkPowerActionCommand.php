@@ -1,14 +1,14 @@
 <?php
 
-namespace Everest\Console\Commands\Server;
+namespace Jexactyl\Console\Commands\Server;
 
-use Everest\Models\Server;
+use Jexactyl\Models\Server;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\ValidationException;
-use Everest\Repositories\Wings\DaemonPowerRepository;
 use Illuminate\Validation\Factory as ValidatorFactory;
-use Everest\Exceptions\Http\Connection\DaemonConnectionException;
+use Jexactyl\Repositories\Wings\DaemonPowerRepository;
+use Jexactyl\Exceptions\Http\Connection\DaemonConnectionException;
 
 class BulkPowerActionCommand extends Command
 {

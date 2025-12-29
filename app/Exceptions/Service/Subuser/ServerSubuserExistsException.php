@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Exceptions\Service\Subuser;
+namespace Jexactyl\Exceptions\Service\Subuser;
 
-use Everest\Exceptions\DisplayException;
+use Jexactyl\Exceptions\DisplayException;
 
 class ServerSubuserExistsException extends DisplayException
 {

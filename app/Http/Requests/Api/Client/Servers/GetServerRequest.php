@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Client\Servers;
+namespace Jexactyl\Http\Requests\Api\Client\Servers;
 
-use Everest\Http\Requests\Api\Client\ClientApiRequest;
+use Jexactyl\Http\Requests\Api\Client\ClientApiRequest;
 
 class GetServerRequest extends ClientApiRequest
 {

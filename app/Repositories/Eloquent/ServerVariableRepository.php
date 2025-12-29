@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Repositories\Eloquent;
+namespace Jexactyl\Repositories\Eloquent;
 
-use Everest\Models\ServerVariable;
-use Everest\Contracts\Repository\ServerVariableRepositoryInterface;
+use Jexactyl\Models\ServerVariable;
+use Jexactyl\Contracts\Repository\ServerVariableRepositoryInterface;
 
 class ServerVariableRepository extends EloquentRepository implements ServerVariableRepositoryInterface
 {

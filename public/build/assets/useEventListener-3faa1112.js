@@ -1,1 +1,0 @@
-import{A as d,y as o}from"./index-7b302c2d.js";const c=(n,e,i)=>{const t=d(null);o(()=>{t.current=e},[e]),o(()=>{if(!(window&&window.addEventListener))return;const r=s=>t.current(s);return window.addEventListener(n,r,i),()=>{window.removeEventListener(n,r)}},[n,window])};export{c as u};

@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import tw from 'twin.macro';
-import Icon from '@elements/Icon';
+import * as Icon from 'react-feather';
+import React, { useState } from 'react';
 import { ServerContext } from '@/state/server';
-import { deleteAllocation, getAllocations } from '@/api/server/allocations';
 import { useFlashKey } from '@/plugins/useFlash';
-import { Dialog } from '@elements/dialog';
-import { Button } from '@elements/button/index';
+import { Dialog } from '@/components/elements/dialog';
+import { Button } from '@/components/elements/button/index';
+import getServerAllocations from '@/api/swr/getServerAllocations';
+import deleteServerAllocation from '@/api/server/network/deleteServerAllocation';
 
 interface Props {
     allocation: number;
@@ -15,19 +15,19 @@ interface Props {
 const DeleteAllocationButton = ({ allocation }: Props) => {
     const [confirm, setConfirm] = useState(false);
 
-    const uuid = ServerContext.useStoreState(state => state.server.data!.uuid);
-    const setServerFromState = ServerContext.useStoreActions(actions => actions.server.setServerFromState);
+    const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
+    const setServerFromState = ServerContext.useStoreActions((actions) => actions.server.setServerFromState);
 
-    const { mutate } = getAllocations();
+    const { mutate } = getServerAllocations();
     const { clearFlashes, clearAndAddHttpError } = useFlashKey('server:network');
 
-    const doDeletion = () => {
+    const deleteAllocation = () => {
         clearFlashes();
 
-        mutate(data => data?.filter(a => a.id !== allocation), false);
-        setServerFromState(s => ({ ...s, allocations: s.allocations.filter(a => a.id !== allocation) }));
+        mutate((data) => data?.filter((a) => a.id !== allocation), false);
+        setServerFromState((s) => ({ ...s, allocations: s.allocations.filter((a) => a.id !== allocation) }));
 
-        deleteAllocation(uuid, allocation).catch(error => {
+        deleteServerAllocation(uuid, allocation).catch((error) => {
             clearAndAddHttpError(error);
             mutate();
         });
@@ -40,7 +40,7 @@ const DeleteAllocationButton = ({ allocation }: Props) => {
                 onClose={() => setConfirm(false)}
                 title={'Remove Allocation'}
                 confirm={'Delete'}
-                onConfirmed={doDeletion}
+                onConfirmed={deleteAllocation}
             >
                 This allocation will be immediately removed from your server.
             </Dialog.Confirm>
@@ -51,7 +51,7 @@ const DeleteAllocationButton = ({ allocation }: Props) => {
                 type={'button'}
                 onClick={() => setConfirm(true)}
             >
-                <Icon icon={faTrashAlt} css={tw`w-3 h-auto`} />
+                <Icon.Trash css={tw`w-3 h-auto`} />
             </Button.Danger>
         </>
     );

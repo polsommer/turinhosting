@@ -1,35 +1,33 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArchive, faLock } from '@fortawesome/free-solid-svg-icons';
-import { format, formatDistanceToNow } from 'date-fns';
-import Spinner from '@elements/Spinner';
+import React from 'react';
+import tw from 'twin.macro';
+import * as Icon from 'react-feather';
+import Can from '@/components/elements/Can';
 import { bytesToString } from '@/lib/formatters';
-import Can from '@elements/Can';
+import { ServerBackup } from '@/api/server/types';
+import Spinner from '@/components/elements/Spinner';
+import { format, formatDistanceToNow } from 'date-fns';
+import { SocketEvent } from '@/components/server/events';
+import GreyRowBox from '@/components/elements/GreyRowBox';
+import getServerBackups from '@/api/swr/getServerBackups';
 import useWebsocketEvent from '@/plugins/useWebsocketEvent';
 import BackupContextMenu from '@/components/server/backups/BackupContextMenu';
-import tw from 'twin.macro';
-import GreyRowBox from '@elements/GreyRowBox';
-import { getBackups } from '@/api/server/backups';
-import { type Backup } from '@/api/definitions/server';
-import { SocketEvent } from '@/components/server/events';
-import { useState } from 'react';
 
 interface Props {
-    backup: Backup;
+    backup: ServerBackup;
     className?: string;
 }
 
-export default ({ backup }: Props) => {
-    const { mutate } = getBackups();
-    const [visible, setVisible] = useState<boolean>(false);
+export default ({ backup, className }: Props) => {
+    const { mutate } = getServerBackups();
 
-    useWebsocketEvent(`${SocketEvent.BACKUP_COMPLETED}:${backup.uuid}` as SocketEvent, async data => {
+    useWebsocketEvent(`${SocketEvent.BACKUP_COMPLETED}:${backup.uuid}` as SocketEvent, (data) => {
         try {
             const parsed = JSON.parse(data);
 
-            await mutate(
-                data => ({
-                    ...data!,
-                    items: data!.items.map(b =>
+            mutate(
+                (data) => ({
+                    ...data,
+                    items: data.items.map((b) =>
                         b.uuid !== backup.uuid
                             ? b
                             : {
@@ -38,10 +36,10 @@ export default ({ backup }: Props) => {
                                   checksum: (parsed.checksum_type || '') + ':' + (parsed.checksum || ''),
                                   bytes: parsed.file_size || 0,
                                   completedAt: new Date(),
-                              },
+                              }
                     ),
                 }),
-                false,
+                false
             );
         } catch (e) {
             console.warn(e);
@@ -49,21 +47,21 @@ export default ({ backup }: Props) => {
     });
 
     return (
-        <GreyRowBox css={tw`flex-wrap md:flex-nowrap items-center`}>
+        <GreyRowBox css={tw`flex-wrap md:flex-nowrap items-center`} className={className}>
             <div css={tw`flex items-center truncate w-full md:flex-1`}>
                 <div css={tw`mr-4`}>
                     {backup.completedAt !== null ? (
                         backup.isLocked ? (
-                            <FontAwesomeIcon icon={faLock} css={tw`text-yellow-500 mx-3`} size={'lg'} />
+                            <Icon.Lock css={tw`text-yellow-500`} />
                         ) : (
-                            <FontAwesomeIcon icon={faArchive} css={tw`text-neutral-300 mx-3`} size={'lg'} />
+                            <Icon.Unlock css={tw`text-neutral-300`} />
                         )
                     ) : (
                         <Spinner size={'small'} />
                     )}
                 </div>
                 <div css={tw`flex flex-col truncate`}>
-                    <div css={tw`flex items-center mb-1`}>
+                    <div css={tw`flex items-center text-sm mb-1`}>
                         {backup.completedAt !== null && !backup.isSuccessful && (
                             <span
                                 css={tw`bg-red-500 py-px px-2 rounded-full text-white text-xs uppercase border border-red-600 mr-2`}
@@ -71,7 +69,7 @@ export default ({ backup }: Props) => {
                                 Failed
                             </span>
                         )}
-                        <p css={tw`break-words truncate font-semibold`}>{backup.name}</p>
+                        <p css={tw`break-words truncate`}>{backup.name}</p>
                         {backup.completedAt !== null && backup.isSuccessful && (
                             <span css={tw`ml-3 text-neutral-300 text-xs font-extralight hidden sm:inline`}>
                                 {bytesToString(backup.bytes)}
@@ -88,8 +86,14 @@ export default ({ backup }: Props) => {
                 <p css={tw`text-2xs text-neutral-500 uppercase mt-1`}>Created</p>
             </div>
             <Can action={['backup.download', 'backup.restore', 'backup.delete']} matchAny>
-                <div css={tw`mr-3 text-gray-400 hover:text-white duration-300`}>
-                    <BackupContextMenu backup={backup} visible={visible} setVisible={setVisible} />
+                <div css={tw`mt-4 md:mt-0 ml-6`} style={{ marginRight: '-0.5rem' }}>
+                    {!backup.completedAt ? (
+                        <div css={tw`p-2 invisible`}>
+                            <Icon.MoreHorizontal />
+                        </div>
+                    ) : (
+                        <BackupContextMenu backup={backup} />
+                    )}
                 </div>
             </Can>
         </GreyRowBox>

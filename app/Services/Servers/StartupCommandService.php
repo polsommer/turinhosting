@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Services\Servers;
+namespace Jexactyl\Services\Servers;
 
-use Everest\Models\Server;
+use Jexactyl\Models\Server;
 
 class StartupCommandService
 {

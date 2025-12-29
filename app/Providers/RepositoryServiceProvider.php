@@ -1,51 +1,49 @@
 <?php
 
-namespace Everest\Providers;
+namespace Jexactyl\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Everest\Repositories\Eloquent\EggRepository;
-use Everest\Repositories\Eloquent\NestRepository;
-use Everest\Repositories\Eloquent\NodeRepository;
-use Everest\Repositories\Eloquent\TaskRepository;
-use Everest\Repositories\Eloquent\UserRepository;
-use Everest\Repositories\Eloquent\ThemeRepository;
-use Everest\Repositories\Eloquent\ApiKeyRepository;
-use Everest\Repositories\Eloquent\ServerRepository;
-use Everest\Repositories\Eloquent\SessionRepository;
-use Everest\Repositories\Eloquent\SubuserRepository;
-use Everest\Repositories\Eloquent\DatabaseRepository;
-use Everest\Repositories\Eloquent\LocationRepository;
-use Everest\Repositories\Eloquent\ScheduleRepository;
-use Everest\Repositories\Eloquent\SettingsRepository;
-use Everest\Repositories\Eloquent\AllocationRepository;
-use Everest\Contracts\Repository\EggRepositoryInterface;
-use Everest\Repositories\Eloquent\EggVariableRepository;
-use Everest\Contracts\Repository\NestRepositoryInterface;
-use Everest\Contracts\Repository\NodeRepositoryInterface;
-use Everest\Contracts\Repository\TaskRepositoryInterface;
-use Everest\Contracts\Repository\UserRepositoryInterface;
-use Everest\Repositories\Eloquent\DatabaseHostRepository;
-use Everest\Contracts\Repository\ThemeRepositoryInterface;
-use Everest\Contracts\Repository\ApiKeyRepositoryInterface;
-use Everest\Contracts\Repository\ServerRepositoryInterface;
-use Everest\Repositories\Eloquent\ServerVariableRepository;
-use Everest\Contracts\Repository\SessionRepositoryInterface;
-use Everest\Contracts\Repository\SubuserRepositoryInterface;
-use Everest\Contracts\Repository\DatabaseRepositoryInterface;
-use Everest\Contracts\Repository\LocationRepositoryInterface;
-use Everest\Contracts\Repository\ScheduleRepositoryInterface;
-use Everest\Contracts\Repository\SettingsRepositoryInterface;
-use Everest\Contracts\Repository\AllocationRepositoryInterface;
-use Everest\Contracts\Repository\EggVariableRepositoryInterface;
-use Everest\Contracts\Repository\DatabaseHostRepositoryInterface;
-use Everest\Contracts\Repository\ServerVariableRepositoryInterface;
+use Jexactyl\Repositories\Eloquent\EggRepository;
+use Jexactyl\Repositories\Eloquent\NestRepository;
+use Jexactyl\Repositories\Eloquent\NodeRepository;
+use Jexactyl\Repositories\Eloquent\TaskRepository;
+use Jexactyl\Repositories\Eloquent\UserRepository;
+use Jexactyl\Repositories\Eloquent\ApiKeyRepository;
+use Jexactyl\Repositories\Eloquent\ServerRepository;
+use Jexactyl\Repositories\Eloquent\SessionRepository;
+use Jexactyl\Repositories\Eloquent\SubuserRepository;
+use Jexactyl\Repositories\Eloquent\DatabaseRepository;
+use Jexactyl\Repositories\Eloquent\LocationRepository;
+use Jexactyl\Repositories\Eloquent\ScheduleRepository;
+use Jexactyl\Repositories\Eloquent\SettingsRepository;
+use Jexactyl\Repositories\Eloquent\AllocationRepository;
+use Jexactyl\Contracts\Repository\EggRepositoryInterface;
+use Jexactyl\Repositories\Eloquent\EggVariableRepository;
+use Jexactyl\Contracts\Repository\NestRepositoryInterface;
+use Jexactyl\Contracts\Repository\NodeRepositoryInterface;
+use Jexactyl\Contracts\Repository\TaskRepositoryInterface;
+use Jexactyl\Contracts\Repository\UserRepositoryInterface;
+use Jexactyl\Repositories\Eloquent\DatabaseHostRepository;
+use Jexactyl\Contracts\Repository\ApiKeyRepositoryInterface;
+use Jexactyl\Contracts\Repository\ServerRepositoryInterface;
+use Jexactyl\Repositories\Eloquent\ServerVariableRepository;
+use Jexactyl\Contracts\Repository\SessionRepositoryInterface;
+use Jexactyl\Contracts\Repository\SubuserRepositoryInterface;
+use Jexactyl\Contracts\Repository\DatabaseRepositoryInterface;
+use Jexactyl\Contracts\Repository\LocationRepositoryInterface;
+use Jexactyl\Contracts\Repository\ScheduleRepositoryInterface;
+use Jexactyl\Contracts\Repository\SettingsRepositoryInterface;
+use Jexactyl\Contracts\Repository\AllocationRepositoryInterface;
+use Jexactyl\Contracts\Repository\EggVariableRepositoryInterface;
+use Jexactyl\Contracts\Repository\DatabaseHostRepositoryInterface;
+use Jexactyl\Contracts\Repository\ServerVariableRepositoryInterface;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
     /**
-     * Register all the repository bindings.
+     * Register all of the repository bindings.
      */
-    public function register(): void
+    public function register()
     {
         // Eloquent Repositories
         $this->app->bind(AllocationRepositoryInterface::class, AllocationRepository::class);
@@ -62,7 +60,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ServerVariableRepositoryInterface::class, ServerVariableRepository::class);
         $this->app->bind(SessionRepositoryInterface::class, SessionRepository::class);
         $this->app->bind(SettingsRepositoryInterface::class, SettingsRepository::class);
-        $this->app->bind(ThemeRepositoryInterface::class, ThemeRepository::class);
         $this->app->bind(SubuserRepositoryInterface::class, SubuserRepository::class);
         $this->app->bind(TaskRepositoryInterface::class, TaskRepository::class);
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);

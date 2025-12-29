@@ -1,20 +1,20 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Client\Servers;
+namespace Jexactyl\Http\Controllers\Api\Client\Servers;
 
-use Everest\Models\Server;
-use Everest\Models\Database;
-use Everest\Facades\Activity;
+use Jexactyl\Models\Server;
 use Illuminate\Http\Response;
-use Everest\Services\Databases\DatabasePasswordService;
-use Everest\Transformers\Api\Client\DatabaseTransformer;
-use Everest\Services\Databases\DatabaseManagementService;
-use Everest\Services\Databases\DeployServerDatabaseService;
-use Everest\Http\Controllers\Api\Client\ClientApiController;
-use Everest\Http\Requests\Api\Client\Servers\Databases\GetDatabasesRequest;
-use Everest\Http\Requests\Api\Client\Servers\Databases\StoreDatabaseRequest;
-use Everest\Http\Requests\Api\Client\Servers\Databases\DeleteDatabaseRequest;
-use Everest\Http\Requests\Api\Client\Servers\Databases\RotatePasswordRequest;
+use Jexactyl\Models\Database;
+use Jexactyl\Facades\Activity;
+use Jexactyl\Services\Databases\DatabasePasswordService;
+use Jexactyl\Transformers\Api\Client\DatabaseTransformer;
+use Jexactyl\Services\Databases\DatabaseManagementService;
+use Jexactyl\Services\Databases\DeployServerDatabaseService;
+use Jexactyl\Http\Controllers\Api\Client\ClientApiController;
+use Jexactyl\Http\Requests\Api\Client\Servers\Databases\GetDatabasesRequest;
+use Jexactyl\Http\Requests\Api\Client\Servers\Databases\StoreDatabaseRequest;
+use Jexactyl\Http\Requests\Api\Client\Servers\Databases\DeleteDatabaseRequest;
+use Jexactyl\Http\Requests\Api\Client\Servers\Databases\RotatePasswordRequest;
 
 class DatabaseController extends ClientApiController
 {
@@ -35,7 +35,7 @@ class DatabaseController extends ClientApiController
     public function index(GetDatabasesRequest $request, Server $server): array
     {
         return $this->fractal->collection($server->databases)
-            ->transformWith(DatabaseTransformer::class)
+            ->transformWith($this->getTransformer(DatabaseTransformer::class))
             ->toArray();
     }
 
@@ -43,8 +43,8 @@ class DatabaseController extends ClientApiController
      * Create a new database for the given server and return it.
      *
      * @throws \Throwable
-     * @throws \Everest\Exceptions\Service\Database\TooManyDatabasesException
-     * @throws \Everest\Exceptions\Service\Database\DatabaseClientFeatureNotEnabledException
+     * @throws \Jexactyl\Exceptions\Service\Database\TooManyDatabasesException
+     * @throws \Jexactyl\Exceptions\Service\Database\DatabaseClientFeatureNotEnabledException
      */
     public function store(StoreDatabaseRequest $request, Server $server): array
     {
@@ -57,7 +57,7 @@ class DatabaseController extends ClientApiController
 
         return $this->fractal->item($database)
             ->parseIncludes(['password'])
-            ->transformWith(DatabaseTransformer::class)
+            ->transformWith($this->getTransformer(DatabaseTransformer::class))
             ->toArray();
     }
 
@@ -79,14 +79,14 @@ class DatabaseController extends ClientApiController
 
         return $this->fractal->item($database)
             ->parseIncludes(['password'])
-            ->transformWith(DatabaseTransformer::class)
+            ->transformWith($this->getTransformer(DatabaseTransformer::class))
             ->toArray();
     }
 
     /**
      * Removes a database from the server.
      *
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function delete(DeleteDatabaseRequest $request, Server $server, Database $database): Response
     {

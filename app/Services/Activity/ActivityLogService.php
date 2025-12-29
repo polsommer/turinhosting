@@ -1,21 +1,17 @@
 <?php
 
-namespace Everest\Services\Activity;
+namespace Jexactyl\Services\Activity;
 
-use Everest\Models\User;
 use Illuminate\Support\Arr;
 use Webmozart\Assert\Assert;
-use Everest\Models\ActivityLog;
-use Everest\Models\WebhookEvent;
+use Jexactyl\Models\ActivityLog;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
-use Everest\Models\ActivityLogSubject;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Request;
+use Jexactyl\Models\ActivityLogSubject;
 use Illuminate\Database\ConnectionInterface;
-use Everest\Services\Webhooks\WebhookEventService;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
-use Everest\Contracts\Repository\SettingsRepositoryInterface;
 
 class ActivityLogService
 {
@@ -27,9 +23,7 @@ class ActivityLogService
         protected AuthFactory $manager,
         protected ActivityLogBatchService $batch,
         protected ActivityLogTargetableService $targetable,
-        protected ConnectionInterface $connection,
-        private SettingsRepositoryInterface $settings,
-        private WebhookEventService $webhook,
+        protected ConnectionInterface $connection
     ) {
     }
 
@@ -62,17 +56,6 @@ class ActivityLogService
     public function description(?string $description): self
     {
         $this->getActivity()->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * Determines whether this Activity instance performed
-     * was of administrative privileges.
-     */
-    public function isAdmin(): self
-    {
-        $this->getActivity()->is_admin = true;
 
         return $this;
     }
@@ -152,19 +135,6 @@ class ActivityLogService
     {
         $activity = $this->getActivity();
 
-        if ($this->settings->get('settings::modules:webhooks:enabled')) {
-            try {
-                $user = User::findOrFail($activity->actor_id);
-                $event = WebhookEvent::where('key', $activity->event)->first();
-
-                if ($event) {
-                    $this->webhook->send($user, $event);
-                }
-            } catch (\Exception $ex) {
-                // handle exception quietly
-            }
-        }
-
         if (!is_null($description)) {
             $activity->description = $description;
         }
@@ -234,10 +204,6 @@ class ActivityLogService
             'properties' => Collection::make([]),
             'api_key_id' => $this->targetable->apiKeyId(),
         ]);
-
-        if ($isAdmin = $this->targetable->isAdmin()) {
-            $this->isAdmin();
-        }
 
         if ($subject = $this->targetable->subject()) {
             $this->subject($subject);

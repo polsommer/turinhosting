@@ -1,123 +1,115 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Client;
+namespace Jexactyl\Http\Controllers\Api\Client;
 
-use Everest\Models\Ticket;
-use Illuminate\Http\Request;
-use Everest\Facades\Activity;
-use Everest\Models\TicketMessage;
+use Jexactyl\Models\Ticket;
 use Illuminate\Http\JsonResponse;
-use Everest\Exceptions\DisplayException;
-use Everest\Http\Requests\Api\Client\ClientApiRequest;
-use Everest\Transformers\Api\Client\TicketTransformer;
-use Everest\Contracts\Repository\SettingsRepositoryInterface;
+use Jexactyl\Models\TicketMessage;
+use Jexactyl\Exceptions\DisplayException;
+use Jexactyl\Http\Requests\Api\Client\ClientApiRequest;
+use Jexactyl\Transformers\Api\Client\Tickets\TicketTransformer;
+use Jexactyl\Transformers\Api\Client\Tickets\TicketMessageTransformer;
 
 class TicketController extends ClientApiController
 {
-    public function __construct(
-        private SettingsRepositoryInterface $settings,
-    ) {
+    public function __construct()
+    {
         parent::__construct();
     }
 
     /**
-     * Returns all the tickets that have been configured for the logged-in
-     * user account.
+     * Returns all of the tickets assigned to a given client.
      */
     public function index(ClientApiRequest $request): array
     {
         return $this->fractal->collection($request->user()->tickets)
-            ->transformWith(TicketTransformer::class)
+            ->transformWith($this->getTransformer(TicketTransformer::class))
             ->toArray();
     }
 
     /**
-     * Stores a new Ticket for the authenticated user's account.
+     * Views a specific ticket for a client.
      */
-    public function store(Request $request): array
+    public function view(ClientApiRequest $request, int $id): array
     {
-        $enabled = $this->settings->get('settings::modules:tickets:enabled');
-        $max_count = $this->settings->get('settings::modules:tickets:max_count');
+        return $this->fractal->item(Ticket::findOrFail($id))
+            ->transformWith($this->getTransformer(TicketTransformer::class))
+            ->toArray();
+    }
 
-        if (!boolval($enabled)) {
-            throw new DisplayException('You cannot create a ticket as the module is disabled.');
+    /**
+     * Gets the messages associated with a ticket.
+     */
+    public function viewMessages(ClientApiRequest $request, int $id): array
+    {
+        $messages = TicketMessage::where('ticket_id', $id)->get();
+
+        return $this->fractal->collection($messages)
+            ->transformWith($this->getTransformer(TicketMessageTransformer::class))
+            ->toArray();
+    }
+
+    /**
+     * Creates a new ticket on the Panel which is accessible by both
+     * administrators and the specific client.
+     *
+     * @throws DisplayException
+     */
+    public function new(ClientApiRequest $request): JsonResponse
+    {
+        $user = $request->user()->id;
+        $title = $request->input('title');
+        $description = $request->input('description');
+        $total = Ticket::where('client_id', $user)->count();
+
+        if ($this->settings->get('jexactyl::tickets:max') <= $total) {
+            throw new DisplayException('You already have ' . $total . ' tickets open.');
         }
 
-        if ($request->user()->tickets()->count() >= $max_count) {
-            throw new DisplayException("You have reached the ticket count per user of {$max_count}.");
-        }
-
-        $ticket = $request->user()->tickets()->create([
-            'title' => $request->input('title'),
+        $model = Ticket::create([
+            'client_id' => $user,
+            'title' => $title,
+            'status' => Ticket::STATUS_PENDING,
+            'content' => $description,
         ]);
 
         TicketMessage::create([
-            'ticket_id' => $ticket->id,
-            'user_id' => $request->user()->id,
-            'message' => $request->input('message'),
+            'user_id' => $user,
+            'ticket_id' => $model->id,
+            'content' => $description,
         ]);
 
-        Activity::event('user:ticket.create')
-            ->subject($ticket)
-            ->log();
-
-        return $this->fractal->item($ticket)
-            ->transformWith(TicketTransformer::class)
-            ->toArray();
+        return new JsonResponse(['id' => $model->id]);
     }
 
     /**
-     * View a ticket and its associated messages.
+     * Creates a new ticket message on the Panel which is accessible
+     * by both administrators and the specific client.
+     *
+     * @throws DisplayException
      */
-    public function view(Ticket $ticket, Request $request): array
+    public function newMessage(ClientApiRequest $request, int $id): JsonResponse
     {
-        if ($request->user()->id !== $ticket->user_id) {
-            throw new DisplayException('You do not own this ticket.');
-        }
+        $ticket = Ticket::findOrFail($id);
 
-        return $this->fractal->item($ticket)
-            ->transformWith(TicketTransformer::class)
-            ->toArray();
-    }
-
-    /**
-     * Add a message to a ticket.
-     */
-    public function message(Ticket $ticket, Request $request): array
-    {
-        if ($request->user()->id !== $ticket->user_id) {
-            throw new DisplayException('You do not own this ticket.');
-        }
-
-        TicketMessage::create([
-            'ticket_id' => $ticket->id,
+        $ticket->messages()->create([
             'user_id' => $request->user()->id,
-            'message' => $request->input('message'),
+            'ticket_id' => $ticket->id,
+            'content' => $request->input('description'),
         ]);
 
-        return $this->fractal->item($ticket)
-            ->transformWith(TicketTransformer::class)
-            ->toArray();
+        return new JsonResponse([], JsonResponse::HTTP_NO_CONTENT);
     }
 
     /**
-     * Deletes an Ticket from the user's account.
+     * Closes a ticket and deletes the associated messages.
+     *
+     * @throws DisplayException
      */
-    public function delete(Ticket $ticket, ClientApiRequest $request): JsonResponse
+    public function close(ClientApiRequest $request, int $id): JsonResponse
     {
-        if ($request->user()->id !== $ticket->user_id) {
-            throw new DisplayException('You do not own this ticket.');
-        }
-
-        if (!is_null($ticket)) {
-            $ticket->delete();
-
-            TicketMessage::where('ticket_id', $ticket->id)->delete();
-        }
-
-        Activity::event('user:ticket.delete')
-            ->property('identifier', $ticket->id)
-            ->log();
+        Ticket::findOrFail($id)->delete();
+        TicketMessage::where('ticket_id', $id)->delete();
 
         return new JsonResponse([], JsonResponse::HTTP_NO_CONTENT);
     }

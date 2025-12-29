@@ -1,6 +1,6 @@
 <?php
 
-namespace Everest\Events;
+namespace Jexactyl\Events;
 
 abstract class Event
 {

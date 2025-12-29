@@ -1,13 +1,13 @@
 <?php
 
-namespace Everest\Services\Databases;
+namespace Jexactyl\Services\Databases;
 
-use Everest\Models\Database;
-use Everest\Helpers\Utilities;
+use Jexactyl\Models\Database;
+use Jexactyl\Helpers\Utilities;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Contracts\Encryption\Encrypter;
-use Everest\Extensions\DynamicDatabaseConnection;
-use Everest\Contracts\Repository\DatabaseRepositoryInterface;
+use Jexactyl\Extensions\DynamicDatabaseConnection;
+use Jexactyl\Contracts\Repository\DatabaseRepositoryInterface;
 
 class DatabasePasswordService
 {

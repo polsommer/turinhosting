@@ -1,22 +1,21 @@
-import { useContext, useEffect, useState } from 'react';
-import Spinner from '@elements/Spinner';
-import useFlash from '@/plugins/useFlash';
-import Can from '@elements/Can';
-import CreateBackupButton from '@/components/server/backups/CreateBackupButton';
-import FlashMessageRender from '@/components/FlashMessageRender';
-import BackupRow from '@/components/server/backups/BackupRow';
 import tw from 'twin.macro';
-import { getBackups, Context } from '@/api/server/backups';
+import useFlash from '@/plugins/useFlash';
+import Can from '@/components/elements/Can';
 import { ServerContext } from '@/state/server';
-import Pagination from '@elements/Pagination';
-import PageContentBlock from '@/components/elements/PageContentBlock';
+import Spinner from '@/components/elements/Spinner';
+import Pagination from '@/components/elements/Pagination';
+import BackupRow from '@/components/server/backups/BackupRow';
+import React, { useContext, useEffect, useState } from 'react';
+import ServerContentBlock from '@/components/elements/ServerContentBlock';
+import CreateBackupButton from '@/components/server/backups/CreateBackupButton';
+import getServerBackups, { Context as ServerBackupContext } from '@/api/swr/getServerBackups';
 
 const BackupContainer = () => {
-    const { page, setPage } = useContext(Context);
+    const { page, setPage } = useContext(ServerBackupContext);
     const { clearFlashes, clearAndAddHttpError } = useFlash();
-    const { data: backups, error, isValidating } = getBackups();
+    const { data: backups, error, isValidating } = getServerBackups();
 
-    const backupLimit = ServerContext.useStoreState(state => state.server.data!.featureLimits.backups);
+    const backupLimit = ServerContext.useStoreState((state) => state.server.data!.featureLimits.backups);
 
     useEffect(() => {
         if (!error) {
@@ -33,8 +32,7 @@ const BackupContainer = () => {
     }
 
     return (
-        <PageContentBlock title={'Backups'} header description={'Keep your data safe with backups.'}>
-            <FlashMessageRender byKey={'backups'} css={tw`mb-4`} />
+        <ServerContentBlock title={'Backups'} description={'Protect your data with backups.'} showFlashKey={'backups'}>
             <Pagination data={backups} onPageSelect={setPage}>
                 {({ items }) =>
                     !items.length ? (
@@ -71,15 +69,15 @@ const BackupContainer = () => {
                     )}
                 </div>
             </Can>
-        </PageContentBlock>
+        </ServerContentBlock>
     );
 };
 
 export default () => {
     const [page, setPage] = useState<number>(1);
     return (
-        <Context.Provider value={{ page, setPage }}>
+        <ServerBackupContext.Provider value={{ page, setPage }}>
             <BackupContainer />
-        </Context.Provider>
+        </ServerBackupContext.Provider>
     );
 };

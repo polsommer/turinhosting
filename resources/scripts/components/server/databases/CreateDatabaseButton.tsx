@@ -1,15 +1,15 @@
-import { useState } from 'react';
-import Modal from '@elements/Modal';
-import { Form, Formik, FormikHelpers } from 'formik';
-import Field from '@elements/Field';
-import { object, string } from 'yup';
-import { createDatabase } from '@/api/server/databases';
-import { ServerContext } from '@/state/server';
-import { httpErrorToHuman } from '@/api/http';
-import FlashMessageRender from '@/components/FlashMessageRender';
-import useFlash from '@/plugins/useFlash';
-import { Button } from '@elements/button';
 import tw from 'twin.macro';
+import { object, string } from 'yup';
+import React, { useState } from 'react';
+import useFlash from '@/plugins/useFlash';
+import { httpErrorToHuman } from '@/api/http';
+import { ServerContext } from '@/state/server';
+import Modal from '@/components/elements/Modal';
+import Field from '@/components/elements/Field';
+import { Form, Formik, FormikHelpers } from 'formik';
+import { Button } from '@/components/elements/button/index';
+import FlashMessageRender from '@/components/FlashMessageRender';
+import createServerDatabase from '@/api/server/databases/createServerDatabase';
 
 interface Values {
     databaseName: string;
@@ -23,29 +23,29 @@ const schema = object().shape({
         .max(48, 'Database name must not exceed 48 characters.')
         .matches(
             /^[\w\-.]{3,48}$/,
-            'Database name should only contain alphanumeric characters, underscores, dashes, and/or periods.',
+            'Database name should only contain alphanumeric characters, underscores, dashes, and/or periods.'
         ),
     connectionsFrom: string().matches(/^[\w\-/.%:]+$/, 'A valid host address must be provided.'),
 });
 
 export default () => {
-    const uuid = ServerContext.useStoreState(state => state.server.data!.uuid);
+    const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
     const { addError, clearFlashes } = useFlash();
     const [visible, setVisible] = useState(false);
 
-    const appendDatabase = ServerContext.useStoreActions(actions => actions.databases.appendDatabase);
+    const appendDatabase = ServerContext.useStoreActions((actions) => actions.databases.appendDatabase);
 
     const submit = (values: Values, { setSubmitting }: FormikHelpers<Values>) => {
         clearFlashes('database:create');
-        createDatabase(uuid, {
+        createServerDatabase(uuid, {
             databaseName: values.databaseName,
             connectionsFrom: values.connectionsFrom || '%',
         })
-            .then(database => {
+            .then((database) => {
                 appendDatabase(database);
                 setVisible(false);
             })
-            .catch(error => {
+            .catch((error) => {
                 addError({ key: 'database:create', message: httpErrorToHuman(error) });
                 setSubmitting(false);
             });
@@ -92,6 +92,7 @@ export default () => {
                             <div css={tw`flex flex-wrap justify-end mt-6`}>
                                 <Button
                                     type={'button'}
+                                    variant={Button.Variants.Secondary}
                                     css={tw`w-full sm:w-auto sm:mr-2`}
                                     onClick={() => setVisible(false)}
                                 >

@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Contracts\Repository;
+namespace Jexactyl\Contracts\Repository;
 
-use Everest\Models\Allocation;
+use Jexactyl\Models\Allocation;
 
 interface AllocationRepositoryInterface extends RepositoryInterface
 {

@@ -1,14 +1,13 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Application\Servers\Databases;
+namespace Jexactyl\Http\Requests\Api\Application\Servers\Databases;
 
-use Everest\Models\AdminRole;
-use Everest\Http\Requests\Api\Application\ApplicationApiRequest;
+use Jexactyl\Services\Acl\Api\AdminAcl;
+use Jexactyl\Http\Requests\Api\Application\ApplicationApiRequest;
 
 class GetServerDatabasesRequest extends ApplicationApiRequest
 {
-    public function permission(): string
-    {
-        return AdminRole::SERVERS_READ;
-    }
+    protected ?string $resource = AdminAcl::RESOURCE_SERVER_DATABASES;
+
+    protected int $permission = AdminAcl::READ;
 }

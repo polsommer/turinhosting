@@ -1,12 +1,12 @@
 <?php
 
-namespace Everest\Listeners\Auth;
+namespace Jexactyl\Listeners\Auth;
 
-use Everest\Facades\Activity;
+use Jexactyl\Facades\Activity;
 use Illuminate\Auth\Events\Failed;
-use Everest\Events\Auth\DirectLogin;
+use Jexactyl\Events\Auth\DirectLogin;
 use Illuminate\Contracts\Events\Dispatcher;
-use Everest\Extensions\Illuminate\Events\Contracts\SubscribesToEvents;
+use Jexactyl\Extensions\Illuminate\Events\Contracts\SubscribesToEvents;
 
 class AuthenticationListener implements SubscribesToEvents
 {

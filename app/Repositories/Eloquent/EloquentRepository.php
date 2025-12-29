@@ -1,20 +1,19 @@
 <?php
 
-namespace Everest\Repositories\Eloquent;
+namespace Jexactyl\Repositories\Eloquent;
 
 use Illuminate\Http\Request;
 use Webmozart\Assert\Assert;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use Everest\Repositories\Repository;
+use Jexactyl\Repositories\Repository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Expression;
-use Everest\Contracts\Repository\RepositoryInterface;
-use Everest\Exceptions\Model\DataValidationException;
+use Jexactyl\Contracts\Repository\RepositoryInterface;
+use Jexactyl\Exceptions\Model\DataValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Everest\Exceptions\Repository\RecordNotFoundException;
+use Jexactyl\Exceptions\Repository\RecordNotFoundException;
 
 abstract class EloquentRepository extends Repository implements RepositoryInterface
 {
@@ -72,11 +71,10 @@ abstract class EloquentRepository extends Repository implements RepositoryInterf
     /**
      * Create a new record in the database and return the associated model.
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
      */
     public function create(array $fields, bool $validate = true, bool $force = false): Model|bool
     {
-        /** @var \Everest\Models\Model $instance */
         $instance = $this->getBuilder()->newModelInstance();
         ($force) ? $instance->forceFill($fields) : $instance->fill($fields);
 
@@ -94,7 +92,7 @@ abstract class EloquentRepository extends Repository implements RepositoryInterf
     /**
      * Find a model that has the specific ID passed.
      *
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function find(int $id): Model
     {
@@ -116,7 +114,7 @@ abstract class EloquentRepository extends Repository implements RepositoryInterf
     /**
      * Find and return the first matching instance for the given fields.
      *
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function findFirstWhere(array $fields): Model
     {
@@ -156,13 +154,12 @@ abstract class EloquentRepository extends Repository implements RepositoryInterf
     /**
      * Update a given ID with the passed array of fields.
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function update(int $id, array $fields, bool $validate = true, bool $force = false): Model|bool
     {
         try {
-            /** @var \Everest\Models\Model $instance */
             $instance = $this->getBuilder()->where('id', $id)->firstOrFail();
         } catch (ModelNotFoundException) {
             throw new RecordNotFoundException();
@@ -203,8 +200,8 @@ abstract class EloquentRepository extends Repository implements RepositoryInterf
     /**
      * Update a record if it exists in the database, otherwise create it.
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function updateOrCreate(array $where, array $fields, bool $validate = true, bool $force = false): Model|bool
     {
@@ -274,17 +271,7 @@ abstract class EloquentRepository extends Repository implements RepositoryInterf
             return sprintf('(%s)', $grammar->parameterize($record));
         })->implode(', ');
 
-        $driver = DB::getPdo()->getAttribute(\PDO::ATTR_DRIVER_NAME);
-        switch ($driver) {
-            case 'mysql':
-                $statement = "insert ignore into $table ($columns) values $parameters";
-                break;
-            case 'pgsql':
-                $statement = "insert into $table ($columns) values $parameters on conflict do nothing";
-                break;
-            default:
-                throw new \RuntimeException("Unsupported database driver \"$driver\" for insert ignore.");
-        }
+        $statement = "insert ignore into $table ($columns) values $parameters";
 
         return $this->getBuilder()->getConnection()->statement($statement, $bindings);
     }

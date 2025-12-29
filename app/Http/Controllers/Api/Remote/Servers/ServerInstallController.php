@@ -1,16 +1,17 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Remote\Servers;
+namespace Jexactyl\Http\Controllers\Api\Remote\Servers;
 
-use Everest\Models\Server;
 use Carbon\CarbonImmutable;
+use Jexactyl\Models\Server;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
-use Everest\Http\Controllers\Controller;
-use Everest\Repositories\Eloquent\ServerRepository;
-use Everest\Http\Requests\Api\Remote\InstallationDataRequest;
+use Jexactyl\Http\Controllers\Controller;
+use Jexactyl\Repositories\Eloquent\ServerRepository;
+use Jexactyl\Events\Server\Installed as ServerInstalled;
 use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
+use Jexactyl\Http\Requests\Api\Remote\InstallationDataRequest;
 
 class ServerInstallController extends Controller
 {
@@ -24,7 +25,7 @@ class ServerInstallController extends Controller
     /**
      * Returns installation information for a server.
      *
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function index(Request $request, string $uuid): JsonResponse
     {
@@ -41,8 +42,8 @@ class ServerInstallController extends Controller
     /**
      * Updates the installation state of a server.
      *
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
-     * @throws \Everest\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
      */
     public function store(InstallationDataRequest $request, string $uuid): JsonResponse
     {
@@ -64,6 +65,15 @@ class ServerInstallController extends Controller
         }
 
         $this->repository->update($server->id, ['status' => $status, 'installed_at' => CarbonImmutable::now()], true, true);
+
+        // If the server successfully installed, fire installed event.
+        // This logic allows individually disabling install and reinstall notifications separately.
+        $isInitialInstall = is_null($server->installed_at);
+        if ($isInitialInstall && config()->get('jexactyl.email.send_install_notification', true)) {
+            $this->eventDispatcher->dispatch(new ServerInstalled($server));
+        } elseif (!$isInitialInstall && config()->get('jexactyl.email.send_reinstall_notification', true)) {
+            $this->eventDispatcher->dispatch(new ServerInstalled($server));
+        }
 
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
     }

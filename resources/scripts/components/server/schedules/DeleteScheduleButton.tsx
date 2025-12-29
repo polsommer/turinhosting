@@ -1,12 +1,13 @@
-import { useState } from 'react';
-import { deleteSchedule } from '@/api/server/schedules';
-import { ServerContext } from '@/state/server';
-import { Actions, useStoreActions } from 'easy-peasy';
+import tw from 'twin.macro';
+import React, { useState } from 'react';
 import { ApplicationStore } from '@/state';
 import { httpErrorToHuman } from '@/api/http';
-import { Button } from '@elements/button/index';
-import { Dialog } from '@elements/dialog';
-import SpinnerOverlay from '@elements/SpinnerOverlay';
+import { ServerContext } from '@/state/server';
+import { Actions, useStoreActions } from 'easy-peasy';
+import { Dialog } from '@/components/elements/dialog';
+import { Button } from '@/components/elements/button/index';
+import SpinnerOverlay from '@/components/elements/SpinnerOverlay';
+import deleteSchedule from '@/api/server/schedules/deleteSchedule';
 
 interface Props {
     scheduleId: number;
@@ -16,7 +17,7 @@ interface Props {
 export default ({ scheduleId, onDeleted }: Props) => {
     const [visible, setVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const uuid = ServerContext.useStoreState(state => state.server.data!.uuid);
+    const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
     const { addError, clearFlashes } = useStoreActions((actions: Actions<ApplicationStore>) => actions.flashes);
 
     const onDelete = () => {
@@ -27,7 +28,7 @@ export default ({ scheduleId, onDeleted }: Props) => {
                 setIsLoading(false);
                 onDeleted();
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error(error);
 
                 addError({ key: 'schedules', message: httpErrorToHuman(error) });
@@ -48,11 +49,7 @@ export default ({ scheduleId, onDeleted }: Props) => {
                 <SpinnerOverlay visible={isLoading} />
                 All tasks will be removed and any running processes will be terminated.
             </Dialog.Confirm>
-            <Button.Danger
-                variant={Button.Variants.Secondary}
-                className={'mr-4 flex-1 border-transparent sm:flex-none'}
-                onClick={() => setVisible(true)}
-            >
+            <Button.Danger css={tw`flex-1 sm:flex-none mr-4 border-transparent`} onClick={() => setVisible(true)}>
                 Delete
             </Button.Danger>
         </>

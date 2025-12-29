@@ -1,13 +1,13 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Client;
+namespace Jexactyl\Http\Requests\Api\Client;
 
-use Everest\Models\Server;
-use Everest\Contracts\Http\ClientPermissionsRequest;
-use Everest\Http\Requests\Api\Application\ApplicationApiRequest;
+use Jexactyl\Models\Server;
+use Jexactyl\Contracts\Http\ClientPermissionsRequest;
+use Jexactyl\Http\Requests\Api\Application\ApplicationApiRequest;
 
 /**
- * @method \Everest\Models\User user($guard = null)
+ * @method \Jexactyl\Models\User user($guard = null)
  */
 class ClientApiRequest extends ApplicationApiRequest
 {

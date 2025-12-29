@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Events\User;
+namespace Jexactyl\Events\User;
 
-use Everest\Models\User;
-use Everest\Events\Event;
+use Jexactyl\Models\User;
+use Jexactyl\Events\Event;
 use Illuminate\Queue\SerializesModels;
 
 class Created extends Event

@@ -1,38 +1,37 @@
-import { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDatabase, faEye, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import Modal from '@elements/Modal';
-import { Form, Formik, FormikHelpers } from 'formik';
-import Field from '@elements/Field';
-import { object, string } from 'yup';
-import FlashMessageRender from '@/components/FlashMessageRender';
-import { ServerContext } from '@/state/server';
-import { deleteDatabase } from '@/api/server/databases';
-import { httpErrorToHuman } from '@/api/http';
-import RotatePasswordButton from '@/components/server/databases/RotatePasswordButton';
-import Can from '@elements/Can';
-import { type Database } from '@/api/definitions/server';
-import useFlash from '@/plugins/useFlash';
 import tw from 'twin.macro';
-import { Button } from '@elements/button';
-import Label from '@elements/Label';
-import Input from '@elements/Input';
-import GreyRowBox from '@elements/GreyRowBox';
-import CopyOnClick from '@elements/CopyOnClick';
+import { object, string } from 'yup';
+import * as Icon from 'react-feather';
+import React, { useState } from 'react';
+import useFlash from '@/plugins/useFlash';
+import Can from '@/components/elements/Can';
+import { httpErrorToHuman } from '@/api/http';
+import { ServerContext } from '@/state/server';
+import Modal from '@/components/elements/Modal';
+import Field from '@/components/elements/Field';
+import Label from '@/components/elements/Label';
+import Input from '@/components/elements/Input';
+import { Form, Formik, FormikHelpers } from 'formik';
+import GreyRowBox from '@/components/elements/GreyRowBox';
+import { Button } from '@/components/elements/button/index';
+import CopyOnClick from '@/components/elements/CopyOnClick';
+import FlashMessageRender from '@/components/FlashMessageRender';
+import { ServerDatabase } from '@/api/server/databases/getServerDatabases';
+import deleteServerDatabase from '@/api/server/databases/deleteServerDatabase';
+import RotatePasswordButton from '@/components/server/databases/RotatePasswordButton';
 
 interface Props {
-    database: Database;
+    database: ServerDatabase;
     className?: string;
 }
 
 export default ({ database, className }: Props) => {
-    const uuid = ServerContext.useStoreState(state => state.server.data!.uuid);
+    const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
     const { addError, clearFlashes } = useFlash();
     const [visible, setVisible] = useState(false);
     const [connectionVisible, setConnectionVisible] = useState(false);
 
-    const appendDatabase = ServerContext.useStoreActions(actions => actions.databases.appendDatabase);
-    const removeDatabase = ServerContext.useStoreActions(actions => actions.databases.removeDatabase);
+    const appendDatabase = ServerContext.useStoreActions((actions) => actions.databases.appendDatabase);
+    const removeDatabase = ServerContext.useStoreActions((actions) => actions.databases.removeDatabase);
 
     const jdbcConnectionString = `jdbc:mysql://${database.username}${
         database.password ? `:${encodeURIComponent(database.password)}` : ''
@@ -41,17 +40,17 @@ export default ({ database, className }: Props) => {
     const schema = object().shape({
         confirm: string()
             .required('The database name must be provided.')
-            .oneOf([database.name!.split('_', 2)[1], database.name], 'The database name must be provided.'),
+            .oneOf([database.name.split('_', 2)[1], database.name], 'The database name must be provided.'),
     });
 
-    const submit = (_: { confirm: string }, { setSubmitting }: FormikHelpers<{ confirm: string }>) => {
+    const submit = (values: { confirm: string }, { setSubmitting }: FormikHelpers<{ confirm: string }>) => {
         clearFlashes();
-        deleteDatabase(uuid, database.id)
+        deleteServerDatabase(uuid, database.id)
             .then(() => {
                 setVisible(false);
                 setTimeout(() => removeDatabase(database.id), 150);
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error(error);
                 setSubmitting(false);
                 addError({ key: 'database:delete', message: httpErrorToHuman(error) });
@@ -86,7 +85,12 @@ export default ({ database, className }: Props) => {
                                 description={'Enter the database name to confirm deletion.'}
                             />
                             <div css={tw`mt-6 text-right`}>
-                                <Button type={'button'} css={tw`mr-2`} onClick={() => setVisible(false)}>
+                                <Button
+                                    type={'button'}
+                                    variant={Button.Variants.Secondary}
+                                    css={tw`mr-2`}
+                                    onClick={() => setVisible(false)}
+                                >
                                     Cancel
                                 </Button>
                                 <Button type={'submit'} color={'red'} disabled={!isValid}>
@@ -119,14 +123,14 @@ export default ({ database, className }: Props) => {
                 <Can action={'database.view_password'}>
                     <div css={tw`mt-6`}>
                         <Label>Password</Label>
-                        <CopyOnClick text={database.password} showInNotification={false}>
+                        <CopyOnClick text={database.password}>
                             <Input type={'text'} readOnly value={database.password} />
                         </CopyOnClick>
                     </div>
                 </Can>
                 <div css={tw`mt-6`}>
                     <Label>JDBC Connection String</Label>
-                    <CopyOnClick text={jdbcConnectionString} showInNotification={false}>
+                    <CopyOnClick text={jdbcConnectionString}>
                         <Input type={'text'} readOnly value={jdbcConnectionString} />
                     </CopyOnClick>
                 </div>
@@ -134,12 +138,14 @@ export default ({ database, className }: Props) => {
                     <Can action={'database.update'}>
                         <RotatePasswordButton databaseId={database.id} onUpdate={appendDatabase} />
                     </Can>
-                    <Button onClick={() => setConnectionVisible(false)}>Close</Button>
+                    <Button variant={Button.Variants.Secondary} onClick={() => setConnectionVisible(false)}>
+                        Close
+                    </Button>
                 </div>
             </Modal>
             <GreyRowBox $hoverable={false} className={className} css={tw`mb-2`}>
                 <div css={tw`hidden md:block`}>
-                    <FontAwesomeIcon icon={faDatabase} fixedWidth />
+                    <Icon.Database />
                 </div>
                 <div css={tw`flex-1 ml-4`}>
                     <CopyOnClick text={database.name}>
@@ -163,13 +169,17 @@ export default ({ database, className }: Props) => {
                     <p css={tw`mt-1 text-2xs text-neutral-500 uppercase select-none`}>Username</p>
                 </div>
                 <div css={tw`ml-8`}>
-                    <Button css={tw`mr-2`} onClick={() => setConnectionVisible(true)}>
-                        <FontAwesomeIcon icon={faEye} fixedWidth />
+                    <Button
+                        variant={Button.Variants.Secondary}
+                        css={tw`mr-2`}
+                        onClick={() => setConnectionVisible(true)}
+                    >
+                        <Icon.Eye />
                     </Button>
                     <Can action={'database.delete'}>
-                        <Button color={'red'} onClick={() => setVisible(true)}>
-                            <FontAwesomeIcon icon={faTrashAlt} fixedWidth />
-                        </Button>
+                        <Button.Danger variant={Button.Variants.Secondary} onClick={() => setVisible(true)}>
+                            <Icon.Trash />
+                        </Button.Danger>
                     </Can>
                 </div>
             </GreyRowBox>

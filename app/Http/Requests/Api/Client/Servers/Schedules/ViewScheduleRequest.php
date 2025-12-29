@@ -1,12 +1,12 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Client\Servers\Schedules;
+namespace Jexactyl\Http\Requests\Api\Client\Servers\Schedules;
 
-use Everest\Models\Task;
-use Everest\Models\Server;
-use Everest\Models\Schedule;
-use Everest\Models\Permission;
-use Everest\Http\Requests\Api\Client\ClientApiRequest;
+use Jexactyl\Models\Task;
+use Jexactyl\Models\Server;
+use Jexactyl\Models\Schedule;
+use Jexactyl\Models\Permission;
+use Jexactyl\Http\Requests\Api\Client\ClientApiRequest;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ViewScheduleRequest extends ClientApiRequest

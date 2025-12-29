@@ -1,20 +1,27 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Application;
+namespace Jexactyl\Http\Controllers\Api\Application;
 
 use Illuminate\Http\Request;
+use Webmozart\Assert\Assert;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Container\Container;
-use Everest\Http\Controllers\Controller;
-use Everest\Extensions\Spatie\Fractalistic\Fractal;
-use Everest\Services\Permission\AdminPermissionService;
+use Jexactyl\Http\Controllers\Controller;
+use Jexactyl\Extensions\Spatie\Fractalistic\Fractal;
+use Jexactyl\Transformers\Api\Application\BaseTransformer;
+use Jexactyl\Contracts\Repository\SettingsRepositoryInterface;
 
 abstract class ApplicationApiController extends Controller
 {
-    protected Fractal $fractal;
     protected Request $request;
-    protected AdminPermissionService $permissionService;
+
+    protected Fractal $fractal;
+
+    /**
+     * @var \Jexactyl\Contracts\Repository\SettingsRepositoryInterface
+     */
+    protected $settings;
 
     /**
      * ApplicationApiController constructor.
@@ -39,18 +46,32 @@ abstract class ApplicationApiController extends Controller
      * Perform dependency injection of certain classes needed for core functionality
      * without littering the constructors of classes that extend this abstract.
      */
-    public function loadDependencies(Fractal $fractal, Request $request)
-    {
+    public function loadDependencies(
+        Fractal $fractal,
+        Request $request,
+        SettingsRepositoryInterface $settings,
+    ) {
         $this->fractal = $fractal;
         $this->request = $request;
+        $this->settings = $settings;
     }
 
     /**
-     * Return an HTTP/201 response for the API.
+     * Return an instance of an application transformer.
+     *
+     * @template T of \Jexactyl\Transformers\Api\Application\BaseTransformer
+     *
+     * @param class-string<T> $abstract
+     *
+     * @return T
+     *
+     * @noinspection PhpDocSignatureInspection
      */
-    protected function returnAccepted(): Response
+    public function getTransformer(string $abstract)
     {
-        return new Response('', Response::HTTP_ACCEPTED);
+        Assert::subclassOf($abstract, BaseTransformer::class);
+
+        return $abstract::fromRequest($this->request);
     }
 
     /**
@@ -59,18 +80,5 @@ abstract class ApplicationApiController extends Controller
     protected function returnNoContent(): Response
     {
         return new Response('', Response::HTTP_NO_CONTENT);
-    }
-
-    /**
-     * Return an HTTP/204 response for the API.
-     */
-    protected function adminPermissions(Request $request): array
-    {
-        return [
-            'object' => 'admin_permissions',
-            'attributes' => [
-                'permissions' => $this->permissionService->handle($request->user()),
-            ],
-        ];
     }
 }

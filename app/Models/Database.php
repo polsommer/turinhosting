@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Models;
+namespace Jexactyl\Models;
 
 use Illuminate\Container\Container;
-use Everest\Contracts\Extensions\HashidsInterface;
+use Jexactyl\Contracts\Extensions\HashidsInterface;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
@@ -17,8 +17,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $max_connections
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
- * @property \Everest\Models\Server $server
- * @property \Everest\Models\DatabaseHost $host
+ * @property \Jexactyl\Models\Server $server
+ * @property \Jexactyl\Models\DatabaseHost $host
  */
 class Database extends Model
 {

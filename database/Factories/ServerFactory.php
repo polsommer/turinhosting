@@ -4,8 +4,8 @@ namespace Database\Factories;
 
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
-use Everest\Models\Server;
 use Illuminate\Support\Str;
+use Jexactyl\Models\Server;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ServerFactory extends Factory
@@ -37,7 +37,7 @@ class ServerFactory extends Factory
             'io' => 500,
             'cpu' => 0,
             'threads' => null,
-            'oom_killer' => true,
+            'oom_disabled' => 0,
             'startup' => '/bin/bash echo "hello world"',
             'image' => 'foo/bar:latest',
             'allocation_limit' => null,

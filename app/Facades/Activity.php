@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Facades;
+namespace Jexactyl\Facades;
 
 use Illuminate\Support\Facades\Facade;
-use Everest\Services\Activity\ActivityLogService;
+use Jexactyl\Services\Activity\ActivityLogService;
 
 class Activity extends Facade
 {

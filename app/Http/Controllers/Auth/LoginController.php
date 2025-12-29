@@ -1,29 +1,24 @@
 <?php
 
-namespace Everest\Http\Controllers\Auth;
+namespace Jexactyl\Http\Controllers\Auth;
 
-use Everest\Models\User;
+use Jexactyl\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Everest\Facades\Activity;
-use Illuminate\Http\Response;
+use Jexactyl\Facades\Activity;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\View\View;
-use Everest\Exceptions\DisplayException;
-use Everest\Services\Users\UserCreationService;
+use Illuminate\Contracts\View\Factory as ViewFactory;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Everest\Contracts\Repository\SettingsRepositoryInterface;
 
 class LoginController extends AbstractLoginController
 {
     /**
      * LoginController constructor.
      */
-    public function __construct(
-        private UserCreationService $creationService,
-        private SettingsRepositoryInterface $settings,
-    ) {
+    public function __construct(private ViewFactory $view)
+    {
         parent::__construct();
     }
 
@@ -34,13 +29,13 @@ class LoginController extends AbstractLoginController
      */
     public function index(): View
     {
-        return view('templates/auth.core');
+        return $this->view->make('templates/auth.core');
     }
 
     /**
      * Handle a login request to the application.
      *
-     * @throws \Everest\Exceptions\DisplayException
+     * @throws \Jexactyl\Exceptions\DisplayException
      * @throws \Illuminate\Validation\ValidationException
      */
     public function login(Request $request): JsonResponse
@@ -53,7 +48,7 @@ class LoginController extends AbstractLoginController
         try {
             $username = $request->input('user');
 
-            /** @var \Everest\Models\User $user */
+            /** @var \Jexactyl\Models\User $user */
             $user = User::query()->where($this->getField($username), $username)->firstOrFail();
         } catch (ModelNotFoundException) {
             $this->sendFailedLoginResponse($request);
@@ -85,33 +80,5 @@ class LoginController extends AbstractLoginController
                 'confirmation_token' => $token,
             ],
         ]);
-    }
-
-    /**
-     * Handle a user registration request.
-     */
-    public function register(Request $request): JsonResponse
-    {
-        if ($this->hasTooManyLoginAttempts($request)) {
-            $this->fireLockoutEvent($request);
-            $this->sendLockoutResponse($request);
-        }
-
-        $email = $request->input('email');
-        $username = $request->input('username');
-        $password = $request->input('password');
-        $passwordConfirm = $request->input('confirm_password');
-
-        if (User::where('email', $email)->exists()) {
-            throw new DisplayException('This email is already in use.');
-        }
-
-        if ($password !== $passwordConfirm) {
-            throw new DisplayException('The passwords entered do not match.');
-        }
-
-        $this->createAccount($this->settings, ['email' => $email, 'username' => $username, 'password' => $password]);
-
-        return new JsonResponse([], Response::HTTP_NO_CONTENT);
     }
 }

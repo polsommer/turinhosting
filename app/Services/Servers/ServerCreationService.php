@@ -1,23 +1,23 @@
 <?php
 
-namespace Everest\Services\Servers;
+namespace Jexactyl\Services\Servers;
 
 use Ramsey\Uuid\Uuid;
-use Everest\Models\Egg;
-use Everest\Models\User;
-use Everest\Models\Server;
+use Jexactyl\Models\Egg;
+use Jexactyl\Models\User;
 use Illuminate\Support\Arr;
+use Jexactyl\Models\Server;
 use Webmozart\Assert\Assert;
-use Everest\Models\Allocation;
+use Jexactyl\Models\Allocation;
 use Illuminate\Support\Collection;
-use Everest\Models\Objects\DeploymentObject;
 use Illuminate\Database\ConnectionInterface;
-use Everest\Repositories\Eloquent\ServerRepository;
-use Everest\Repositories\Wings\DaemonServerRepository;
-use Everest\Services\Deployment\FindViableNodesService;
-use Everest\Repositories\Eloquent\ServerVariableRepository;
-use Everest\Services\Deployment\AllocationSelectionService;
-use Everest\Exceptions\Http\Connection\DaemonConnectionException;
+use Jexactyl\Models\Objects\DeploymentObject;
+use Jexactyl\Repositories\Eloquent\ServerRepository;
+use Jexactyl\Repositories\Wings\DaemonServerRepository;
+use Jexactyl\Services\Deployment\FindViableNodesService;
+use Jexactyl\Repositories\Eloquent\ServerVariableRepository;
+use Jexactyl\Services\Deployment\AllocationSelectionService;
+use Jexactyl\Exceptions\Http\Connection\DaemonConnectionException;
 
 class ServerCreationService
 {
@@ -43,11 +43,11 @@ class ServerCreationService
      * no node_id the node_is will be picked from the allocation.
      *
      * @throws \Throwable
-     * @throws \Everest\Exceptions\DisplayException
+     * @throws \Jexactyl\Exceptions\DisplayException
      * @throws \Illuminate\Validation\ValidationException
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
-     * @throws \Everest\Exceptions\Service\Deployment\NoViableNodeException
-     * @throws \Everest\Exceptions\Service\Deployment\NoViableAllocationException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Service\Deployment\NoViableNodeException
+     * @throws \Jexactyl\Exceptions\Service\Deployment\NoViableAllocationException
      */
     public function handle(array $data, DeploymentObject $deployment = null): Server
     {
@@ -82,7 +82,7 @@ class ServerCreationService
         //
         // If that connection fails out we will attempt to perform a cleanup by just
         // deleting the server itself from the system.
-        /** @var Server $server */
+        /** @var \Jexactyl\Models\Server $server */
         $server = $this->connection->transaction(function () use ($data, $eggVariableData) {
             // Create the server and assign any additional allocations to it.
             $server = $this->createModel($data);
@@ -109,14 +109,14 @@ class ServerCreationService
     /**
      * Gets an allocation to use for automatic deployment.
      *
-     * @throws \Everest\Exceptions\DisplayException
-     * @throws \Everest\Exceptions\Service\Deployment\NoViableAllocationException
-     * @throws \Everest\Exceptions\Service\Deployment\NoViableNodeException
+     * @throws \Jexactyl\Exceptions\DisplayException
+     * @throws \Jexactyl\Exceptions\Service\Deployment\NoViableAllocationException
+     * @throws \Jexactyl\Exceptions\Service\Deployment\NoViableNodeException
      */
     private function configureDeployment(array $data, DeploymentObject $deployment): Allocation
     {
-        /** @var Collection $nodes */
-        $nodes = $this->findViableNodesService
+        /** @var \Illuminate\Support\Collection $nodes */
+        $nodes = $this->findViableNodesService->setLocations($deployment->getLocations())
             ->setDisk(Arr::get($data, 'disk'))
             ->setMemory(Arr::get($data, 'memory'))
             ->handle();
@@ -130,13 +130,13 @@ class ServerCreationService
     /**
      * Store the server in the database and return the model.
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
      */
     private function createModel(array $data): Server
     {
         $uuid = $this->generateUniqueUuidCombo();
 
-        /** @var Server $model */
+        /** @var \Jexactyl\Models\Server $model */
         $model = $this->repository->create([
             'external_id' => Arr::get($data, 'external_id'),
             'uuid' => $uuid,
@@ -153,18 +153,17 @@ class ServerCreationService
             'io' => Arr::get($data, 'io'),
             'cpu' => Arr::get($data, 'cpu'),
             'threads' => Arr::get($data, 'threads'),
-            'oom_killer' => Arr::get($data, 'oom_killer') ?? false,
+            'oom_disabled' => Arr::get($data, 'oom_disabled') ?? true,
             'allocation_id' => Arr::get($data, 'allocation_id'),
             'nest_id' => Arr::get($data, 'nest_id'),
             'egg_id' => Arr::get($data, 'egg_id'),
             'startup' => Arr::get($data, 'startup'),
             'image' => Arr::get($data, 'image'),
-            'billing_product_id' => Arr::get($data, 'billing_product_id') ?? null,
-            'renewal_date' => Arr::get($data, 'renewal_date') ?? null,
             'database_limit' => Arr::get($data, 'database_limit') ?? 0,
             'allocation_limit' => Arr::get($data, 'allocation_limit') ?? 0,
             'backup_limit' => Arr::get($data, 'backup_limit') ?? 0,
-            'subuser_limit' => Arr::get($data, 'subuser_limit') ?? 0,
+            'renewable' => Arr::get($data, 'renewable') ?? false,
+            'renewal' => Arr::get($data, 'renewal') ?? 0,
         ]);
 
         return $model;

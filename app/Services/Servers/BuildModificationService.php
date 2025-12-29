@@ -1,16 +1,16 @@
 <?php
 
-namespace Everest\Services\Servers;
+namespace Jexactyl\Services\Servers;
 
-use Everest\Models\Server;
 use Illuminate\Support\Arr;
-use Everest\Models\Allocation;
+use Jexactyl\Models\Server;
+use Jexactyl\Models\Allocation;
 use Illuminate\Support\Facades\Log;
-use Everest\Exceptions\DisplayException;
+use Jexactyl\Exceptions\DisplayException;
 use Illuminate\Database\ConnectionInterface;
-use Everest\Repositories\Wings\DaemonServerRepository;
+use Jexactyl\Repositories\Wings\DaemonServerRepository;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Everest\Exceptions\Http\Connection\DaemonConnectionException;
+use Jexactyl\Exceptions\Http\Connection\DaemonConnectionException;
 
 class BuildModificationService
 {
@@ -28,11 +28,11 @@ class BuildModificationService
      * Change the build details for a specified server.
      *
      * @throws \Throwable
-     * @throws \Everest\Exceptions\DisplayException
+     * @throws \Jexactyl\Exceptions\DisplayException
      */
     public function handle(Server $server, array $data): Server
     {
-        /** @var \Everest\Models\Server $server */
+        /** @var \Jexactyl\Models\Server $server */
         $server = $this->connection->transaction(function () use ($server, $data) {
             $this->processAllocations($server, $data);
 
@@ -46,13 +46,12 @@ class BuildModificationService
 
             // If any of these values are passed through in the data array go ahead and set
             // them correctly on the server model.
-            $merge = Arr::only($data, ['oom_killer', 'memory', 'swap', 'io', 'cpu', 'threads', 'disk', 'allocation_id']);
+            $merge = Arr::only($data, ['oom_disabled', 'memory', 'swap', 'io', 'cpu', 'threads', 'disk', 'allocation_id']);
 
             $server->forceFill(array_merge($merge, [
+                'database_limit' => Arr::get($data, 'database_limit', 0) ?? null,
                 'allocation_limit' => Arr::get($data, 'allocation_limit', 0) ?? null,
                 'backup_limit' => Arr::get($data, 'backup_limit', 0) ?? 0,
-                'database_limit' => Arr::get($data, 'database_limit', 0) ?? null,
-                'subuser_limit' => Arr::get($data, 'subuser_limit', 0) ?? null,
             ]))->saveOrFail();
 
             return $server->refresh();
@@ -78,7 +77,7 @@ class BuildModificationService
     /**
      * Process the allocations being assigned in the data and ensure they are available for a server.
      *
-     * @throws \Everest\Exceptions\DisplayException
+     * @throws \Jexactyl\Exceptions\DisplayException
      */
     private function processAllocations(Server $server, array &$data): void
     {
@@ -89,13 +88,14 @@ class BuildModificationService
         // Handle the addition of allocations to this server. Only assign allocations that are not currently
         // assigned to a different server, and only allocations on the same node as the server.
         if (!empty($data['add_allocations'])) {
-            $query = $server->node->allocations()
+            $query = Allocation::query()
+                ->where('node_id', $server->node_id)
                 ->whereIn('id', $data['add_allocations'])
                 ->whereNull('server_id');
 
             // Keep track of all the allocations we're just now adding so that we can use the first
             // one to reset the default allocation to.
-            $freshlyAllocated = $query->first()->id ?? null;
+            $freshlyAllocated = $query->pluck('id')->first();
 
             $query->update(['server_id' => $server->id, 'notes' => null]);
         }

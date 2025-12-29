@@ -1,19 +1,20 @@
 <?php
 
-namespace Everest\Transformers\Api\Client;
+namespace Jexactyl\Transformers\Api\Client;
 
-use Everest\Models\Egg;
-use Everest\Models\Server;
-use Everest\Models\Allocation;
-use Everest\Models\Permission;
+use Jexactyl\Models\Egg;
+use Jexactyl\Models\Server;
+use Jexactyl\Models\Subuser;
+use Jexactyl\Models\Allocation;
+use Jexactyl\Models\Permission;
+use Jexactyl\Models\EggVariable;
 use League\Fractal\Resource\Item;
 use Illuminate\Container\Container;
 use League\Fractal\Resource\Collection;
-use Everest\Transformers\Api\Transformer;
 use League\Fractal\Resource\NullResource;
-use Everest\Services\Servers\StartupCommandService;
+use Jexactyl\Services\Servers\StartupCommandService;
 
-class ServerTransformer extends Transformer
+class ServerTransformer extends BaseClientTransformer
 {
     protected array $defaultIncludes = ['allocations', 'variables'];
 
@@ -30,7 +31,7 @@ class ServerTransformer extends Transformer
      */
     public function transform(Server $server): array
     {
-        /** @var \Everest\Services\Servers\StartupCommandService $service */
+        /** @var \Jexactyl\Services\Servers\StartupCommandService $service */
         $service = Container::getInstance()->make(StartupCommandService::class);
 
         $user = $this->request->user();
@@ -39,14 +40,13 @@ class ServerTransformer extends Transformer
             'server_owner' => $user->id === $server->owner_id,
             'identifier' => $server->uuidShort,
             'internal_id' => $server->id,
-            'group_id' => $server->group_id,
             'uuid' => $server->uuid,
             'name' => $server->name,
             'node' => $server->node->name,
             'is_node_under_maintenance' => $server->node->isUnderMaintenance(),
             'sftp_details' => [
                 'ip' => $server->node->fqdn,
-                'port' => $server->node->public_port_sftp,
+                'port' => $server->node->daemonSFTP,
             ],
             'description' => $server->description,
             'limits' => [
@@ -56,30 +56,36 @@ class ServerTransformer extends Transformer
                 'io' => $server->io,
                 'cpu' => $server->cpu,
                 'threads' => $server->threads,
-                'oom_killer' => $server->oom_killer,
+                'oom_disabled' => $server->oom_disabled,
             ],
-            'invocation' => $server->egg->startup,
+            'invocation' => $service->handle($server, !$user->can(Permission::ACTION_STARTUP_READ, $server)),
             'docker_image' => $server->image,
             'egg_features' => $server->egg->inherit_features,
-            'billing_product_id' => $server->billing_product_id,
             'feature_limits' => [
                 'databases' => $server->database_limit,
                 'allocations' => $server->allocation_limit,
                 'backups' => $server->backup_limit,
-                'subusers' => $server->subuser_limit,
             ],
             'status' => $server->status,
-            'renewal_date' => self::formatTimestamp($server->renewal_date),
+            // This field is deprecated, please use "status".
+            'is_suspended' => $server->isSuspended(),
+            // This field is deprecated, please use "status".
+            'is_installing' => !$server->isInstalled(),
             'is_transferring' => !is_null($server->transfer),
+            'renewable' => $server->renewable,
+            'renewal' => $server->renewal,
+            'bg' => $server->bg,
         ];
     }
 
     /**
      * Returns the allocations associated with this server.
+     *
+     * @throws \Jexactyl\Exceptions\Transformer\InvalidTransformerLevelException
      */
     public function includeAllocations(Server $server): Collection
     {
-        $transformer = new AllocationTransformer();
+        $transformer = $this->makeTransformer(AllocationTransformer::class);
 
         $user = $this->request->user();
         // While we include this permission, we do need to actually handle it slightly different here
@@ -93,31 +99,42 @@ class ServerTransformer extends Transformer
             $primary = clone $server->allocation;
             $primary->notes = null;
 
-            return $this->collection([$primary], $transformer);
+            return $this->collection([$primary], $transformer, Allocation::RESOURCE_NAME);
         }
 
-        return $this->collection($server->allocations, $transformer);
+        return $this->collection($server->allocations, $transformer, Allocation::RESOURCE_NAME);
     }
 
+    /**
+     * @throws \Jexactyl\Exceptions\Transformer\InvalidTransformerLevelException
+     */
     public function includeVariables(Server $server): Collection|NullResource
     {
         if (!$this->request->user()->can(Permission::ACTION_STARTUP_READ, $server)) {
             return $this->null();
         }
 
-        return $this->collection($server->variables->where('user_viewable', true), new EggVariableTransformer());
+        return $this->collection(
+            $server->variables->where('user_viewable', true),
+            $this->makeTransformer(EggVariableTransformer::class),
+            EggVariable::RESOURCE_NAME
+        );
     }
 
     /**
      * Returns the egg associated with this server.
+     *
+     * @throws \Jexactyl\Exceptions\Transformer\InvalidTransformerLevelException
      */
     public function includeEgg(Server $server): Item
     {
-        return $this->item($server->egg, new EggTransformer());
+        return $this->item($server->egg, $this->makeTransformer(EggTransformer::class), Egg::RESOURCE_NAME);
     }
 
     /**
      * Returns the subusers associated with this server.
+     *
+     * @throws \Jexactyl\Exceptions\Transformer\InvalidTransformerLevelException
      */
     public function includeSubusers(Server $server): Collection|NullResource
     {
@@ -125,6 +142,6 @@ class ServerTransformer extends Transformer
             return $this->null();
         }
 
-        return $this->collection($server->subusers, new SubuserTransformer());
+        return $this->collection($server->subusers, $this->makeTransformer(SubuserTransformer::class), Subuser::RESOURCE_NAME);
     }
 }

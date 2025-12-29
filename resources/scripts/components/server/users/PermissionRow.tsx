@@ -1,8 +1,9 @@
-import styled from 'styled-components';
+import React from 'react';
 import tw from 'twin.macro';
-import Checkbox from '@elements/Checkbox';
 import { useStoreState } from 'easy-peasy';
-import Label from '@elements/Label';
+import styled from 'styled-components/macro';
+import Label from '@/components/elements/Label';
+import Checkbox from '@/components/elements/Checkbox';
 
 const Container = styled.label`
     ${tw`flex items-center border border-transparent rounded md:p-2 transition-colors duration-75`};
@@ -35,8 +36,8 @@ interface Props {
 }
 
 const PermissionRow = ({ permission, disabled }: Props) => {
-    const [key = '', pkey = ''] = permission.split('.', 2);
-    const permissions = useStoreState(state => state.permissions.data);
+    const [key, pkey] = permission.split('.', 2);
+    const permissions = useStoreState((state) => state.permissions.data);
 
     return (
         <Container htmlFor={`permission_${permission}`} className={disabled ? 'disabled' : undefined}>
@@ -53,8 +54,8 @@ const PermissionRow = ({ permission, disabled }: Props) => {
                 <Label as={'p'} css={tw`font-medium`}>
                     {pkey}
                 </Label>
-                {(permissions[key]?.keys?.[pkey]?.length ?? 0) > 0 && (
-                    <p css={tw`text-xs text-neutral-400 mt-1`}>{permissions[key]?.keys?.[pkey] ?? ''}</p>
+                {permissions[key].keys[pkey].length > 0 && (
+                    <p css={tw`text-xs text-neutral-400 mt-1`}>{permissions[key].keys[pkey]}</p>
                 )}
             </div>
         </Container>

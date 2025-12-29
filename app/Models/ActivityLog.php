@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Models;
+namespace Jexactyl\Models;
 
 use Carbon\Carbon;
-use Everest\Events\ActivityLogged;
+use Jexactyl\Events\ActivityLogged;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\MassPrunable;
@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Model as IlluminateModel;
 
 /**
- * \Everest\Models\ActivityLog.
+ * \Jexactyl\Models\ActivityLog.
  *
  * @property int $id
  * @property string|null $batch
@@ -23,13 +23,12 @@ use Illuminate\Database\Eloquent\Model as IlluminateModel;
  * @property string|null $actor_type
  * @property int|null $actor_id
  * @property int|null $api_key_id
- * @property bool|null $is_admin
  * @property \Illuminate\Support\Collection|null $properties
  * @property \Carbon\Carbon $timestamp
  * @property IlluminateModel|\Eloquent $actor
- * @property \Illuminate\Database\Eloquent\Collection|\Everest\Models\ActivityLogSubject[] $subjects
+ * @property \Illuminate\Database\Eloquent\Collection|\Jexactyl\Models\ActivityLogSubject[] $subjects
  * @property int|null $subjects_count
- * @property \Everest\Models\ApiKey|null $apiKey
+ * @property \Jexactyl\Models\ApiKey|null $apiKey
  *
  * @method static Builder|ActivityLog forActor(\Illuminate\Database\Eloquent\Model $actor)
  * @method static Builder|ActivityLog forEvent(string $action)
@@ -79,7 +78,6 @@ class ActivityLog extends Model
         'event' => ['required', 'string'],
         'batch' => ['nullable', 'uuid'],
         'ip' => ['required', 'string'],
-        'is_admin' => ['nullable', 'bool'],
         'description' => ['nullable', 'string'],
         'properties' => ['array'],
     ];

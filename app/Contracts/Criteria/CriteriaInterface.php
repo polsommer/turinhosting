@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Contracts\Criteria;
+namespace Jexactyl\Contracts\Criteria;
 
-use Everest\Repositories\Repository;
+use Jexactyl\Repositories\Repository;
 use Illuminate\Database\Eloquent\Model;
 
 interface CriteriaInterface

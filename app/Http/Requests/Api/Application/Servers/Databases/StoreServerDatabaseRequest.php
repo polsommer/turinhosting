@@ -1,21 +1,26 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Application\Servers\Databases;
+namespace Jexactyl\Http\Requests\Api\Application\Servers\Databases;
 
-use Everest\Models\Server;
-use Illuminate\Support\Arr;
+use Jexactyl\Models\Server;
 use Webmozart\Assert\Assert;
-use Everest\Models\AdminRole;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\Query\Builder;
-use Everest\Services\Databases\DatabaseManagementService;
-use Everest\Http\Requests\Api\Application\ApplicationApiRequest;
+use Jexactyl\Services\Acl\Api\AdminAcl;
+use Jexactyl\Services\Databases\DatabaseManagementService;
+use Jexactyl\Http\Requests\Api\Application\ApplicationApiRequest;
 
 class StoreServerDatabaseRequest extends ApplicationApiRequest
 {
+    protected ?string $resource = AdminAcl::RESOURCE_SERVER_DATABASES;
+
+    protected int $permission = AdminAcl::WRITE;
+
+    /**
+     * Validation rules for database creation.
+     */
     public function rules(): array
     {
-        /** @var \Everest\Models\Server $server */
         $server = $this->route()->parameter('server');
 
         return [
@@ -34,22 +39,20 @@ class StoreServerDatabaseRequest extends ApplicationApiRequest
     }
 
     /**
-     * @param string|null $key
-     * @param string|array|null $default
-     *
-     * @return mixed
+     * Return data formatted in the correct format for the service to consume.
      */
-    public function validated($key = null, $default = null)
+    public function validated($key = null, $default = null): array
     {
-        $data = [
+        return [
             'database' => $this->input('database'),
             'remote' => $this->input('remote'),
             'database_host_id' => $this->input('host'),
         ];
-
-        return is_null($key) ? $data : Arr::get($data, $key, $default);
     }
 
+    /**
+     * Format error messages in a more understandable format for API output.
+     */
     public function attributes(): array
     {
         return [
@@ -59,6 +62,9 @@ class StoreServerDatabaseRequest extends ApplicationApiRequest
         ];
     }
 
+    /**
+     * Returns the database name in the expected format.
+     */
     public function databaseName(): string
     {
         $server = $this->route()->parameter('server');
@@ -66,10 +72,5 @@ class StoreServerDatabaseRequest extends ApplicationApiRequest
         Assert::isInstanceOf($server, Server::class);
 
         return DatabaseManagementService::generateUniqueDatabaseName($this->input('database'), $server->id);
-    }
-
-    public function permission(): string
-    {
-        return AdminRole::SERVERS_UPDATE;
     }
 }

@@ -1,18 +1,17 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Client\Account;
+namespace Jexactyl\Http\Requests\Api\Client\Account;
 
-use Everest\Models\User;
+use Jexactyl\Models\User;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Hashing\Hasher;
-use Everest\Http\Requests\Api\Client\ClientApiRequest;
-use Everest\Exceptions\Http\Base\InvalidPasswordProvidedException;
+use Jexactyl\Http\Requests\Api\Client\ClientApiRequest;
+use Jexactyl\Exceptions\Http\Base\InvalidPasswordProvidedException;
 
 class UpdateEmailRequest extends ClientApiRequest
 {
     /**
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
-     * @throws \Everest\Exceptions\Http\Base\InvalidPasswordProvidedException
+     * @throws \Jexactyl\Exceptions\Http\Base\InvalidPasswordProvidedException
      */
     public function authorize(): bool
     {

@@ -1,3 +1,4 @@
+import { store } from '@/state';
 import axios, { AxiosInstance } from 'axios';
 
 const http: AxiosInstance = axios.create({
@@ -9,6 +10,29 @@ const http: AxiosInstance = axios.create({
         'Content-Type': 'application/json',
     },
 });
+
+http.interceptors.request.use((req) => {
+    if (!req.url?.endsWith('/resources')) {
+        store.getActions().progress.startContinuous();
+    }
+
+    return req;
+});
+
+http.interceptors.response.use(
+    (resp) => {
+        if (!resp.request?.url?.endsWith('/resources')) {
+            store.getActions().progress.setComplete();
+        }
+
+        return resp;
+    },
+    (error) => {
+        store.getActions().progress.setComplete();
+
+        throw error;
+    }
+);
 
 export default http;
 
@@ -49,7 +73,6 @@ export interface FractalResponseData {
         [k: string]: any;
         relationships?: Record<string, FractalResponseData | FractalResponseList | null | undefined>;
     };
-    meta?: any;
 }
 
 export interface FractalResponseList {

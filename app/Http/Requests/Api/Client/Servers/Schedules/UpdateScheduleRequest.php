@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Client\Servers\Schedules;
+namespace Jexactyl\Http\Requests\Api\Client\Servers\Schedules;
 
-use Everest\Models\Permission;
+use Jexactyl\Models\Permission;
 
 class UpdateScheduleRequest extends StoreScheduleRequest
 {

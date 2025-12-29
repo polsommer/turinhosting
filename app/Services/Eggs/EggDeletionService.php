@@ -1,11 +1,11 @@
 <?php
 
-namespace Everest\Services\Eggs;
+namespace Jexactyl\Services\Eggs;
 
-use Everest\Contracts\Repository\EggRepositoryInterface;
-use Everest\Exceptions\Service\Egg\HasChildrenException;
-use Everest\Exceptions\Service\HasActiveServersException;
-use Everest\Contracts\Repository\ServerRepositoryInterface;
+use Jexactyl\Contracts\Repository\EggRepositoryInterface;
+use Jexactyl\Exceptions\Service\Egg\HasChildrenException;
+use Jexactyl\Exceptions\Service\HasActiveServersException;
+use Jexactyl\Contracts\Repository\ServerRepositoryInterface;
 
 class EggDeletionService
 {
@@ -21,8 +21,8 @@ class EggDeletionService
     /**
      * Delete an Egg from the database if it has no active servers attached to it.
      *
-     * @throws \Everest\Exceptions\Service\HasActiveServersException
-     * @throws \Everest\Exceptions\Service\Egg\HasChildrenException
+     * @throws \Jexactyl\Exceptions\Service\HasActiveServersException
+     * @throws \Jexactyl\Exceptions\Service\Egg\HasChildrenException
      */
     public function handle(int $egg): int
     {

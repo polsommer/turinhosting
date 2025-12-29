@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Exceptions\Service;
+namespace Jexactyl\Exceptions\Service;
 
 use Illuminate\Http\Response;
-use Everest\Exceptions\DisplayException;
+use Jexactyl\Exceptions\DisplayException;
 
 class HasActiveServersException extends DisplayException
 {

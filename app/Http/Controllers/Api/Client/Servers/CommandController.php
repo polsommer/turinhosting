@@ -1,17 +1,17 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Client\Servers;
+namespace Jexactyl\Http\Controllers\Api\Client\Servers;
 
-use Everest\Models\Server;
-use Everest\Facades\Activity;
+use Jexactyl\Models\Server;
 use Illuminate\Http\Response;
+use Jexactyl\Facades\Activity;
 use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Exception\BadResponseException;
-use Everest\Repositories\Wings\DaemonCommandRepository;
+use Jexactyl\Repositories\Wings\DaemonCommandRepository;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Everest\Http\Controllers\Api\Client\ClientApiController;
-use Everest\Http\Requests\Api\Client\Servers\SendCommandRequest;
-use Everest\Exceptions\Http\Connection\DaemonConnectionException;
+use Jexactyl\Http\Controllers\Api\Client\ClientApiController;
+use Jexactyl\Http\Requests\Api\Client\Servers\SendCommandRequest;
+use Jexactyl\Exceptions\Http\Connection\DaemonConnectionException;
 
 class CommandController extends ClientApiController
 {
@@ -26,7 +26,7 @@ class CommandController extends ClientApiController
     /**
      * Send a command to a running server.
      *
-     * @throws \Everest\Exceptions\Http\Connection\DaemonConnectionException
+     * @throws \Jexactyl\Exceptions\Http\Connection\DaemonConnectionException
      */
     public function index(SendCommandRequest $request, Server $server): Response
     {

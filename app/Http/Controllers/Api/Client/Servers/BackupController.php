@@ -1,24 +1,23 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Client\Servers;
+namespace Jexactyl\Http\Controllers\Api\Client\Servers;
 
-use Everest\Models\Backup;
-use Everest\Models\Server;
+use Jexactyl\Models\Backup;
+use Jexactyl\Models\Server;
 use Illuminate\Http\Request;
-use Everest\Facades\Activity;
-use Everest\Models\Permission;
+use Jexactyl\Facades\Activity;
+use Jexactyl\Models\Permission;
 use Illuminate\Http\JsonResponse;
-use Everest\Services\Backups\DeleteBackupService;
-use Everest\Services\Backups\DownloadLinkService;
 use Illuminate\Auth\Access\AuthorizationException;
-use Everest\Repositories\Eloquent\BackupRepository;
-use Everest\Services\Backups\InitiateBackupService;
-use Everest\Repositories\Wings\DaemonBackupRepository;
-use Everest\Transformers\Api\Client\BackupTransformer;
-use Everest\Http\Controllers\Api\Client\ClientApiController;
+use Jexactyl\Services\Backups\DeleteBackupService;
+use Jexactyl\Services\Backups\DownloadLinkService;
+use Jexactyl\Repositories\Eloquent\BackupRepository;
+use Jexactyl\Services\Backups\InitiateBackupService;
+use Jexactyl\Repositories\Wings\DaemonBackupRepository;
+use Jexactyl\Transformers\Api\Client\BackupTransformer;
+use Jexactyl\Http\Controllers\Api\Client\ClientApiController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Everest\Http\Requests\Api\Client\Servers\Backups\StoreBackupRequest;
-use Everest\Http\Requests\Api\Client\Servers\Backups\RestoreBackupRequest;
+use Jexactyl\Http\Requests\Api\Client\Servers\Backups\StoreBackupRequest;
 
 class BackupController extends ClientApiController
 {
@@ -50,7 +49,7 @@ class BackupController extends ClientApiController
         $limit = min($request->query('per_page') ?? 20, 50);
 
         return $this->fractal->collection($server->backups()->paginate($limit))
-            ->transformWith(BackupTransformer::class)
+            ->transformWith($this->getTransformer(BackupTransformer::class))
             ->addMeta([
                 'backup_count' => $this->repository->getNonFailedBackups($server)->count(),
             ])
@@ -85,7 +84,7 @@ class BackupController extends ClientApiController
             ->log();
 
         return $this->fractal->item($backup)
-            ->transformWith(BackupTransformer::class)
+            ->transformWith($this->getTransformer(BackupTransformer::class))
             ->toArray();
     }
 
@@ -108,7 +107,7 @@ class BackupController extends ClientApiController
         Activity::event($action)->subject($backup)->property('name', $backup->name)->log();
 
         return $this->fractal->item($backup)
-            ->transformWith(BackupTransformer::class)
+            ->transformWith($this->getTransformer(BackupTransformer::class))
             ->toArray();
     }
 
@@ -124,7 +123,7 @@ class BackupController extends ClientApiController
         }
 
         return $this->fractal->item($backup)
-            ->transformWith(BackupTransformer::class)
+            ->transformWith($this->getTransformer(BackupTransformer::class))
             ->toArray();
     }
 
@@ -189,8 +188,12 @@ class BackupController extends ClientApiController
      *
      * @throws \Throwable
      */
-    public function restore(RestoreBackupRequest $request, Server $server, Backup $backup): JsonResponse
+    public function restore(Request $request, Server $server, Backup $backup): JsonResponse
     {
+        if (!$request->user()->can(Permission::ACTION_BACKUP_RESTORE, $server)) {
+            throw new AuthorizationException();
+        }
+
         // Cannot restore a backup unless a server is fully installed and not currently
         // processing a different backup restoration request.
         if (!is_null($server->status)) {

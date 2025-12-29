@@ -1,1 +1,0 @@
-function e(t){return typeof t=="object"&&t!==null&&!Array.isArray(t)}function r(t){return Object.keys(t).length===0&&Object.getPrototypeOf(t)===Object.prototype}function c(t){return Object.keys(t)}export{r as a,c as g,e as i};

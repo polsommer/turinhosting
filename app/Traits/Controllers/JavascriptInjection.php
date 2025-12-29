@@ -1,6 +1,6 @@
 <?php
 
-namespace Everest\Traits\Controllers;
+namespace Jexactyl\Traits\Controllers;
 
 use Illuminate\Http\Request;
 

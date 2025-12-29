@@ -1,12 +1,12 @@
 <?php
 
-namespace Everest\Http\Resources\Wings;
+namespace Jexactyl\Http\Resources\Wings;
 
-use Everest\Models\Server;
+use Jexactyl\Models\Server;
 use Illuminate\Container\Container;
-use Everest\Services\Eggs\EggConfigurationService;
+use Jexactyl\Services\Eggs\EggConfigurationService;
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use Everest\Services\Servers\ServerConfigurationStructureService;
+use Jexactyl\Services\Servers\ServerConfigurationStructureService;
 
 class ServerConfigurationCollection extends ResourceCollection
 {

@@ -1,15 +1,15 @@
 <?php
 
-namespace Everest\Services\Schedules;
+namespace Jexactyl\Services\Schedules;
 
 use Exception;
-use Everest\Models\Schedule;
-use Everest\Jobs\Schedule\RunTaskJob;
-use Everest\Exceptions\DisplayException;
+use Jexactyl\Models\Schedule;
+use Jexactyl\Jobs\Schedule\RunTaskJob;
 use Illuminate\Contracts\Bus\Dispatcher;
+use Jexactyl\Exceptions\DisplayException;
 use Illuminate\Database\ConnectionInterface;
-use Everest\Repositories\Wings\DaemonServerRepository;
-use Everest\Exceptions\Http\Connection\DaemonConnectionException;
+use Jexactyl\Repositories\Wings\DaemonServerRepository;
+use Jexactyl\Exceptions\Http\Connection\DaemonConnectionException;
 
 class ProcessScheduleService
 {
@@ -27,13 +27,13 @@ class ProcessScheduleService
      */
     public function handle(Schedule $schedule, bool $now = false): void
     {
+        /** @var \Jexactyl\Models\Task $task */
         $task = $schedule->tasks()->orderBy('sequence_id')->first();
 
         if (is_null($task)) {
             throw new DisplayException('Cannot process schedule for task execution: no tasks are registered.');
         }
 
-        /* @var \Everest\Models\Task $task */
         $this->connection->transaction(function () use ($schedule, $task) {
             $schedule->forceFill([
                 'is_processing' => true,

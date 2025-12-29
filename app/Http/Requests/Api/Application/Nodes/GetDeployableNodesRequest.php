@@ -1,8 +1,6 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Application\Nodes;
-
-use Everest\Models\AdminRole;
+namespace Jexactyl\Http\Requests\Api\Application\Nodes;
 
 class GetDeployableNodesRequest extends GetNodesRequest
 {
@@ -15,10 +13,5 @@ class GetDeployableNodesRequest extends GetNodesRequest
             'location_ids' => 'array',
             'location_ids.*' => 'integer',
         ];
-    }
-
-    public function permission(): string
-    {
-        return AdminRole::NODES_READ;
     }
 }

@@ -14,37 +14,9 @@ interface User extends Model {
 
 interface SSHKey extends Model {
     name: string;
-    public_key: string;
+    publicKey: string;
     fingerprint: string;
-    created_at: Date;
-}
-
-interface ApiKey extends Model {
-    id?: number;
-    identifier: string;
-    description: string;
-    allowedIps: string[];
-    createdAt: Date | null;
-    lastUsedAt: Date | null;
-}
-
-interface Ticket extends Model {
-    id: number;
-    title: string;
-    status: 'resolved' | 'unresolved' | 'pending' | 'in-progress';
     createdAt: Date;
-    updatedAt: Date | null;
-    relationships: {
-        messages: TicketMessage[] | null;
-    };
-}
-
-interface TicketMessage extends Model {
-    id: number;
-    message: string;
-    author: User;
-    createdAt: Date;
-    updatedAt?: Date | null;
 }
 
 interface ActivityLog extends Model<'actor'> {

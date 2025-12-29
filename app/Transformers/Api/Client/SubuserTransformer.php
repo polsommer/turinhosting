@@ -1,11 +1,10 @@
 <?php
 
-namespace Everest\Transformers\Api\Client;
+namespace Jexactyl\Transformers\Api\Client;
 
-use Everest\Models\Subuser;
-use Everest\Transformers\Api\Transformer;
+use Jexactyl\Models\Subuser;
 
-class SubuserTransformer extends Transformer
+class SubuserTransformer extends BaseClientTransformer
 {
     /**
      * Return the resource name for the JSONAPI output.
@@ -17,11 +16,13 @@ class SubuserTransformer extends Transformer
 
     /**
      * Transforms a subuser into a model that can be shown to a front-end user.
+     *
+     * @throws \Jexactyl\Exceptions\Transformer\InvalidTransformerLevelException
      */
     public function transform(Subuser $model): array
     {
         return array_merge(
-            (new UserTransformer())->transform($model->user),
+            $this->makeTransformer(UserTransformer::class)->transform($model->user),
             ['permissions' => $model->permissions]
         );
     }

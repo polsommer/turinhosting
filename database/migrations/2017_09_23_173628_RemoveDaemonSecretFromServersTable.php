@@ -5,14 +5,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use Everest\Contracts\Repository\DaemonKeyRepositoryInterface;
+use Jexactyl\Contracts\Repository\DaemonKeyRepositoryInterface;
 
 class RemoveDaemonSecretFromServersTable extends Migration
 {
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         $inserts = [];
 
@@ -22,7 +22,7 @@ class RemoveDaemonSecretFromServersTable extends Migration
                 'user_id' => $server->owner_id,
                 'server_id' => $server->id,
                 'secret' => DaemonKeyRepositoryInterface::INTERNAL_KEY_IDENTIFIER . str_random(40),
-                'expires_at' => Carbon::now()->addMinutes(config('everest.api.key_expire_time', 720))->toDateTimeString(),
+                'expires_at' => Carbon::now()->addMinutes(config('jexactyl.api.key_expire_time', 720))->toDateTimeString(),
                 'created_at' => Carbon::now()->toDateTimeString(),
                 'updated_at' => Carbon::now()->toDateTimeString(),
             ];
@@ -41,7 +41,7 @@ class RemoveDaemonSecretFromServersTable extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
+    public function down()
     {
         Schema::table('servers', function (Blueprint $table) {
             $table->char('daemonSecret', 36)->after('startup')->unique();

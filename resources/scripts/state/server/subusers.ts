@@ -1,4 +1,3 @@
-import { Subuser } from '@/api/definitions/server';
 import { action, Action } from 'easy-peasy';
 
 export type SubuserPermission =
@@ -31,6 +30,18 @@ export type SubuserPermission =
     | 'schedule.update'
     | 'schedule.delete';
 
+export interface Subuser {
+    uuid: string;
+    username: string;
+    email: string;
+    image: string;
+    twoFactorEnabled: boolean;
+    createdAt: Date;
+    permissions: SubuserPermission[];
+
+    can(permission: SubuserPermission): boolean;
+}
+
 export interface ServerSubuserStore {
     data: Subuser[];
     setSubusers: Action<ServerSubuserStore, Subuser[]>;
@@ -49,7 +60,7 @@ const subusers: ServerSubuserStore = {
         let matched = false;
         state.data = [
             ...state.data
-                .map(user => {
+                .map((user) => {
                     if (user.uuid === payload.uuid) {
                         matched = true;
 
@@ -63,7 +74,7 @@ const subusers: ServerSubuserStore = {
     }),
 
     removeSubuser: action((state, payload) => {
-        state.data = [...state.data.filter(user => user.uuid !== payload)];
+        state.data = [...state.data.filter((user) => user.uuid !== payload)];
     }),
 };
 

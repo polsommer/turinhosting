@@ -1,20 +1,20 @@
-import { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ServerContext } from '@/state/server';
 import { Form, Formik, FormikHelpers } from 'formik';
-import Field from '@elements/Field';
-import { join } from 'pathe';
+import Field from '@/components/elements/Field';
+import { join } from 'path';
 import { object, string } from 'yup';
-import { createDirectory } from '@/api/server/directories';
+import createDirectory from '@/api/server/files/createDirectory';
 import tw from 'twin.macro';
-import { Button } from '@elements/button/index';
+import { Button } from '@/components/elements/button/index';
+import { FileObject } from '@/api/server/files/loadDirectory';
 import { useFlashKey } from '@/plugins/useFlash';
 import useFileManagerSwr from '@/plugins/useFileManagerSwr';
 import { WithClassname } from '@/components/types';
 import FlashMessageRender from '@/components/FlashMessageRender';
-import { Dialog, DialogWrapperContext } from '@elements/dialog';
-import Code from '@elements/Code';
+import { Dialog, DialogWrapperContext } from '@/components/elements/dialog';
+import Code from '@/components/elements/Code';
 import asDialog from '@/hoc/asDialog';
-import { FileObject } from '@/api/definitions/server';
 
 interface Values {
     directoryName: string;
@@ -42,8 +42,8 @@ const generateDirectoryData = (name: string): FileObject => ({
 const NewDirectoryDialog = asDialog({
     title: 'Create Directory',
 })(() => {
-    const uuid = ServerContext.useStoreState(state => state.server.data!.uuid);
-    const directory = ServerContext.useStoreState(state => state.files.directory);
+    const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
+    const directory = ServerContext.useStoreState((state) => state.files.directory);
 
     const { mutate } = useFileManagerSwr();
     const { close } = useContext(DialogWrapperContext);
@@ -57,9 +57,9 @@ const NewDirectoryDialog = asDialog({
 
     const submit = ({ directoryName }: Values, { setSubmitting }: FormikHelpers<Values>) => {
         createDirectory(uuid, directory, directoryName)
-            .then(() => mutate(data => [...data!, generateDirectoryData(directoryName)], false))
+            .then(() => mutate((data) => [...data, generateDirectoryData(directoryName)], false))
             .then(() => close())
-            .catch(error => {
+            .catch((error) => {
                 setSubmitting(false);
                 clearAndAddHttpError(error);
             });

@@ -1,13 +1,13 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Client\Servers\Settings;
+namespace Jexactyl\Http\Requests\Api\Client\Servers\Settings;
 
-use Everest\Models\Server;
+use Jexactyl\Models\Server;
 use Webmozart\Assert\Assert;
-use Everest\Models\Permission;
 use Illuminate\Validation\Rule;
-use Everest\Contracts\Http\ClientPermissionsRequest;
-use Everest\Http\Requests\Api\Client\ClientApiRequest;
+use Jexactyl\Models\Permission;
+use Jexactyl\Contracts\Http\ClientPermissionsRequest;
+use Jexactyl\Http\Requests\Api\Client\ClientApiRequest;
 
 class SetDockerImageRequest extends ClientApiRequest implements ClientPermissionsRequest
 {
@@ -18,7 +18,7 @@ class SetDockerImageRequest extends ClientApiRequest implements ClientPermission
 
     public function rules(): array
     {
-        /** @var \Everest\Models\Server $server */
+        /** @var \Jexactyl\Models\Server $server */
         $server = $this->route()->parameter('server');
 
         Assert::isInstanceOf($server, Server::class);

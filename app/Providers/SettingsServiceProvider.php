@@ -1,12 +1,13 @@
 <?php
 
-namespace Everest\Providers;
+namespace Jexactyl\Providers;
 
 use Psr\Log\LoggerInterface as Log;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\Encryption\Encrypter;
-use Everest\Contracts\Repository\SettingsRepositoryInterface;
+use Illuminate\Contracts\Encryption\DecryptException;
+use Jexactyl\Contracts\Repository\SettingsRepositoryInterface;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
 class SettingsServiceProvider extends ServiceProvider
@@ -16,80 +17,55 @@ class SettingsServiceProvider extends ServiceProvider
      * if they exist.
      */
     protected array $keys = [
-        // Jexactyl-specific keys
+        'app:logo',
         'app:name',
-        'app:mode',
-        'app:setup',
         'app:locale',
-        'app:speed_dial',
-        'app:indicators',
-        'app:auto_update',
+        'theme:admin',
         'recaptcha:enabled',
         'recaptcha:secret_key',
         'recaptcha:website_key',
-        'pterodactyl:guzzle:timeout',
-        'pterodactyl:guzzle:connect_timeout',
-        'pterodactyl:console:count',
-        'pterodactyl:console:frequency',
-        'pterodactyl:auth:2fa_required',
-        'pterodactyl:client_features:allocations:enabled',
-        'pterodactyl:client_features:allocations:range_start',
-        'pterodactyl:client_features:allocations:range_end',
+        'theme:user:background',
+        'jexactyl:guzzle:timeout',
+        'jexactyl:auth:2fa_required',
+        'jexactyl:guzzle:connect_timeout',
+        'jexactyl:client_features:allocations:enabled',
+        'jexactyl:client_features:allocations:range_end',
+        'jexactyl:client_features:allocations:range_start',
+    ];
 
-        // Authentication module settings
-        'modules:auth:registration:enabled',
-        'modules:auth:security:force2fa',
-        'modules:auth:security:attempts',
+    /**
+     * Keys specific to the mail driver that are only grabbed from the database
+     * when using the SMTP driver.
+     */
+    protected array $emailKeys = [
+        'mail:mailers:smtp:host',
+        'mail:mailers:smtp:port',
+        'mail:mailers:smtp:encryption',
+        'mail:mailers:smtp:username',
+        'mail:mailers:smtp:password',
+        'mail:from:address',
+        'mail:from:name',
+    ];
 
-        'modules:auth:discord:enabled',
-        'modules:auth:discord:client_id',
-        'modules:auth:discord:client_secret',
-
-        'modules:auth:google:enabled',
-        'modules:auth:google:client_id',
-        'modules:auth:google:client_secret',
-
-        'modules:auth:onboarding:enabled',
-        'modules:auth:onboarding:content',
-
-        'modules:auth:jguard:enabled',
-        'modules:auth:jguard:delay',
-
-        // Billing module settings
-        'modules:billing:enabled',
-        'modules:billing:paypal',
-        'modules:billing:link',
-        'modules:billing:keys:publishable',
-        'modules:billing:keys:secret',
-        'modules:billing:currency:code',
-        'modules:billing:currency:symbol',
-
-        // Ticket module settings
-        'modules:tickets:enabled',
-        'modules:tickets:max_count',
-
-        // Alert module settings
-        'modules:alert:enabled',
-        'modules:alert:type',
-        'modules:alert:position',
-        'modules:alert:content',
-        'modules:alert:uuid',
-
-        // AI module settings
-        'modules:ai:enabled',
-        'modules:ai:key',
-        'modules:ai:user_access',
-
-        // Webhook module settings
-        'modules:webhooks:enabled',
-        'modules:webhooks:url',
+    /**
+     * Keys that are encrypted and should be decrypted when set in the
+     * configuration array.
+     */
+    protected static array $encrypted = [
+        'mail:mailers:smtp:password',
     ];
 
     /**
      * Boot the service provider.
      */
-    public function boot(ConfigRepository $config, Encrypter $encrypter, Log $log, SettingsRepositoryInterface $settings): void
+    public function boot(ConfigRepository $config, Encrypter $encrypter, Log $log, SettingsRepositoryInterface $settings)
     {
+        // Only set the email driver settings from the database if we
+        // are configured using SMTP as the driver.
+        if ($config->get('mail.default') === 'smtp') {
+            $this->keys = array_merge($this->keys, $this->emailKeys);
+        }
+
         try {
             $values = $settings->all()->mapWithKeys(function ($setting) {
                 return [$setting->key => $setting->value];
@@ -102,6 +78,12 @@ class SettingsServiceProvider extends ServiceProvider
 
         foreach ($this->keys as $key) {
             $value = array_get($values, 'settings::' . $key, $config->get(str_replace(':', '.', $key)));
+            if (in_array($key, self::$encrypted)) {
+                try {
+                    $value = $encrypter->decrypt($value);
+                } catch (DecryptException $exception) {
+                }
+            }
 
             switch (strtolower($value)) {
                 case 'true':
@@ -123,5 +105,10 @@ class SettingsServiceProvider extends ServiceProvider
 
             $config->set(str_replace(':', '.', $key), $value);
         }
+    }
+
+    public static function getEncryptedKeys(): array
+    {
+        return self::$encrypted;
     }
 }

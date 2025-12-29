@@ -1,6 +1,6 @@
 <?php
 
-namespace Everest\Exceptions\Repository;
+namespace Jexactyl\Exceptions\Repository;
 
 use Illuminate\Http\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;

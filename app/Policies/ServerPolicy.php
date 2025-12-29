@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Policies;
+namespace Jexactyl\Policies;
 
-use Everest\Models\User;
-use Everest\Models\Server;
+use Jexactyl\Models\User;
+use Jexactyl\Models\Server;
 
 class ServerPolicy
 {

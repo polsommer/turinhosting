@@ -1,14 +1,14 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Client;
+namespace Jexactyl\Http\Controllers\Api\Client;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Everest\Facades\Activity;
 use Illuminate\Http\Response;
+use Jexactyl\Facades\Activity;
 use Illuminate\Http\JsonResponse;
-use Everest\Services\Users\TwoFactorSetupService;
-use Everest\Services\Users\ToggleTwoFactorService;
+use Jexactyl\Services\Users\TwoFactorSetupService;
+use Jexactyl\Services\Users\ToggleTwoFactorService;
 use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
@@ -30,8 +30,8 @@ class TwoFactorController extends ClientApiController
      * it on their account. If two-factor is already enabled this endpoint
      * will return a 400 error.
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function index(Request $request): JsonResponse
     {
@@ -86,7 +86,7 @@ class TwoFactorController extends ClientApiController
             throw new BadRequestHttpException('The password provided was not valid.');
         }
 
-        /** @var \Everest\Models\User $user */
+        /** @var \Jexactyl\Models\User $user */
         $user = $request->user();
 
         $user->update([

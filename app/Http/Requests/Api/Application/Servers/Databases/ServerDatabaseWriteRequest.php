@@ -1,13 +1,10 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Application\Servers\Databases;
+namespace Jexactyl\Http\Requests\Api\Application\Servers\Databases;
 
-use Everest\Models\AdminRole;
+use Jexactyl\Services\Acl\Api\AdminAcl;
 
 class ServerDatabaseWriteRequest extends GetServerDatabasesRequest
 {
-    public function permission(): string
-    {
-        return AdminRole::SERVERS_UPDATE;
-    }
+    protected int $permission = AdminAcl::WRITE;
 }

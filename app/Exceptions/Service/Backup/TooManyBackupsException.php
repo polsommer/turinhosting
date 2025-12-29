@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Exceptions\Service\Backup;
+namespace Jexactyl\Exceptions\Service\Backup;
 
-use Everest\Exceptions\DisplayException;
+use Jexactyl\Exceptions\DisplayException;
 
 class TooManyBackupsException extends DisplayException
 {

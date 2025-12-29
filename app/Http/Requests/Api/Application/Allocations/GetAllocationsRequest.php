@@ -1,14 +1,13 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Application\Allocations;
+namespace Jexactyl\Http\Requests\Api\Application\Allocations;
 
-use Everest\Models\AdminRole;
-use Everest\Http\Requests\Api\Application\ApplicationApiRequest;
+use Jexactyl\Services\Acl\Api\AdminAcl;
+use Jexactyl\Http\Requests\Api\Application\ApplicationApiRequest;
 
 class GetAllocationsRequest extends ApplicationApiRequest
 {
-    public function permission(): string
-    {
-        return AdminRole::NODES_READ;
-    }
+    protected ?string $resource = AdminAcl::RESOURCE_ALLOCATIONS;
+
+    protected int $permission = AdminAcl::READ;
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Everest\Contracts\Repository;
+namespace Jexactyl\Contracts\Repository;
 
 interface UserRepositoryInterface extends RepositoryInterface
 {

@@ -1,12 +1,12 @@
 <?php
 
-namespace Everest\Services\Eggs\Sharing;
+namespace Jexactyl\Services\Eggs\Sharing;
 
 use Carbon\Carbon;
-use Everest\Models\Egg;
-use Everest\Models\EggVariable;
+use Jexactyl\Models\Egg;
+use Jexactyl\Models\EggVariable;
 use Illuminate\Support\Collection;
-use Everest\Contracts\Repository\EggRepositoryInterface;
+use Jexactyl\Contracts\Repository\EggRepositoryInterface;
 
 class EggExporterService
 {
@@ -20,14 +20,14 @@ class EggExporterService
     /**
      * Return a JSON representation of an egg and its variables.
      *
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function handle(int $egg): string
     {
         $egg = $this->repository->getWithExportAttributes($egg);
 
         $struct = [
-            '_comment' => 'DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PTERODACTYL PANEL - PTERODACTYL.IO',
+            '_comment' => 'DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY Jexactyl PANEL - jexactyl.com',
             'meta' => [
                 'version' => Egg::EXPORT_VERSION,
                 'update_url' => $egg->update_url,
@@ -45,6 +45,7 @@ class EggExporterService
             'config' => [
                 'files' => $egg->inherit_config_files,
                 'startup' => $egg->inherit_config_startup,
+                'logs' => $egg->inherit_config_logs,
                 'stop' => $egg->inherit_config_stop,
             ],
             'scripts' => [

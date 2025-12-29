@@ -1,15 +1,16 @@
 <?php
 
-namespace Everest\Console\Commands\Node;
+namespace Jexactyl\Console\Commands\Node;
 
 use Illuminate\Console\Command;
-use Everest\Services\Nodes\NodeCreationService;
+use Jexactyl\Services\Nodes\NodeCreationService;
 
 class MakeNodeCommand extends Command
 {
     protected $signature = 'p:node:make
                             {--name= : A name to identify the node.}
                             {--description= : A description to identify the node.}
+                            {--locationId= : A valid locationId.}
                             {--fqdn= : The domain name (e.g node.example.com) to be used for connecting to the daemon. An IP address may only be used if you are not using SSL for this node.}
                             {--public= : Should the node be public or private? (public=1 / private=0).}
                             {--scheme= : Which scheme should be used? (Enable SSL=https / Disable SSL=http).}
@@ -37,12 +38,13 @@ class MakeNodeCommand extends Command
     /**
      * Handle the command execution process.
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
      */
     public function handle()
     {
         $data['name'] = $this->option('name') ?? $this->ask('Enter a short identifier used to distinguish this node from others');
         $data['description'] = $this->option('description') ?? $this->ask('Enter a description to identify the node');
+        $data['location_id'] = $this->option('locationId') ?? $this->ask('Enter a valid location id');
         $data['scheme'] = $this->option('scheme') ?? $this->anticipate(
             'Please either enter https for SSL or http for a non-ssl connection',
             ['https', 'http'],
@@ -62,6 +64,6 @@ class MakeNodeCommand extends Command
         $data['daemonBase'] = $this->option('daemonBase') ?? $this->ask('Enter the base folder', '/var/lib/pterodactyl/volumes');
 
         $node = $this->creationService->handle($data);
-        $this->line('Successfully created a new node with name ' . $data['name'] . '.');
+        $this->line('Successfully created a new node on the location ' . $data['location_id'] . ' with the name ' . $data['name'] . ' and has an id of ' . $node->id . '.');
     }
 }

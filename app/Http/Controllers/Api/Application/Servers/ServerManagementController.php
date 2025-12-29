@@ -1,22 +1,22 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Application\Servers;
+namespace Jexactyl\Http\Controllers\Api\Application\Servers;
 
-use Everest\Models\Server;
+use Jexactyl\Models\Server;
 use Illuminate\Http\Response;
-use Everest\Services\Servers\SuspensionService;
-use Everest\Services\Servers\ReinstallServerService;
-use Everest\Http\Requests\Api\Application\Servers\ServerWriteRequest;
-use Everest\Http\Controllers\Api\Application\ApplicationApiController;
+use Jexactyl\Services\Servers\SuspensionService;
+use Jexactyl\Services\Servers\ReinstallServerService;
+use Jexactyl\Http\Requests\Api\Application\Servers\ServerWriteRequest;
+use Jexactyl\Http\Controllers\Api\Application\ApplicationApiController;
 
 class ServerManagementController extends ApplicationApiController
 {
     /**
-     * SuspensionController constructor.
+     * ServerManagementController constructor.
      */
     public function __construct(
         private ReinstallServerService $reinstallServerService,
-        private SuspensionService $suspensionService,
+        private SuspensionService $suspensionService
     ) {
         parent::__construct();
     }
@@ -48,27 +48,13 @@ class ServerManagementController extends ApplicationApiController
     /**
      * Mark a server as needing to be reinstalled.
      *
-     * @throws \Throwable
+     * @throws \Jexactyl\Exceptions\DisplayException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function reinstall(ServerWriteRequest $request, Server $server): Response
     {
         $this->reinstallServerService->handle($server);
-
-        return $this->returnNoContent();
-    }
-
-    /**
-     * Toggles the installation status for a server.
-     *
-     * @throws \Throwable
-     */
-    public function toggle(Server $server): Response
-    {
-        if ($server->status === Server::STATUS_INSTALL_FAILED) {
-            throw new \Exception('The server failed to install, so we cannot change the state.');
-        }
-
-        $server->update(['status' => $server->isInstalled() ? Server::STATUS_INSTALLING : null]);
 
         return $this->returnNoContent();
     }

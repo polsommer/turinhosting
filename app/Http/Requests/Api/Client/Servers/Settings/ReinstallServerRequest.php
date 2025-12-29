@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Client\Servers\Settings;
+namespace Jexactyl\Http\Requests\Api\Client\Servers\Settings;
 
-use Everest\Models\Permission;
-use Everest\Http\Requests\Api\Client\ClientApiRequest;
+use Jexactyl\Models\Permission;
+use Jexactyl\Http\Requests\Api\Client\ClientApiRequest;
 
 class ReinstallServerRequest extends ClientApiRequest
 {

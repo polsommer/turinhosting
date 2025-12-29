@@ -1,19 +1,19 @@
 <?php
 
-namespace Everest\Repositories\Wings;
+namespace Jexactyl\Repositories\Wings;
 
-use Everest\Models\Server;
+use Jexactyl\Models\Server;
 use Webmozart\Assert\Assert;
 use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Exception\TransferException;
-use Everest\Exceptions\Http\Connection\DaemonConnectionException;
+use Jexactyl\Exceptions\Http\Connection\DaemonConnectionException;
 
 class DaemonPowerRepository extends DaemonRepository
 {
     /**
      * Sends a power action to the server instance.
      *
-     * @throws \Everest\Exceptions\Http\Connection\DaemonConnectionException
+     * @throws \Jexactyl\Exceptions\Http\Connection\DaemonConnectionException
      */
     public function send(string $action): ResponseInterface
     {

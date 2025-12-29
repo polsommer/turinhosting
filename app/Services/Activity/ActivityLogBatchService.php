@@ -1,6 +1,6 @@
 <?php
 
-namespace Everest\Services\Activity;
+namespace Jexactyl\Services\Activity;
 
 use Ramsey\Uuid\Uuid;
 

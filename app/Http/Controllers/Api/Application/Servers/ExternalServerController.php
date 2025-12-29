@@ -1,11 +1,11 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Application\Servers;
+namespace Jexactyl\Http\Controllers\Api\Application\Servers;
 
-use Everest\Models\Server;
-use Everest\Transformers\Api\Application\ServerTransformer;
-use Everest\Http\Controllers\Api\Application\ApplicationApiController;
-use Everest\Http\Requests\Api\Application\Servers\GetExternalServerRequest;
+use Jexactyl\Models\Server;
+use Jexactyl\Transformers\Api\Application\ServerTransformer;
+use Jexactyl\Http\Controllers\Api\Application\ApplicationApiController;
+use Jexactyl\Http\Requests\Api\Application\Servers\GetExternalServerRequest;
 
 class ExternalServerController extends ApplicationApiController
 {
@@ -17,7 +17,7 @@ class ExternalServerController extends ApplicationApiController
         $server = Server::query()->where('external_id', $external_id)->firstOrFail();
 
         return $this->fractal->item($server)
-            ->transformWith(ServerTransformer::class)
+            ->transformWith($this->getTransformer(ServerTransformer::class))
             ->toArray();
     }
 }

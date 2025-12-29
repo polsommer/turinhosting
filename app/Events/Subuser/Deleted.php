@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Events\Subuser;
+namespace Jexactyl\Events\Subuser;
 
-use Everest\Events\Event;
-use Everest\Models\Subuser;
+use Jexactyl\Events\Event;
+use Jexactyl\Models\Subuser;
 use Illuminate\Queue\SerializesModels;
 
 class Deleted extends Event

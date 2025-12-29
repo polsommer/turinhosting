@@ -1,10 +1,10 @@
 <?php
 
-namespace Everest\Repositories\Eloquent;
+namespace Jexactyl\Repositories\Eloquent;
 
-use Everest\Models\EggVariable;
+use Jexactyl\Models\EggVariable;
 use Illuminate\Support\Collection;
-use Everest\Contracts\Repository\EggVariableRepositoryInterface;
+use Jexactyl\Contracts\Repository\EggVariableRepositoryInterface;
 
 class EggVariableRepository extends EloquentRepository implements EggVariableRepositoryInterface
 {

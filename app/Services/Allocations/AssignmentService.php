@@ -1,16 +1,16 @@
 <?php
 
-namespace Everest\Services\Allocations;
+namespace Jexactyl\Services\Allocations;
 
 use IPTools\Network;
-use Everest\Models\Node;
-use Everest\Exceptions\DisplayException;
+use Jexactyl\Models\Node;
+use Jexactyl\Exceptions\DisplayException;
 use Illuminate\Database\ConnectionInterface;
-use Everest\Contracts\Repository\AllocationRepositoryInterface;
-use Everest\Exceptions\Service\Allocation\CidrOutOfRangeException;
-use Everest\Exceptions\Service\Allocation\PortOutOfRangeException;
-use Everest\Exceptions\Service\Allocation\InvalidPortMappingException;
-use Everest\Exceptions\Service\Allocation\TooManyPortsInRangeException;
+use Jexactyl\Contracts\Repository\AllocationRepositoryInterface;
+use Jexactyl\Exceptions\Service\Allocation\CidrOutOfRangeException;
+use Jexactyl\Exceptions\Service\Allocation\PortOutOfRangeException;
+use Jexactyl\Exceptions\Service\Allocation\InvalidPortMappingException;
+use Jexactyl\Exceptions\Service\Allocation\TooManyPortsInRangeException;
 
 class AssignmentService
 {
@@ -31,32 +31,31 @@ class AssignmentService
     /**
      * Insert allocations into the database and link them to a specific node.
      *
-     * @throws \Everest\Exceptions\DisplayException
-     * @throws \Everest\Exceptions\Service\Allocation\CidrOutOfRangeException
-     * @throws \Everest\Exceptions\Service\Allocation\InvalidPortMappingException
-     * @throws \Everest\Exceptions\Service\Allocation\PortOutOfRangeException
-     * @throws \Everest\Exceptions\Service\Allocation\TooManyPortsInRangeException
+     * @throws \Jexactyl\Exceptions\DisplayException
+     * @throws \Jexactyl\Exceptions\Service\Allocation\CidrOutOfRangeException
+     * @throws \Jexactyl\Exceptions\Service\Allocation\InvalidPortMappingException
+     * @throws \Jexactyl\Exceptions\Service\Allocation\PortOutOfRangeException
+     * @throws \Jexactyl\Exceptions\Service\Allocation\TooManyPortsInRangeException
      */
     public function handle(Node $node, array $data): void
     {
-        $allocationIp = $data['ip'];
-        $explode = explode('/', $allocationIp);
+        $explode = explode('/', $data['allocation_ip']);
         if (count($explode) !== 1) {
             if (!ctype_digit($explode[1]) || ($explode[1] > self::CIDR_MIN_BITS || $explode[1] < self::CIDR_MAX_BITS)) {
                 throw new CidrOutOfRangeException();
             }
         }
 
-        $underlying = 'Unknown IP';
         try {
             // TODO: how should we approach supporting IPv6 with this?
             // gethostbyname only supports IPv4, but the alternative (dns_get_record) returns
             // an array of records, which is not ideal for this use case, we need a SINGLE
             // IP to use, not multiple.
-            $underlying = gethostbyname($allocationIp);
+            $underlying = gethostbyname($data['allocation_ip']);
             $parsed = Network::parse($underlying);
         } catch (\Exception $exception) {
-            throw new DisplayException("Could not parse provided allocation IP address for $allocationIp ($underlying): {$exception->getMessage()}", $exception);
+            /* @noinspection PhpUndefinedVariableInspection */
+            throw new DisplayException("Could not parse provided allocation IP address ({$underlying}): {$exception->getMessage()}", $exception);
         }
 
         $this->connection->beginTransaction();
@@ -83,7 +82,7 @@ class AssignmentService
                             'node_id' => $node->id,
                             'ip' => $ip->__toString(),
                             'port' => (int) $unit,
-                            'ip_alias' => array_get($data, 'alias'),
+                            'ip_alias' => array_get($data, 'allocation_alias'),
                             'server_id' => null,
                         ];
                     }
@@ -96,7 +95,7 @@ class AssignmentService
                         'node_id' => $node->id,
                         'ip' => $ip->__toString(),
                         'port' => (int) $port,
-                        'ip_alias' => array_get($data, 'alias'),
+                        'ip_alias' => array_get($data, 'allocation_alias'),
                         'server_id' => null,
                     ];
                 }

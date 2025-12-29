@@ -1,16 +1,16 @@
 <?php
 
-namespace Everest\Console\Commands\Maintenance;
+namespace Jexactyl\Console\Commands\Maintenance;
 
 use Carbon\CarbonImmutable;
 use Illuminate\Console\Command;
-use Everest\Repositories\Eloquent\BackupRepository;
+use Jexactyl\Repositories\Eloquent\BackupRepository;
 
 class PruneOrphanedBackupsCommand extends Command
 {
     protected $signature = 'p:maintenance:prune-backups {--prune-age=}';
 
-    protected $description = 'Marks all backups older than "n" minutes that have not yet completed as being failed.';
+    protected $description = 'Marks all backups that have not completed in the last "n" minutes as being failed.';
 
     /**
      * PruneOrphanedBackupsCommand constructor.
@@ -38,7 +38,7 @@ class PruneOrphanedBackupsCommand extends Command
             return;
         }
 
-        $this->warn("Marking $count uncompleted backups that are older than $since minutes as failed.");
+        $this->warn("Marking $count backups that have not been marked as completed in the last $since minutes as failed.");
 
         $query->update([
             'is_successful' => false,

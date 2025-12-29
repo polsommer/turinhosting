@@ -1,12 +1,12 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Client;
+namespace Jexactyl\Http\Controllers\Api\Client;
 
-use Everest\Models\ActivityLog;
+use Jexactyl\Models\ActivityLog;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
-use Everest\Http\Requests\Api\Client\ClientApiRequest;
-use Everest\Transformers\Api\Client\ActivityLogTransformer;
+use Jexactyl\Http\Requests\Api\Client\ClientApiRequest;
+use Jexactyl\Transformers\Api\Client\ActivityLogTransformer;
 
 class ActivityLogController extends ClientApiController
 {
@@ -15,9 +15,7 @@ class ActivityLogController extends ClientApiController
      */
     public function __invoke(ClientApiRequest $request): array
     {
-        $activity = QueryBuilder::for(
-            $request->user()->activity()->where('is_admin', false)
-        )
+        $activity = QueryBuilder::for($request->user()->activity())
             ->with('actor')
             ->allowedFilters([AllowedFilter::partial('event')])
             ->allowedSorts(['timestamp'])
@@ -26,7 +24,22 @@ class ActivityLogController extends ClientApiController
             ->appends($request->query());
 
         return $this->fractal->collection($activity)
-            ->transformWith(ActivityLogTransformer::class)
+            ->transformWith($this->getTransformer(ActivityLogTransformer::class))
+            ->toArray();
+    }
+
+    /**
+     * Returns the latest activity log for a user.
+     */
+    public function latest(ClientApiRequest $request): array
+    {
+        $data = $request->user()
+            ->activity()
+            ->orderBy('timestamp', 'desc')
+            ->first();
+
+        return $this->fractal->item($data)
+            ->transformWith($this->getTransformer(ActivityLogTransformer::class))
             ->toArray();
     }
 }

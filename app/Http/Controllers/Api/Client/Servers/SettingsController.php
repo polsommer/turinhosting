@@ -1,18 +1,18 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Client\Servers;
+namespace Jexactyl\Http\Controllers\Api\Client\Servers;
 
-use Everest\Models\Server;
-use Everest\Facades\Activity;
+use Jexactyl\Models\Server;
 use Illuminate\Http\Response;
+use Jexactyl\Facades\Activity;
 use Illuminate\Http\JsonResponse;
-use Everest\Repositories\Eloquent\ServerRepository;
-use Everest\Services\Servers\ReinstallServerService;
-use Everest\Http\Controllers\Api\Client\ClientApiController;
+use Jexactyl\Repositories\Eloquent\ServerRepository;
+use Jexactyl\Services\Servers\ReinstallServerService;
+use Jexactyl\Http\Controllers\Api\Client\ClientApiController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Everest\Http\Requests\Api\Client\Servers\Settings\RenameServerRequest;
-use Everest\Http\Requests\Api\Client\Servers\Settings\SetDockerImageRequest;
-use Everest\Http\Requests\Api\Client\Servers\Settings\ReinstallServerRequest;
+use Jexactyl\Http\Requests\Api\Client\Servers\Settings\RenameServerRequest;
+use Jexactyl\Http\Requests\Api\Client\Servers\Settings\SetDockerImageRequest;
+use Jexactyl\Http\Requests\Api\Client\Servers\Settings\ReinstallServerRequest;
 
 class SettingsController extends ClientApiController
 {
@@ -29,13 +29,13 @@ class SettingsController extends ClientApiController
     /**
      * Renames a server.
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function rename(RenameServerRequest $request, Server $server): JsonResponse
     {
         $name = $request->input('name');
-        $description = $request->has('description') ? (string) $request->input('description') : $server->description;
+        $description = $request->input('description') ?? $server->description;
         $this->repository->update($server->id, [
             'name' => $name,
             'description' => $description,

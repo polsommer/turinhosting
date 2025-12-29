@@ -1,11 +1,11 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Application\Users;
+namespace Jexactyl\Http\Controllers\Api\Application\Users;
 
-use Everest\Models\User;
-use Everest\Transformers\Api\Application\UserTransformer;
-use Everest\Http\Controllers\Api\Application\ApplicationApiController;
-use Everest\Http\Requests\Api\Application\Users\GetExternalUserRequest;
+use Jexactyl\Models\User;
+use Jexactyl\Transformers\Api\Application\UserTransformer;
+use Jexactyl\Http\Controllers\Api\Application\ApplicationApiController;
+use Jexactyl\Http\Requests\Api\Application\Users\GetExternalUserRequest;
 
 class ExternalUserController extends ApplicationApiController
 {
@@ -17,7 +17,7 @@ class ExternalUserController extends ApplicationApiController
         $user = User::query()->where('external_id', $external_id)->firstOrFail();
 
         return $this->fractal->item($user)
-            ->transformWith(UserTransformer::class)
+            ->transformWith($this->getTransformer(UserTransformer::class))
             ->toArray();
     }
 }

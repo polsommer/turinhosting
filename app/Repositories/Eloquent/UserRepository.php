@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Repositories\Eloquent;
+namespace Jexactyl\Repositories\Eloquent;
 
-use Everest\Models\User;
-use Everest\Contracts\Repository\UserRepositoryInterface;
+use Jexactyl\Models\User;
+use Jexactyl\Contracts\Repository\UserRepositoryInterface;
 
 class UserRepository extends EloquentRepository implements UserRepositoryInterface
 {

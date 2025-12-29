@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Observers;
+namespace Jexactyl\Observers;
 
-use Everest\Events;
-use Everest\Models\User;
+use Jexactyl\Events;
+use Jexactyl\Models\User;
 
 class UserObserver
 {

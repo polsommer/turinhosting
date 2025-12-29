@@ -1,6 +1,6 @@
 <?php
 
-namespace Everest\Services\Activity;
+namespace Jexactyl\Services\Activity;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,16 +12,9 @@ class ActivityLogTargetableService
 
     protected ?int $apiKeyId = null;
 
-    protected ?bool $isAdmin = false;
-
     public function setActor(Model $actor): void
     {
         $this->actor = $actor;
-    }
-
-    public function setIsAdmin(): void
-    {
-        $this->isAdmin = true;
     }
 
     public function setSubject(Model $subject): void
@@ -49,16 +42,10 @@ class ActivityLogTargetableService
         return $this->apiKeyId;
     }
 
-    public function isAdmin(): ?bool
-    {
-        return $this->isAdmin;
-    }
-
     public function reset(): void
     {
         $this->actor = null;
         $this->subject = null;
         $this->apiKeyId = null;
-        $this->isAdmin = false;
     }
 }

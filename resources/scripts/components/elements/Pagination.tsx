@@ -1,10 +1,9 @@
-import * as React from 'react';
-import { PaginatedResult } from '@/api/http';
+import React from 'react';
 import tw from 'twin.macro';
-import styled from 'styled-components';
-import { Button } from '@elements/button';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleDoubleLeft, faAngleDoubleRight } from '@fortawesome/free-solid-svg-icons';
+import * as Icon from 'react-feather';
+import { PaginatedResult } from '@/api/http';
+import styled from 'styled-components/macro';
+import { Button } from '@/components/elements/button/index';
 
 interface RenderFuncProps<T> {
     items: T[];
@@ -47,30 +46,25 @@ function Pagination<T>({ data: { items, pagination }, onPageSelect, children }: 
         <>
             {children({ items, isFirstPage, isLastPage })}
             {pages.length > 1 && (
-                <div css={tw`my-3 flex justify-center`}>
-                    {(pages?.[0] ?? 0) > 1 && !isFirstPage && (
-                        <Block.Text size={Button.Sizes.Small} onClick={() => onPageSelect(1)} className={'mx-1'}>
-                            <FontAwesomeIcon icon={faAngleDoubleLeft} />
-                        </Block.Text>
+                <div css={tw`mt-4 flex justify-center`}>
+                    {pages[0] > 1 && !isFirstPage && (
+                        <Block variant={Button.Variants.Secondary} color={'primary'} onClick={() => onPageSelect(1)}>
+                            <Icon.ChevronLeft />
+                        </Block>
                     )}
-                    {pages.map(i => (
-                        <Block.Text
-                            size={Button.Sizes.Small}
-                            className={'mx-1'}
-                            key={`block_page_${i}`}
-                            onClick={() => onPageSelect(i)}
-                        >
+                    {pages.map((i) => (
+                        <Block key={`block_page_${i}`} onClick={() => onPageSelect(i)}>
                             {i}
-                        </Block.Text>
+                        </Block>
                     ))}
-                    {(pages?.[4] ?? 0) < pagination.totalPages && !isLastPage && (
-                        <Block.Text
-                            size={Button.Sizes.Small}
+                    {pages[4] < pagination.totalPages && !isLastPage && (
+                        <Block
+                            variant={Button.Variants.Secondary}
+                            color={'primary'}
                             onClick={() => onPageSelect(pagination.totalPages)}
-                            className={'mx-1'}
                         >
-                            <FontAwesomeIcon icon={faAngleDoubleRight} />
-                        </Block.Text>
+                            <Icon.ChevronRight />
+                        </Block>
                     )}
                 </div>
             )}

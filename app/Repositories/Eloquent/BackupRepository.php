@@ -1,10 +1,10 @@
 <?php
 
-namespace Everest\Repositories\Eloquent;
+namespace Jexactyl\Repositories\Eloquent;
 
 use Carbon\Carbon;
-use Everest\Models\Backup;
-use Everest\Models\Server;
+use Jexactyl\Models\Backup;
+use Jexactyl\Models\Server;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 

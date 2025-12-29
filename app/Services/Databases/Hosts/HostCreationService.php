@@ -1,13 +1,13 @@
 <?php
 
-namespace Everest\Services\Databases\Hosts;
+namespace Jexactyl\Services\Databases\Hosts;
 
-use Everest\Models\DatabaseHost;
+use Jexactyl\Models\DatabaseHost;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Contracts\Encryption\Encrypter;
-use Everest\Extensions\DynamicDatabaseConnection;
-use Everest\Contracts\Repository\DatabaseHostRepositoryInterface;
+use Jexactyl\Extensions\DynamicDatabaseConnection;
+use Jexactyl\Contracts\Repository\DatabaseHostRepositoryInterface;
 
 class HostCreationService
 {

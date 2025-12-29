@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Console\Commands\User;
+namespace Jexactyl\Console\Commands\User;
 
 use Illuminate\Console\Command;
-use Everest\Contracts\Repository\UserRepositoryInterface;
+use Jexactyl\Contracts\Repository\UserRepositoryInterface;
 
 class DisableTwoFactorCommand extends Command
 {
@@ -22,8 +22,8 @@ class DisableTwoFactorCommand extends Command
     /**
      * Handle command execution process.
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function handle()
     {

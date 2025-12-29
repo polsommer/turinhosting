@@ -1,12 +1,12 @@
 <?php
 
-namespace Everest\Models;
+namespace Jexactyl\Models;
 
 use Cron\CronExpression;
 use Carbon\CarbonImmutable;
 use Illuminate\Container\Container;
-use Everest\Contracts\Extensions\HashidsInterface;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Jexactyl\Contracts\Extensions\HashidsInterface;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
@@ -26,8 +26,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  * @property string $hashid
- * @property \Everest\Models\Server $server
- * @property \Everest\Models\Task[]|\Illuminate\Support\Collection $tasks
+ * @property \Jexactyl\Models\Server $server
+ * @property \Jexactyl\Models\Task[]|\Illuminate\Support\Collection $tasks
  */
 class Schedule extends Model
 {
@@ -71,8 +71,14 @@ class Schedule extends Model
         'is_active' => 'boolean',
         'is_processing' => 'boolean',
         'only_when_online' => 'boolean',
-        'last_run_at' => 'datetime',
-        'next_run_at' => 'datetime',
+    ];
+
+    /**
+     * Columns to mutate to a date.
+     */
+    protected $dates = [
+        'last_run_at',
+        'next_run_at',
     ];
 
     protected $attributes = [

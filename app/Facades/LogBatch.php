@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Facades;
+namespace Jexactyl\Facades;
 
 use Illuminate\Support\Facades\Facade;
-use Everest\Services\Activity\ActivityLogBatchService;
+use Jexactyl\Services\Activity\ActivityLogBatchService;
 
 class LogBatch extends Facade
 {

@@ -1,16 +1,16 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Client\Servers\Databases;
+namespace Jexactyl\Http\Requests\Api\Client\Servers\Databases;
 
-use Everest\Models\Server;
-use Everest\Models\Database;
+use Jexactyl\Models\Server;
 use Webmozart\Assert\Assert;
-use Everest\Models\Permission;
+use Jexactyl\Models\Database;
 use Illuminate\Validation\Rule;
+use Jexactyl\Models\Permission;
 use Illuminate\Database\Query\Builder;
-use Everest\Contracts\Http\ClientPermissionsRequest;
-use Everest\Http\Requests\Api\Client\ClientApiRequest;
-use Everest\Services\Databases\DatabaseManagementService;
+use Jexactyl\Contracts\Http\ClientPermissionsRequest;
+use Jexactyl\Http\Requests\Api\Client\ClientApiRequest;
+use Jexactyl\Services\Databases\DatabaseManagementService;
 
 class StoreDatabaseRequest extends ClientApiRequest implements ClientPermissionsRequest
 {
@@ -21,7 +21,6 @@ class StoreDatabaseRequest extends ClientApiRequest implements ClientPermissions
 
     public function rules(): array
     {
-        /** @var Server $server */
         $server = $this->route()->parameter('server');
 
         Assert::isInstanceOf($server, Server::class);

@@ -1,15 +1,15 @@
 <?php
 
-namespace Everest\Contracts\Repository;
+namespace Jexactyl\Contracts\Repository;
 
-use Everest\Models\Task;
+use Jexactyl\Models\Task;
 
 interface TaskRepositoryInterface extends RepositoryInterface
 {
     /**
      * Get a task and the server relationship for that task.
      *
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function getTaskForJobProcess(int $id): Task;
 

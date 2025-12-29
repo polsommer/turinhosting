@@ -1,6 +1,6 @@
 <?php
 
-namespace Everest\Http\Middleware;
+namespace Jexactyl\Http\Middleware;
 
 use Illuminate\Cookie\Middleware\EncryptCookies as BaseEncrypter;
 

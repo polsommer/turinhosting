@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Exceptions\Service\Allocation;
+namespace Jexactyl\Exceptions\Service\Allocation;
 
-use Everest\Exceptions\DisplayException;
+use Jexactyl\Exceptions\DisplayException;
 
 class ServerUsingAllocationException extends DisplayException
 {

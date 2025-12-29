@@ -1,13 +1,13 @@
 <?php
 
-namespace Everest\Console\Commands\Schedule;
+namespace Jexactyl\Console\Commands\Schedule;
 
 use Exception;
-use Everest\Models\Schedule;
+use Jexactyl\Models\Schedule;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Builder;
-use Everest\Services\Schedules\ProcessScheduleService;
+use Jexactyl\Services\Schedules\ProcessScheduleService;
 
 class ProcessRunnableCommand extends Command
 {

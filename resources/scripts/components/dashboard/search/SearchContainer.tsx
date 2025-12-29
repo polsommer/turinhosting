@@ -1,10 +1,14 @@
-import { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import * as Icon from 'react-feather';
+import React, { useState } from 'react';
 import useEventListener from '@/plugins/useEventListener';
 import SearchModal from '@/components/dashboard/search/SearchModal';
+import Tooltip from '@/components/elements/tooltip/Tooltip';
 
-export default () => {
+interface Props {
+    size: number;
+}
+
+export default ({ size }: Props) => {
     const [visible, setVisible] = useState(false);
 
     useEventListener('keydown', (e: KeyboardEvent) => {
@@ -17,12 +21,12 @@ export default () => {
 
     return (
         <>
-            <SearchModal open={visible} onClose={() => setVisible(false)} />
-
-            <div className={'navigation-link'} onClick={() => setVisible(true)}>
-                <FontAwesomeIcon icon={faSearch} />
-                Search
-            </div>
+            {visible && <SearchModal appear visible={visible} onDismissed={() => setVisible(false)} />}
+            <Tooltip placement={'bottom'} content={'Search'}>
+                <div className={'navigation-link'} onClick={() => setVisible(true)}>
+                    <Icon.Search size={size} />
+                </div>
+            </Tooltip>
         </>
     );
 };

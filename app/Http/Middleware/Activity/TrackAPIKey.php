@@ -1,10 +1,10 @@
 <?php
 
-namespace Everest\Http\Middleware\Activity;
+namespace Jexactyl\Http\Middleware\Activity;
 
-use Everest\Models\ApiKey;
+use Jexactyl\Models\ApiKey;
 use Illuminate\Http\Request;
-use Everest\Facades\LogTarget;
+use Jexactyl\Facades\LogTarget;
 
 class TrackAPIKey
 {

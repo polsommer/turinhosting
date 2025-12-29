@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Events\Auth;
+namespace Jexactyl\Events\Auth;
 
-use Everest\Models\User;
-use Everest\Events\Event;
+use Jexactyl\Models\User;
+use Jexactyl\Events\Event;
 
 class DirectLogin extends Event
 {

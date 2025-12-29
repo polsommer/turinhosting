@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Exceptions\Repository;
+namespace Jexactyl\Exceptions\Repository;
 
-use Everest\Exceptions\PterodactylException;
+use Jexactyl\Exceptions\JexactylException;
 
-class RepositoryException extends PterodactylException
+class RepositoryException extends JexactylException
 {
 }

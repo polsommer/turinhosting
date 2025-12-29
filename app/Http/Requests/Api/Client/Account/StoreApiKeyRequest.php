@@ -1,11 +1,11 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Client\Account;
+namespace Jexactyl\Http\Requests\Api\Client\Account;
 
 use IPTools\Range;
-use Everest\Models\ApiKey;
+use Jexactyl\Models\ApiKey;
 use Illuminate\Validation\Validator;
-use Everest\Http\Requests\Api\Client\ClientApiRequest;
+use Jexactyl\Http\Requests\Api\Client\ClientApiRequest;
 
 class StoreApiKeyRequest extends ClientApiRequest
 {

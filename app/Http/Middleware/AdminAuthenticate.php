@@ -1,6 +1,6 @@
 <?php
 
-namespace Everest\Http\Middleware;
+namespace Jexactyl\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -14,13 +14,7 @@ class AdminAuthenticate
      */
     public function handle(Request $request, \Closure $next): mixed
     {
-        $user = $request->user();
-
-        if (!$user) {
-            throw new AccessDeniedHttpException();
-        }
-
-        if (!$user->root_admin && empty($user->admin_role_id)) {
+        if (!$request->user() || !$request->user()->root_admin) {
             throw new AccessDeniedHttpException();
         }
 

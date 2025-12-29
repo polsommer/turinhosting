@@ -1,10 +1,10 @@
 <?php
 
-namespace Everest\Services\Servers;
+namespace Jexactyl\Services\Servers;
 
-use Everest\Models\Server;
+use Jexactyl\Models\Server;
 use Webmozart\Assert\Assert;
-use Everest\Repositories\Wings\DaemonServerRepository;
+use Jexactyl\Repositories\Wings\DaemonServerRepository;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 class SuspensionService

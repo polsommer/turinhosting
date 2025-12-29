@@ -1,10 +1,10 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Client\Servers\Files;
+namespace Jexactyl\Http\Requests\Api\Client\Servers\Files;
 
-use Everest\Models\Permission;
-use Everest\Contracts\Http\ClientPermissionsRequest;
-use Everest\Http\Requests\Api\Client\ClientApiRequest;
+use Jexactyl\Models\Permission;
+use Jexactyl\Contracts\Http\ClientPermissionsRequest;
+use Jexactyl\Http\Requests\Api\Client\ClientApiRequest;
 
 class PullFileRequest extends ClientApiRequest implements ClientPermissionsRequest
 {
@@ -16,7 +16,7 @@ class PullFileRequest extends ClientApiRequest implements ClientPermissionsReque
     public function rules(): array
     {
         return [
-            'url' => 'required|string|url',
+            'url' => 'sometimes|string|url',
             'directory' => 'nullable|string',
             'filename' => 'nullable|string',
             'use_header' => 'boolean',

@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 import { useMemo } from 'react';
 
 export default () => {
@@ -9,7 +9,7 @@ export default () => {
             .substring(1)
             .split('&')
             .reduce((obj, str) => {
-                const [key = '', value = ''] = str.split('=');
+                const [key, value = ''] = str.split('=');
 
                 return !str.trim() ? obj : { ...obj, [key]: value };
             }, {});
@@ -18,11 +18,11 @@ export default () => {
         const current = getHashObject(location.hash);
 
         for (const key in params) {
-            current[key] = params[key] ?? '';
+            current[key] = params[key];
         }
 
         return Object.keys(current)
-            .map(key => `${key}=${current[key]}`)
+            .map((key) => `${key}=${current[key]}`)
             .join('&');
     };
 

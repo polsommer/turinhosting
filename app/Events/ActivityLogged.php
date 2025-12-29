@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Events;
+namespace Jexactyl\Events;
 
 use Illuminate\Support\Str;
-use Everest\Models\ActivityLog;
+use Jexactyl\Models\ActivityLog;
 use Illuminate\Database\Eloquent\Model;
 
 class ActivityLogged extends Event

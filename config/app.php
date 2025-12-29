@@ -7,58 +7,11 @@ return [
     |--------------------------------------------------------------------------
     | Application Version
     |--------------------------------------------------------------------------
-    | This value is set when creating a release. You should not
+    | This value is set when creating a Jexactyl release. You should not
     | change this value if you are not maintaining your own internal versions.
     */
 
-    'version' => '4.0.0-rc2',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Automatic Updates
-    |--------------------------------------------------------------------------
-    | Allow Jexactyl to update itself in the background in line with the latest
-    | GitHub software release. This feature is off by default.
-    */
-    'auto_update' => false,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Admin Indicators
-    |--------------------------------------------------------------------------
-    | Allow the panel to display small indicators in the top-right of the UI
-    | when certain Jexactyl features are toggled to 'on'.
-    */
-    'indicators' => false,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Is Setup
-    |--------------------------------------------------------------------------
-    | This variable toggles whether Jexactyl has been configured and is ready
-    | for use. This should ideally be done via the UI.
-    */
-    'auto_update' => false,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Admin Speed Dial
-    |--------------------------------------------------------------------------
-    | This controls whether a small 'speed dial' component is visible to
-    | administrators when they are on the client UI, to perform certain admin-side
-    | actions quickly.
-    */
-    'speed_dial' => false,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Panel Mode
-    |--------------------------------------------------------------------------
-    | The 'mode' of the Panel controls what features are automatically hidden.
-    | - Standard: All features & functions enabled
-    | - Personal: A simple mode with barebone features
-    */
-    'mode' => 'standard',
+    'version' => '3.7.4',
 
     /*
     |--------------------------------------------------------------------------
@@ -70,7 +23,7 @@ return [
     | any other location as required by the application or its packages.
     */
 
-    'name' => env('APP_NAME', 'Everest'),
+    'name' => env('APP_NAME', 'Jexactyl'),
 
     /*
     |--------------------------------------------------------------------------
@@ -152,6 +105,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Logo
+    |--------------------------------------------------------------------------
+    |
+    | Used as the Panel logo and branding which is displayed via the frontend.
+    |
+    */
+
+    'logo' => '',
+
+    /*
+    |--------------------------------------------------------------------------
     | Encryption Key
     |--------------------------------------------------------------------------
     |
@@ -224,6 +188,7 @@ return [
         Illuminate\Filesystem\FilesystemServiceProvider::class,
         Illuminate\Foundation\Providers\FoundationServiceProvider::class,
         Illuminate\Hashing\HashServiceProvider::class,
+        Illuminate\Mail\MailServiceProvider::class,
         Illuminate\Notifications\NotificationServiceProvider::class,
         Illuminate\Pagination\PaginationServiceProvider::class,
         Illuminate\Pipeline\PipelineServiceProvider::class,
@@ -238,16 +203,21 @@ return [
         /*
          * Application Service Providers...
          */
-        Everest\Providers\ActivityLogServiceProvider::class,
-        Everest\Providers\AppServiceProvider::class,
-        Everest\Providers\AuthServiceProvider::class,
-        Everest\Providers\BackupsServiceProvider::class,
-        Everest\Providers\BladeServiceProvider::class,
-        Everest\Providers\EventServiceProvider::class,
-        Everest\Providers\HashidsServiceProvider::class,
-        Everest\Providers\RouteServiceProvider::class,
-        Everest\Providers\RepositoryServiceProvider::class,
-        Everest\Providers\ViewComposerServiceProvider::class,
+        Jexactyl\Providers\ActivityLogServiceProvider::class,
+        Jexactyl\Providers\AppServiceProvider::class,
+        Jexactyl\Providers\AuthServiceProvider::class,
+        Jexactyl\Providers\BackupsServiceProvider::class,
+        Jexactyl\Providers\BladeServiceProvider::class,
+        Jexactyl\Providers\EventServiceProvider::class,
+        Jexactyl\Providers\HashidsServiceProvider::class,
+        Jexactyl\Providers\RouteServiceProvider::class,
+        Jexactyl\Providers\RepositoryServiceProvider::class,
+        Jexactyl\Providers\ViewComposerServiceProvider::class,
+
+        /*
+         * Additional Dependencies
+         */
+        Prologue\Alerts\AlertsServiceProvider::class,
     ],
 
     /*
@@ -262,12 +232,14 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
+        'Alert' => Prologue\Alerts\Facades\Alert::class,
         'Carbon' => Carbon\Carbon::class,
         'JavaScript' => Laracasts\Utilities\JavaScript\JavaScriptFacade::class,
+        'Theme' => Jexactyl\Extensions\Facades\Theme::class,
 
         // Custom Facades
-        'Activity' => Everest\Facades\Activity::class,
-        'LogBatch' => Everest\Facades\LogBatch::class,
-        'LogTarget' => Everest\Facades\LogTarget::class,
+        'Activity' => Jexactyl\Facades\Activity::class,
+        'LogBatch' => Jexactyl\Facades\LogBatch::class,
+        'LogTarget' => Jexactyl\Facades\LogTarget::class,
     ])->toArray(),
 ];

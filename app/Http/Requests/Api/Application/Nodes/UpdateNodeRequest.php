@@ -1,19 +1,19 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Application\Nodes;
+namespace Jexactyl\Http\Requests\Api\Application\Nodes;
 
-use Everest\Models\Node;
-use Everest\Models\AdminRole;
+use Jexactyl\Models\Node;
 
 class UpdateNodeRequest extends StoreNodeRequest
 {
+    /**
+     * Apply validation rules to this request. Uses the parent class rules()
+     * function but passes in the rules for updating rather than creating.
+     */
     public function rules(array $rules = null): array
     {
-        return parent::rules($rules ?? Node::getRulesForUpdate($this->route()->parameter('node')));
-    }
+        $node = $this->route()->parameter('node')->id;
 
-    public function permission(): string
-    {
-        return AdminRole::NODES_UPDATE;
+        return parent::rules(Node::getRulesForUpdate($node));
     }
 }

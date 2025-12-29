@@ -1,5 +1,4 @@
-import { cloneElement, useRef, useState } from 'react';
-import * as React from 'react';
+import React, { cloneElement, useRef, useState } from 'react';
 import {
     arrow,
     autoUpdate,
@@ -30,7 +29,6 @@ interface Props {
     interactions?: Interaction[];
     placement?: Placement;
     className?: string;
-    open?: boolean;
     children: React.ReactElement;
 }
 
@@ -43,7 +41,7 @@ const arrowSides: Record<Side, string> = {
 
 export default ({ children, ...props }: Props) => {
     const arrowEl = useRef<HTMLDivElement>(null);
-    const [open, setOpen] = useState(props.open || false);
+    const [open, setOpen] = useState(false);
 
     const { x, y, reference, floating, middlewareData, strategy, context } = useFloating({
         open,
@@ -92,7 +90,7 @@ export default ({ children, ...props }: Props) => {
                         {...getFloatingProps({
                             ref: floating,
                             className:
-                                'bg-slate-900 text-sm text-slate-200 px-3 py-2 rounded pointer-events-none max-w-[24rem] normal-case',
+                                'bg-gray-900 text-sm text-gray-200 px-3 py-2 rounded pointer-events-none max-w-[24rem]',
                             style: {
                                 position: strategy,
                                 top: `${y || 0}px`,
@@ -106,10 +104,10 @@ export default ({ children, ...props }: Props) => {
                                 ref={arrowEl}
                                 style={{
                                     transform: `translate(${Math.round(ax || 0)}px, ${Math.round(
-                                        ay || 0,
+                                        ay || 0
                                     )}px) rotate(45deg)`,
                                 }}
-                                className={classNames('absolute h-3 w-3 bg-slate-900 z-50', side)}
+                                className={classNames('absolute bg-gray-900 w-3 h-3', side)}
                             />
                         )}
                     </motion.div>

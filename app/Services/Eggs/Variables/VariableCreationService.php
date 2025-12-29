@@ -1,12 +1,12 @@
 <?php
 
-namespace Everest\Services\Eggs\Variables;
+namespace Jexactyl\Services\Eggs\Variables;
 
-use Everest\Models\EggVariable;
-use Everest\Traits\Services\ValidatesValidationRules;
-use Everest\Contracts\Repository\EggVariableRepositoryInterface;
+use Jexactyl\Models\EggVariable;
+use Jexactyl\Traits\Services\ValidatesValidationRules;
 use Illuminate\Contracts\Validation\Factory as ValidationFactory;
-use Everest\Exceptions\Service\Egg\Variable\ReservedVariableNameException;
+use Jexactyl\Contracts\Repository\EggVariableRepositoryInterface;
+use Jexactyl\Exceptions\Service\Egg\Variable\ReservedVariableNameException;
 
 class VariableCreationService
 {
@@ -31,9 +31,9 @@ class VariableCreationService
     /**
      * Create a new variable for a given Egg.
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
-     * @throws \Everest\Exceptions\Service\Egg\Variable\BadValidationRuleException
-     * @throws \Everest\Exceptions\Service\Egg\Variable\ReservedVariableNameException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Service\Egg\Variable\BadValidationRuleException
+     * @throws \Jexactyl\Exceptions\Service\Egg\Variable\ReservedVariableNameException
      */
     public function handle(int $egg, array $data): EggVariable
     {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Exceptions\Http\Server;
+namespace Jexactyl\Exceptions\Http\Server;
 
-use Everest\Exceptions\DisplayException;
+use Jexactyl\Exceptions\DisplayException;
 
 class FileSizeTooLargeException extends DisplayException
 {

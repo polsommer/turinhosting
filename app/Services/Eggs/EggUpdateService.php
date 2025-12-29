@@ -1,10 +1,10 @@
 <?php
 
-namespace Everest\Services\Eggs;
+namespace Jexactyl\Services\Eggs;
 
-use Everest\Models\Egg;
-use Everest\Contracts\Repository\EggRepositoryInterface;
-use Everest\Exceptions\Service\Egg\NoParentConfigurationFoundException;
+use Jexactyl\Models\Egg;
+use Jexactyl\Contracts\Repository\EggRepositoryInterface;
+use Jexactyl\Exceptions\Service\Egg\NoParentConfigurationFoundException;
 
 class EggUpdateService
 {
@@ -18,9 +18,9 @@ class EggUpdateService
     /**
      * Update a service option.
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
-     * @throws \Everest\Exceptions\Service\Egg\NoParentConfigurationFoundException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Service\Egg\NoParentConfigurationFoundException
      */
     public function handle(Egg $egg, array $data): void
     {

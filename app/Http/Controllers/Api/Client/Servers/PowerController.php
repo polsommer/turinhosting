@@ -1,13 +1,13 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Client\Servers;
+namespace Jexactyl\Http\Controllers\Api\Client\Servers;
 
-use Everest\Models\Server;
-use Everest\Facades\Activity;
+use Jexactyl\Models\Server;
 use Illuminate\Http\Response;
-use Everest\Repositories\Wings\DaemonPowerRepository;
-use Everest\Http\Controllers\Api\Client\ClientApiController;
-use Everest\Http\Requests\Api\Client\Servers\SendPowerRequest;
+use Jexactyl\Facades\Activity;
+use Jexactyl\Repositories\Wings\DaemonPowerRepository;
+use Jexactyl\Http\Controllers\Api\Client\ClientApiController;
+use Jexactyl\Http\Requests\Api\Client\Servers\SendPowerRequest;
 
 class PowerController extends ClientApiController
 {

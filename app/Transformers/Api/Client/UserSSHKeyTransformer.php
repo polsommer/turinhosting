@@ -1,11 +1,10 @@
 <?php
 
-namespace Everest\Transformers\Api\Client;
+namespace Jexactyl\Transformers\Api\Client;
 
-use Everest\Models\UserSSHKey;
-use Everest\Transformers\Api\Transformer;
+use Jexactyl\Models\UserSSHKey;
 
-class UserSSHKeyTransformer extends Transformer
+class UserSSHKeyTransformer extends BaseClientTransformer
 {
     public function getResourceName(): string
     {
@@ -21,7 +20,7 @@ class UserSSHKeyTransformer extends Transformer
             'name' => $model->name,
             'fingerprint' => $model->fingerprint,
             'public_key' => $model->public_key,
-            'created_at' => self::formatTimestamp($model->created_at),
+            'created_at' => $model->created_at->toAtomString(),
         ];
     }
 }

@@ -1,10 +1,10 @@
 <?php
 
-namespace Everest\Http\Middleware\Api\Client\Server;
+namespace Jexactyl\Http\Middleware\Api\Client\Server;
 
-use Everest\Models\Server;
+use Jexactyl\Models\Server;
 use Illuminate\Http\Request;
-use Everest\Exceptions\Http\Server\ServerStateConflictException;
+use Jexactyl\Exceptions\Http\Server\ServerStateConflictException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AuthenticateServerAccess
@@ -28,7 +28,7 @@ class AuthenticateServerAccess
      */
     public function handle(Request $request, \Closure $next): mixed
     {
-        /** @var \Everest\Models\User $user */
+        /** @var \Jexactyl\Models\User $user */
         $user = $request->user();
         $server = $request->route()->parameter('server');
 
@@ -46,17 +46,19 @@ class AuthenticateServerAccess
             }
         }
 
-        try {
-            $server->validateCurrentState();
-        } catch (ServerStateConflictException $exception) {
-            // Still allow users to get information about their server if it is installing or
-            // being transferred.
-            if (!$request->routeIs('api:client:server.view')) {
-                if (($server->isSuspended() || $server->node->isUnderMaintenance()) && !$request->routeIs('api:client:server.resources')) {
-                    throw $exception;
-                }
-                if (!$user->root_admin || !$request->routeIs($this->except)) {
-                    throw $exception;
+        if (!$request->routeIs(['api:client:server.delete', 'api:client:server.renew'])) {
+            try {
+                $server->validateCurrentState();
+            } catch (ServerStateConflictException $exception) {
+                // Still allow users to get information about their server if it is installing or
+                // being transferred.
+                if (!$request->routeIs('api:client:server.view')) {
+                    if (($server->isSuspended() || $server->node->isUnderMaintenance()) && !$request->routeIs('api:client:server.resources')) {
+                        throw $exception;
+                    }
+                    if (!$user->root_admin || !$request->routeIs($this->except)) {
+                        throw $exception;
+                    }
                 }
             }
         }

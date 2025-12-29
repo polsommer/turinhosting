@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Client\Servers\Schedules;
+namespace Jexactyl\Http\Requests\Api\Client\Servers\Schedules;
 
-use Everest\Models\Permission;
-use Everest\Http\Requests\Api\Client\ClientApiRequest;
+use Jexactyl\Models\Permission;
+use Jexactyl\Http\Requests\Api\Client\ClientApiRequest;
 
 class TriggerScheduleRequest extends ClientApiRequest
 {

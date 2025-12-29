@@ -1,6 +1,6 @@
 <?php
 
-namespace Everest\Exceptions;
+namespace Jexactyl\Exceptions;
 
 class AutoDeploymentException extends \Exception
 {

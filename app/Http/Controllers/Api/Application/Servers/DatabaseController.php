@@ -1,19 +1,19 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Application\Servers;
+namespace Jexactyl\Http\Controllers\Api\Application\Servers;
 
-use Everest\Models\Server;
-use Everest\Models\Database;
+use Jexactyl\Models\Server;
 use Illuminate\Http\Response;
+use Jexactyl\Models\Database;
 use Illuminate\Http\JsonResponse;
-use Everest\Services\Databases\DatabasePasswordService;
-use Everest\Services\Databases\DatabaseManagementService;
-use Everest\Transformers\Api\Application\ServerDatabaseTransformer;
-use Everest\Http\Controllers\Api\Application\ApplicationApiController;
-use Everest\Http\Requests\Api\Application\Servers\Databases\GetServerDatabaseRequest;
-use Everest\Http\Requests\Api\Application\Servers\Databases\GetServerDatabasesRequest;
-use Everest\Http\Requests\Api\Application\Servers\Databases\ServerDatabaseWriteRequest;
-use Everest\Http\Requests\Api\Application\Servers\Databases\StoreServerDatabaseRequest;
+use Jexactyl\Services\Databases\DatabasePasswordService;
+use Jexactyl\Services\Databases\DatabaseManagementService;
+use Jexactyl\Transformers\Api\Application\ServerDatabaseTransformer;
+use Jexactyl\Http\Controllers\Api\Application\ApplicationApiController;
+use Jexactyl\Http\Requests\Api\Application\Servers\Databases\GetServerDatabaseRequest;
+use Jexactyl\Http\Requests\Api\Application\Servers\Databases\GetServerDatabasesRequest;
+use Jexactyl\Http\Requests\Api\Application\Servers\Databases\ServerDatabaseWriteRequest;
+use Jexactyl\Http\Requests\Api\Application\Servers\Databases\StoreServerDatabaseRequest;
 
 class DatabaseController extends ApplicationApiController
 {
@@ -34,7 +34,7 @@ class DatabaseController extends ApplicationApiController
     public function index(GetServerDatabasesRequest $request, Server $server): array
     {
         return $this->fractal->collection($server->databases)
-            ->transformWith(ServerDatabaseTransformer::class)
+            ->transformWith($this->getTransformer(ServerDatabaseTransformer::class))
             ->toArray();
     }
 
@@ -44,7 +44,7 @@ class DatabaseController extends ApplicationApiController
     public function view(GetServerDatabaseRequest $request, Server $server, Database $database): array
     {
         return $this->fractal->item($database)
-            ->transformWith(ServerDatabaseTransformer::class)
+            ->transformWith($this->getTransformer(ServerDatabaseTransformer::class))
             ->toArray();
     }
 
@@ -53,11 +53,11 @@ class DatabaseController extends ApplicationApiController
      *
      * @throws \Throwable
      */
-    public function resetPassword(ServerDatabaseWriteRequest $request, Server $server, Database $database): Response
+    public function resetPassword(ServerDatabaseWriteRequest $request, Server $server, Database $database): JsonResponse
     {
         $this->databasePasswordService->handle($database);
 
-        return $this->returnNoContent();
+        return new JsonResponse([], JsonResponse::HTTP_NO_CONTENT);
     }
 
     /**
@@ -72,19 +72,23 @@ class DatabaseController extends ApplicationApiController
         ]));
 
         return $this->fractal->item($database)
-            ->transformWith(ServerDatabaseTransformer::class)
+            ->transformWith($this->getTransformer(ServerDatabaseTransformer::class))
+            ->addMeta([
+                'resource' => route('api.application.servers.databases.view', [
+                    'server' => $server->id,
+                    'database' => $database->id,
+                ]),
+            ])
             ->respond(Response::HTTP_CREATED);
     }
 
     /**
      * Handle a request to delete a specific server database from the Panel.
-     *
-     * @throws \Exception
      */
-    public function delete(ServerDatabaseWriteRequest $request, Database $database): Response
+    public function delete(ServerDatabaseWriteRequest $request, Server $server, Database $database): Response
     {
         $this->databaseManagementService->delete($database);
 
-        return $this->returnNoContent();
+        return response('', 204);
     }
 }

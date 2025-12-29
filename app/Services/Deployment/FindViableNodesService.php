@@ -1,17 +1,30 @@
 <?php
 
-namespace Everest\Services\Deployment;
+namespace Jexactyl\Services\Deployment;
 
-use Everest\Models\Node;
+use Jexactyl\Models\Node;
 use Webmozart\Assert\Assert;
 use Illuminate\Support\Collection;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Everest\Exceptions\Service\Deployment\NoViableNodeException;
+use Jexactyl\Exceptions\Service\Deployment\NoViableNodeException;
 
 class FindViableNodesService
 {
+    protected array $locations = [];
     protected ?int $disk = null;
     protected ?int $memory = null;
+
+    /**
+     * Set the locations that should be searched through to locate available nodes.
+     */
+    public function setLocations(array $locations): self
+    {
+        Assert::allIntegerish($locations, 'An array of location IDs should be provided when calling setLocations.');
+
+        $this->locations = $locations;
+
+        return $this;
+    }
 
     /**
      * Set the amount of disk that will be used by the server being created. Nodes will be
@@ -51,7 +64,7 @@ class FindViableNodesService
      *                       If "null" is provided as the value no pagination will
      *                       be used.
      *
-     * @throws \Everest\Exceptions\Service\Deployment\NoViableNodeException
+     * @throws \Jexactyl\Exceptions\Service\Deployment\NoViableNodeException
      */
     public function handle(int $perPage = null, int $page = null): LengthAwarePaginator|Collection
     {
@@ -59,14 +72,18 @@ class FindViableNodesService
         Assert::integer($this->memory, 'Memory usage must be an int, got %s');
 
         $query = Node::query()->select('nodes.*')
-            ->selectRaw('COALESCE(SUM(servers.memory), 0) as sum_memory')
-            ->selectRaw('COALESCE(SUM(servers.disk), 0) as sum_disk')
+            ->selectRaw('IFNULL(SUM(servers.memory), 0) as sum_memory')
+            ->selectRaw('IFNULL(SUM(servers.disk), 0) as sum_disk')
             ->leftJoin('servers', 'servers.node_id', '=', 'nodes.id')
             ->where('nodes.public', 1);
 
+        if (!empty($this->locations)) {
+            $query = $query->whereIn('nodes.location_id', $this->locations);
+        }
+
         $results = $query->groupBy('nodes.id')
-            ->havingRaw('(COALESCE(SUM(servers.memory), 0) + ?) <= (nodes.memory * (1.0 + (nodes.memory_overallocate / 100.0)))', [$this->memory])
-            ->havingRaw('(COALESCE(SUM(servers.disk), 0) + ?) <= (nodes.disk * (1.0 + (nodes.disk_overallocate / 100.0)))', [$this->disk]);
+            ->havingRaw('(IFNULL(SUM(servers.memory), 0) + ?) <= (nodes.memory * (1 + (nodes.memory_overallocate / 100)))', [$this->memory])
+            ->havingRaw('(IFNULL(SUM(servers.disk), 0) + ?) <= (nodes.disk * (1 + (nodes.disk_overallocate / 100)))', [$this->disk]);
 
         if (!is_null($page)) {
             $results = $results->paginate($perPage ?? 50, ['*'], 'page', $page);

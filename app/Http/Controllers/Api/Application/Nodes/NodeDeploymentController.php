@@ -1,11 +1,11 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Application\Nodes;
+namespace Jexactyl\Http\Controllers\Api\Application\Nodes;
 
-use Everest\Services\Deployment\FindViableNodesService;
-use Everest\Transformers\Api\Application\NodeTransformer;
-use Everest\Http\Controllers\Api\Application\ApplicationApiController;
-use Everest\Http\Requests\Api\Application\Nodes\GetDeployableNodesRequest;
+use Jexactyl\Services\Deployment\FindViableNodesService;
+use Jexactyl\Transformers\Api\Application\NodeTransformer;
+use Jexactyl\Http\Controllers\Api\Application\ApplicationApiController;
+use Jexactyl\Http\Requests\Api\Application\Nodes\GetDeployableNodesRequest;
 
 class NodeDeploymentController extends ApplicationApiController
 {
@@ -22,18 +22,18 @@ class NodeDeploymentController extends ApplicationApiController
      * similarly to the server creation process, but allows you to pass the deployment object
      * to this endpoint and get back a list of all Nodes satisfying the requirements.
      *
-     * @throws \Everest\Exceptions\Service\Deployment\NoViableNodeException
+     * @throws \Jexactyl\Exceptions\Service\Deployment\NoViableNodeException
      */
     public function __invoke(GetDeployableNodesRequest $request): array
     {
         $data = $request->validated();
-        $nodes = $this->viableNodesService
+        $nodes = $this->viableNodesService->setLocations($data['location_ids'] ?? [])
             ->setMemory($data['memory'])
             ->setDisk($data['disk'])
             ->handle($request->query('per_page'), $request->query('page'));
 
         return $this->fractal->collection($nodes)
-            ->transformWith(NodeTransformer::class)
+            ->transformWith($this->getTransformer(NodeTransformer::class))
             ->toArray();
     }
 }

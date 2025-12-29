@@ -1,17 +1,17 @@
 <?php
 
-namespace Everest\Transformers\Api\Application;
+namespace Jexactyl\Transformers\Api\Application;
 
-use Everest\Models\Database;
+use Jexactyl\Models\Database;
+use Jexactyl\Models\DatabaseHost;
 use League\Fractal\Resource\Item;
-use Everest\Services\Acl\Api\AdminAcl;
-use Everest\Transformers\Api\Transformer;
+use Jexactyl\Services\Acl\Api\AdminAcl;
 use League\Fractal\Resource\NullResource;
 use Illuminate\Contracts\Encryption\Encrypter;
 
-class ServerDatabaseTransformer extends Transformer
+class ServerDatabaseTransformer extends BaseTransformer
 {
-    protected array $availableIncludes = ['host', 'password'];
+    protected array $availableIncludes = ['password', 'host'];
 
     private Encrypter $encrypter;
 
@@ -38,27 +38,15 @@ class ServerDatabaseTransformer extends Transformer
     {
         return [
             'id' => $model->id,
-            'database_host_id' => $model->database_host_id,
-            'server_id' => $model->server_id,
-            'name' => $model->database,
+            'server' => $model->server_id,
+            'host' => $model->database_host_id,
+            'database' => $model->database,
             'username' => $model->username,
             'remote' => $model->remote,
             'max_connections' => $model->max_connections,
-            'created_at' => self::formatTimestamp($model->created_at),
-            'updated_at' => self::formatTimestamp($model->updated_at),
+            'created_at' => $model->created_at->toAtomString(),
+            'updated_at' => $model->updated_at->toAtomString(),
         ];
-    }
-
-    /**
-     * Return the database host relationship for this server database.
-     */
-    public function includeHost(Database $model): Item|NullResource
-    {
-        if (!$this->authorize(AdminAcl::RESOURCE_DATABASE_HOSTS)) {
-            return $this->null();
-        }
-
-        return $this->item($model->host, new DatabaseHostTransformer());
     }
 
     /**
@@ -71,5 +59,25 @@ class ServerDatabaseTransformer extends Transformer
                 'password' => $this->encrypter->decrypt($model->password),
             ];
         }, 'database_password');
+    }
+
+    /**
+     * Return the database host relationship for this server database.
+     *
+     * @throws \Jexactyl\Exceptions\Transformer\InvalidTransformerLevelException
+     */
+    public function includeHost(Database $model): Item|NullResource
+    {
+        if (!$this->authorize(AdminAcl::RESOURCE_DATABASE_HOSTS)) {
+            return $this->null();
+        }
+
+        $model->loadMissing('host');
+
+        return $this->item(
+            $model->getRelation('host'),
+            $this->makeTransformer(DatabaseHostTransformer::class),
+            DatabaseHost::RESOURCE_NAME
+        );
     }
 }

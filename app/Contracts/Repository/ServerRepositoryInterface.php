@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Contracts\Repository;
+namespace Jexactyl\Contracts\Repository;
 
-use Everest\Models\Server;
+use Jexactyl\Models\Server;
 use Illuminate\Support\Collection;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
@@ -26,7 +26,7 @@ interface ServerRepositoryInterface extends RepositoryInterface
     /**
      * Return a server model and all variables associated with the server.
      *
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function findWithVariables(int $id): Server;
 
@@ -57,7 +57,7 @@ interface ServerRepositoryInterface extends RepositoryInterface
     /**
      * Return a server by UUID.
      *
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function getByUuid(string $uuid): Server;
 

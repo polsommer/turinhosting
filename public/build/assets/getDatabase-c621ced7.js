@@ -1,1 +1,0 @@
-import{l as s}from"./index-7b302c2d.js";import{r as i}from"./getDatabases-b49615dc.js";const m=(a,t=[])=>new Promise((e,r)=>{s.get(`/api/application/databases/${a}`,{params:{include:t.join(",")}}).then(({data:o})=>e(i(o))).catch(r)});export{m as g};

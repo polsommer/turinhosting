@@ -1,6 +1,6 @@
 <?php
 
-namespace Everest\Console\Commands\Maintenance;
+namespace Jexactyl\Console\Commands\Maintenance;
 
 use Carbon\Carbon;
 use Illuminate\Console\Command;

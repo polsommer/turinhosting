@@ -1,11 +1,11 @@
 <?php
 
-namespace Everest\Console\Commands\Environment;
+namespace Jexactyl\Console\Commands\Environment;
 
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Database\DatabaseManager;
-use Everest\Traits\Commands\EnvironmentWriterTrait;
+use Jexactyl\Traits\Commands\EnvironmentWriterTrait;
 
 class DatabaseSettingsCommand extends Command
 {
@@ -18,10 +18,7 @@ class DatabaseSettingsCommand extends Command
                             {--port= : The connection port for the MySQL server.}
                             {--database= : The database to use.}
                             {--username= : Username to use when connecting.}
-                            {--password= : Password to use for this database.}
-                            {--create : Automatically create the database and user if they do not exist.}
-                            {--admin-username= : Admin username for MySQL user/database creation.}
-                            {--admin-password= : Admin password for MySQL user/database creation.}';
+                            {--password= : Password to use for this database.}';
 
     protected array $variables = [];
 
@@ -36,7 +33,7 @@ class DatabaseSettingsCommand extends Command
     /**
      * Handle command execution.
      *
-     * @throws \Everest\Exceptions\PterodactylException
+     * @throws \Jexactyl\Exceptions\JexactylException
      */
     public function handle(): int
     {
@@ -59,7 +56,7 @@ class DatabaseSettingsCommand extends Command
         $this->output->note('Using the "root" account for MySQL connections is not only highly frowned upon, it is also not allowed by this application. You\'ll need to have created a MySQL user for this software.');
         $this->variables['DB_USERNAME'] = $this->option('username') ?? $this->ask(
             'Database Username',
-            config('database.connections.mysql.username', 'Everest')
+            config('database.connections.mysql.username', 'jexactyl')
         );
 
         $askForMySQLPassword = true;
@@ -72,41 +69,19 @@ class DatabaseSettingsCommand extends Command
             $this->variables['DB_PASSWORD'] = $this->option('password') ?? $this->secret('Database Password');
         }
 
-        if ($this->option('create')) {
-            if (!$this->attemptAutoCreate()) {
-                return 1;
-            }
-        }
-
         try {
             $this->testMySQLConnection();
         } catch (\PDOException $exception) {
             $this->output->error(sprintf('Unable to connect to the MySQL server using the provided credentials. The error returned was "%s".', $exception->getMessage()));
+            $this->output->error('Your connection credentials have NOT been saved. You will need to provide valid connection information before proceeding.');
 
-            if ($this->input->isInteractive() && $this->confirm('Would you like the Panel to create the database and user automatically?')) {
-                if (!$this->attemptAutoCreate()) {
-                    return 1;
-                }
+            if ($this->confirm('Go back and try again?')) {
+                $this->database->disconnect('_jexactyl_command_test');
 
-                try {
-                    $this->testMySQLConnection();
-                } catch (\PDOException $exception) {
-                    $this->output->error(sprintf('Unable to connect to the MySQL server using the provided credentials. The error returned was "%s".', $exception->getMessage()));
-                    $this->output->error('Your connection credentials have NOT been saved. You will need to provide valid connection information before proceeding.');
-
-                    return 1;
-                }
-            } else {
-                $this->output->error('Your connection credentials have NOT been saved. You will need to provide valid connection information before proceeding.');
-
-                if ($this->confirm('Go back and try again?')) {
-                    $this->database->disconnect('_pterodactyl_command_test');
-
-                    return $this->handle();
-                }
-
-                return 1;
+                return $this->handle();
             }
+
+            return 1;
         }
 
         $this->writeToEnvironment($this->variables);
@@ -121,7 +96,7 @@ class DatabaseSettingsCommand extends Command
      */
     private function testMySQLConnection()
     {
-        config()->set('database.connections._pterodactyl_command_test', [
+        config()->set('database.connections._jexactyl_command_test', [
             'driver' => 'mysql',
             'host' => $this->variables['DB_HOST'],
             'port' => $this->variables['DB_PORT'],
@@ -133,93 +108,6 @@ class DatabaseSettingsCommand extends Command
             'strict' => true,
         ]);
 
-        $this->database->connection('_pterodactyl_command_test')->getPdo();
-    }
-
-    /**
-     * Attempt to create the database and user with admin credentials.
-     */
-    private function attemptAutoCreate(): bool
-    {
-        try {
-            $adminCredentials = $this->getAdminCredentials();
-            $this->createDatabaseAndUser($adminCredentials['username'], $adminCredentials['password']);
-        } catch (\RuntimeException $exception) {
-            $this->output->error($exception->getMessage());
-
-            return false;
-        } catch (\PDOException $exception) {
-            $this->output->error(sprintf('Unable to create the database and user. The error returned was "%s".', $exception->getMessage()));
-
-            return false;
-        }
-
-        $this->output->info('Database and user created successfully.');
-
-        return true;
-    }
-
-    /**
-     * @return array{username: string, password: string}
-     */
-    private function getAdminCredentials(): array
-    {
-        $username = $this->option('admin-username') ?? $this->ask('Admin Username', 'root');
-        $password = $this->option('admin-password');
-
-        if (is_null($password)) {
-            if (!$this->input->isInteractive()) {
-                throw new \RuntimeException('The admin password is required when running non-interactively.');
-            }
-
-            $password = $this->secret('Admin Password (leave blank for none)');
-        }
-
-        if (is_null($password)) {
-            $password = '';
-        }
-
-        return [
-            'username' => $username,
-            'password' => $password,
-        ];
-    }
-
-    private function createDatabaseAndUser(string $adminUsername, string $adminPassword): void
-    {
-        $connection = new \PDO(
-            sprintf('mysql:host=%s;port=%s', $this->variables['DB_HOST'], $this->variables['DB_PORT']),
-            $adminUsername,
-            $adminPassword,
-            [
-                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-            ]
-        );
-
-        $database = $this->escapeIdentifier($this->variables['DB_DATABASE']);
-        $username = $connection->quote($this->variables['DB_USERNAME']);
-        $password = $connection->quote($this->variables['DB_PASSWORD'] ?? '');
-        $host = $connection->quote($this->resolveUserHost());
-
-        $connection->exec(sprintf('CREATE DATABASE IF NOT EXISTS `%s`', $database));
-        $connection->exec(sprintf('CREATE USER IF NOT EXISTS %s@%s IDENTIFIED BY %s', $username, $host, $password));
-        $connection->exec(sprintf('GRANT ALL PRIVILEGES ON `%s`.* TO %s@%s', $database, $username, $host));
-        $connection->exec('FLUSH PRIVILEGES');
-    }
-
-    private function resolveUserHost(): string
-    {
-        $host = $this->variables['DB_HOST'];
-
-        if (in_array($host, ['localhost', '127.0.0.1'], true)) {
-            return $host;
-        }
-
-        return '%';
-    }
-
-    private function escapeIdentifier(string $identifier): string
-    {
-        return str_replace('`', '``', $identifier);
+        $this->database->connection('_jexactyl_command_test')->getPdo();
     }
 }

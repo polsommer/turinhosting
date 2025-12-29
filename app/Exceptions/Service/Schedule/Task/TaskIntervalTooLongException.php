@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Exceptions\Service\Schedule\Task;
+namespace Jexactyl\Exceptions\Service\Schedule\Task;
 
-use Everest\Exceptions\DisplayException;
+use Jexactyl\Exceptions\DisplayException;
 
 class TaskIntervalTooLongException extends DisplayException
 {

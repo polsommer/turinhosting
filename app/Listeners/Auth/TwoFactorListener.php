@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Listeners\Auth;
+namespace Jexactyl\Listeners\Auth;
 
-use Everest\Facades\Activity;
-use Everest\Events\Auth\ProvidedAuthenticationToken;
+use Jexactyl\Facades\Activity;
+use Jexactyl\Events\Auth\ProvidedAuthenticationToken;
 
 class TwoFactorListener
 {

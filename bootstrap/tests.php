@@ -9,7 +9,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 $app = require __DIR__ . '/app.php';
 
-/** @var \Everest\Console\Kernel $kernel */
+/** @var \Jexactyl\Console\Kernel $kernel */
 $kernel = $app->make(Kernel::class);
 
 /*
@@ -40,8 +40,6 @@ if (!env('SKIP_MIGRATIONS')) {
 
     $output->writeln('<info>Seeding database for Integration tests...</info>' . PHP_EOL);
     $kernel->call('db:seed');
-
-    $output->writeln('<info>Database configured, running Integration tests...</info>' . PHP_EOL);
 } else {
     $output->writeln(PHP_EOL . '<comment>Skipping database migrations...</comment>' . PHP_EOL);
 }

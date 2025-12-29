@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { IconPosition } from '@elements/dialog/DialogIcon';
+import React from 'react';
+import { IconPosition } from '@/components/elements/dialog/DialogIcon';
 
 type Callback<T> = ((value: T) => void) | React.Dispatch<React.SetStateAction<T>>;
 
@@ -9,8 +9,6 @@ export interface DialogProps {
 }
 
 export type IconPosition = 'title' | 'container' | undefined;
-
-export type DialogSize = 'sm' | 'md' | 'lg' | 'xl';
 
 export interface DialogIconProps {
     type: 'danger' | 'info' | 'success' | 'warning';
@@ -22,10 +20,8 @@ export interface RenderDialogProps extends DialogProps {
     hideCloseIcon?: boolean;
     preventExternalClose?: boolean;
     title?: string;
-    subDialog?: boolean;
     description?: string | undefined;
     children?: React.ReactNode;
-    size?: DialogSize;
 }
 
 export type WrapperProps = Omit<RenderDialogProps, 'children' | 'open' | 'onClose'>;

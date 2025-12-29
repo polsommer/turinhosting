@@ -1,12 +1,12 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Client;
+namespace Jexactyl\Http\Controllers\Api\Client;
 
-use Everest\Facades\Activity;
+use Jexactyl\Facades\Activity;
 use Illuminate\Http\JsonResponse;
-use Everest\Http\Requests\Api\Client\ClientApiRequest;
-use Everest\Transformers\Api\Client\UserSSHKeyTransformer;
-use Everest\Http\Requests\Api\Client\Account\StoreSSHKeyRequest;
+use Jexactyl\Http\Requests\Api\Client\ClientApiRequest;
+use Jexactyl\Transformers\Api\Client\UserSSHKeyTransformer;
+use Jexactyl\Http\Requests\Api\Client\Account\StoreSSHKeyRequest;
 
 class SSHKeyController extends ClientApiController
 {
@@ -17,7 +17,7 @@ class SSHKeyController extends ClientApiController
     public function index(ClientApiRequest $request): array
     {
         return $this->fractal->collection($request->user()->sshKeys)
-            ->transformWith(UserSSHKeyTransformer::class)
+            ->transformWith($this->getTransformer(UserSSHKeyTransformer::class))
             ->toArray();
     }
 
@@ -38,7 +38,7 @@ class SSHKeyController extends ClientApiController
             ->log();
 
         return $this->fractal->item($model)
-            ->transformWith(UserSSHKeyTransformer::class)
+            ->transformWith($this->getTransformer(UserSSHKeyTransformer::class))
             ->toArray();
     }
 

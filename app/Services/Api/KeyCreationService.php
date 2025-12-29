@@ -1,10 +1,10 @@
 <?php
 
-namespace Everest\Services\Api;
+namespace Jexactyl\Services\Api;
 
-use Everest\Models\ApiKey;
+use Jexactyl\Models\ApiKey;
 use Illuminate\Contracts\Encryption\Encrypter;
-use Everest\Contracts\Repository\ApiKeyRepositoryInterface;
+use Jexactyl\Contracts\Repository\ApiKeyRepositoryInterface;
 
 class KeyCreationService
 {
@@ -33,7 +33,7 @@ class KeyCreationService
      * This will automatically generate an identifier and an encrypted token that are
      * stored in the database.
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
      */
     public function handle(array $data, array $permissions = []): ApiKey
     {

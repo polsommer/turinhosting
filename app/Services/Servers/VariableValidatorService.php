@@ -1,11 +1,11 @@
 <?php
 
-namespace Everest\Services\Servers;
+namespace Jexactyl\Services\Servers;
 
-use Everest\Models\User;
-use Everest\Models\EggVariable;
+use Jexactyl\Models\User;
+use Jexactyl\Models\EggVariable;
 use Illuminate\Support\Collection;
-use Everest\Traits\Services\HasUserLevels;
+use Jexactyl\Traits\Services\HasUserLevels;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 
@@ -34,13 +34,12 @@ class VariableValidatorService
             $query = $query->where('user_editable', true)->where('user_viewable', true);
         }
 
-        /** @var \Everest\Models\EggVariable[] $variables */
+        /** @var \Jexactyl\Models\EggVariable[] $variables */
         $variables = $query->get();
 
         $data = $rules = $customAttributes = [];
         foreach ($variables as $variable) {
             $data['environment'][$variable->env_variable] = array_get($fields, $variable->env_variable);
-            $data['environment'][$variable->env_variable] = array_get($fields, $variable->env_variable) ?? $variable->default_value;
             $rules['environment.' . $variable->env_variable] = $variable->rules;
             $customAttributes['environment.' . $variable->env_variable] = trans('validation.internal.variable_value', ['env' => $variable->name]);
         }

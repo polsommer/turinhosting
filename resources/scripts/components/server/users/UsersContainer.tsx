@@ -1,25 +1,22 @@
-import { useEffect, useState } from 'react';
-import { ServerContext } from '@/state/server';
-import { Actions, useStoreActions, useStoreState } from 'easy-peasy';
-import { ApplicationStore } from '@/state';
-import Spinner from '@elements/Spinner';
-import AddSubuserButton from '@/components/server/users/AddSubuserButton';
-import UserRow from '@/components/server/users/UserRow';
-import FlashMessageRender from '@/components/FlashMessageRender';
-import { getSubusers } from '@/api/server/subusers';
-import { httpErrorToHuman } from '@/api/http';
-import Can from '@elements/Can';
 import tw from 'twin.macro';
-import PageContentBlock from '@/components/elements/PageContentBlock';
+import { ApplicationStore } from '@/state';
+import Can from '@/components/elements/Can';
+import { httpErrorToHuman } from '@/api/http';
+import { ServerContext } from '@/state/server';
+import React, { useEffect, useState } from 'react';
+import Spinner from '@/components/elements/Spinner';
+import UserRow from '@/components/server/users/UserRow';
+import { Actions, useStoreActions, useStoreState } from 'easy-peasy';
+import getServerSubusers from '@/api/server/users/getServerSubusers';
+import AddSubuserButton from '@/components/server/users/AddSubuserButton';
+import ServerContentBlock from '@/components/elements/ServerContentBlock';
 
 export default () => {
     const [loading, setLoading] = useState(true);
 
-    const uuid = ServerContext.useStoreState(state => state.server.data!.uuid);
-    const subusers = ServerContext.useStoreState(state => state.subusers.data);
-    const setSubusers = ServerContext.useStoreActions(actions => actions.subusers.setSubusers);
-
-    const limit = ServerContext.useStoreState(state => state.server.data!.featureLimits.subusers);
+    const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
+    const subusers = ServerContext.useStoreState((state) => state.subusers.data);
+    const setSubusers = ServerContext.useStoreActions((actions) => actions.subusers.setSubusers);
 
     const permissions = useStoreState((state: ApplicationStore) => state.permissions.data);
     const getPermissions = useStoreActions((actions: Actions<ApplicationStore>) => actions.permissions.getPermissions);
@@ -27,19 +24,19 @@ export default () => {
 
     useEffect(() => {
         clearFlashes('users');
-        getSubusers(uuid)
-            .then(subusers => {
+        getServerSubusers(uuid)
+            .then((subusers) => {
                 setSubusers(subusers);
                 setLoading(false);
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error(error);
                 addError({ key: 'users', message: httpErrorToHuman(error) });
             });
     }, []);
 
     useEffect(() => {
-        getPermissions().catch(error => {
+        getPermissions().catch((error) => {
             addError({ key: 'users', message: httpErrorToHuman(error) });
             console.error(error);
         });
@@ -50,23 +47,21 @@ export default () => {
     }
 
     return (
-        <PageContentBlock title={'Subusers'} header description={'Control the access of other users to this server.'}>
-            <FlashMessageRender byKey={'users'} css={tw`mb-4`} />
+        <ServerContentBlock
+            title={'Users'}
+            description={'Add and remove users from your server.'}
+            showFlashKey={'users'}
+        >
             {!subusers.length ? (
                 <p css={tw`text-center text-sm text-neutral-300`}>It looks like you don&apos;t have any subusers.</p>
             ) : (
-                subusers.map(subuser => <UserRow key={subuser.uuid} subuser={subuser} />)
+                subusers.map((subuser) => <UserRow key={subuser.uuid} subuser={subuser} />)
             )}
             <Can action={'user.create'}>
-                <div css={tw`mt-6 sm:flex items-center justify-end`}>
-                    {limit > 0 && subusers.length > 0 && (
-                        <p css={tw`text-sm text-neutral-300 mb-4 sm:mr-6 sm:mb-0`}>
-                            {subusers.length} of {limit} subusers have been created for this server.
-                        </p>
-                    )}
-                    {limit > 0 && limit > subusers.length && <AddSubuserButton css={tw`w-full sm:w-auto`} />}
+                <div css={tw`flex justify-end mt-6`}>
+                    <AddSubuserButton />
                 </div>
             </Can>
-        </PageContentBlock>
+        </ServerContentBlock>
     );
 };

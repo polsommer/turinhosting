@@ -1,13 +1,13 @@
-import { Fragment } from 'react';
-import { Actions, State, useStoreActions, useStoreState } from 'easy-peasy';
-import { Form, Formik, FormikHelpers } from 'formik';
+import React from 'react';
 import * as Yup from 'yup';
-import SpinnerOverlay from '@elements/SpinnerOverlay';
-import Field from '@elements/Field';
-import { httpErrorToHuman } from '@/api/http';
-import { ApplicationStore } from '@/state';
 import tw from 'twin.macro';
-import { Button } from '@elements/button/index';
+import { ApplicationStore } from '@/state';
+import { httpErrorToHuman } from '@/api/http';
+import Field from '@/components/elements/Field';
+import { Form, Formik, FormikHelpers } from 'formik';
+import { Button } from '@/components/elements/button/index';
+import SpinnerOverlay from '@/components/elements/SpinnerOverlay';
+import { Actions, State, useStoreActions, useStoreState } from 'easy-peasy';
 
 interface Values {
     email: string;
@@ -34,15 +34,15 @@ export default () => {
                     type: 'success',
                     key: 'account:email',
                     message: 'Your primary email has been updated.',
-                }),
+                })
             )
-            .catch(error =>
+            .catch((error) =>
                 addFlash({
-                    type: 'error',
+                    type: 'danger',
                     key: 'account:email',
                     title: 'Error',
                     message: httpErrorToHuman(error),
-                }),
+                })
             )
             .then(() => {
                 resetForm();
@@ -53,7 +53,7 @@ export default () => {
     return (
         <Formik onSubmit={submit} validationSchema={schema} initialValues={{ email: user!.email, password: '' }}>
             {({ isSubmitting, isValid }) => (
-                <Fragment>
+                <React.Fragment>
                     <SpinnerOverlay size={'large'} visible={isSubmitting} />
                     <Form css={tw`m-0`}>
                         <Field id={'current_email'} type={'email'} name={'email'} label={'Email'} />
@@ -69,7 +69,7 @@ export default () => {
                             <Button disabled={isSubmitting || !isValid}>Update Email</Button>
                         </div>
                     </Form>
-                </Fragment>
+                </React.Fragment>
             )}
         </Formik>
     );

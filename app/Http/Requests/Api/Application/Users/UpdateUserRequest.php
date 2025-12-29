@@ -1,19 +1,18 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Application\Users;
+namespace Jexactyl\Http\Requests\Api\Application\Users;
 
-use Everest\Models\User;
-use Everest\Models\AdminRole;
+use Jexactyl\Models\User;
 
 class UpdateUserRequest extends StoreUserRequest
 {
+    /**
+     * Return the validation rules for this request.
+     */
     public function rules(array $rules = null): array
     {
-        return parent::rules($rules ?? User::getRulesForUpdate($this->route()->parameter('user')));
-    }
+        $userId = $this->parameter('user', User::class)->id;
 
-    public function permission(): string
-    {
-        return AdminRole::USERS_UPDATE;
+        return parent::rules(User::getRulesForUpdate($userId));
     }
 }

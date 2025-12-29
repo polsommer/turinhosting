@@ -1,12 +1,12 @@
 <?php
 
-namespace Everest\Repositories\Eloquent;
+namespace Jexactyl\Repositories\Eloquent;
 
-use Everest\Models\Mount;
-use Everest\Models\Server;
+use Jexactyl\Models\Mount;
+use Jexactyl\Models\Server;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Everest\Exceptions\Repository\RecordNotFoundException;
+use Jexactyl\Exceptions\Repository\RecordNotFoundException;
 
 class MountRepository extends EloquentRepository
 {
@@ -29,7 +29,7 @@ class MountRepository extends EloquentRepository
     /**
      * Return all the mounts and their respective relations.
      *
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function getWithRelations(string $id): Mount
     {

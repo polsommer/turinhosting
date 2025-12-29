@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Repositories\Eloquent;
+namespace Jexactyl\Repositories\Eloquent;
 
-use Everest\Contracts\Repository\PermissionRepositoryInterface;
+use Jexactyl\Contracts\Repository\PermissionRepositoryInterface;
 
 class PermissionRepository extends EloquentRepository implements PermissionRepositoryInterface
 {

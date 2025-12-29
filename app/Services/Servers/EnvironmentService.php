@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Services\Servers;
+namespace Jexactyl\Services\Servers;
 
-use Everest\Models\Server;
-use Everest\Models\EggVariable;
+use Jexactyl\Models\Server;
+use Jexactyl\Models\EggVariable;
 
 class EnvironmentService
 {
@@ -44,7 +44,7 @@ class EnvironmentService
         }
 
         // Process variables set in the configuration file.
-        foreach (config('everest.environment_variables', []) as $key => $object) {
+        foreach (config('jexactyl.environment_variables', []) as $key => $object) {
             $variables->put(
                 $key,
                 is_callable($object) ? call_user_func($object, $server) : object_get($server, $object)
@@ -66,6 +66,7 @@ class EnvironmentService
     {
         return [
             'STARTUP' => 'startup',
+            'P_SERVER_LOCATION' => 'location.short',
             'P_SERVER_UUID' => 'uuid',
         ];
     }

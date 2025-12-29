@@ -1,11 +1,10 @@
 <?php
 
-namespace Everest\Transformers\Api\Client;
+namespace Jexactyl\Transformers\Api\Client;
 
-use Everest\Models\User;
-use Everest\Transformers\Api\Transformer;
+use Jexactyl\Models\User;
 
-class AccountTransformer extends Transformer
+class AccountTransformer extends BaseClientTransformer
 {
     /**
      * Return the resource name for the JSONAPI output.
@@ -25,6 +24,8 @@ class AccountTransformer extends Transformer
             'admin' => $model->root_admin,
             'username' => $model->username,
             'email' => $model->email,
+            'first_name' => $model->name_first,
+            'last_name' => $model->name_last,
             'language' => $model->language,
         ];
     }

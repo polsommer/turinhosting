@@ -1,12 +1,11 @@
 <?php
 
-namespace Everest\Transformers\Api\Application;
+namespace Jexactyl\Transformers\Api\Application;
 
-use Everest\Models\Egg;
-use Everest\Models\EggVariable;
-use Everest\Transformers\Api\Transformer;
+use Jexactyl\Models\Egg;
+use Jexactyl\Models\EggVariable;
 
-class EggVariableTransformer extends Transformer
+class EggVariableTransformer extends BaseTransformer
 {
     /**
      * Return the resource name for the JSONAPI output.
@@ -16,10 +15,7 @@ class EggVariableTransformer extends Transformer
         return Egg::RESOURCE_NAME;
     }
 
-    /**
-     * Transform egg variable into a representation for the application API.
-     */
-    public function transform(EggVariable $model): array
+    public function transform(EggVariable $model)
     {
         return $model->toArray();
     }

@@ -1,19 +1,22 @@
 <?php
 
-namespace Everest\Transformers\Api\Application;
+namespace Jexactyl\Transformers\Api\Application;
 
-use Everest\Models\Nest;
-use Everest\Services\Acl\Api\AdminAcl;
+use Jexactyl\Models\Egg;
+use Jexactyl\Models\Nest;
+use Jexactyl\Models\Server;
+use Jexactyl\Services\Acl\Api\AdminAcl;
 use League\Fractal\Resource\Collection;
-use Everest\Transformers\Api\Transformer;
 use League\Fractal\Resource\NullResource;
 
-class NestTransformer extends Transformer
+class NestTransformer extends BaseTransformer
 {
     /**
      * Relationships that can be loaded onto this transformation.
      */
-    protected array $availableIncludes = ['eggs', 'servers'];
+    protected array $availableIncludes = [
+        'eggs', 'servers',
+    ];
 
     /**
      * Return the resource name for the JSONAPI output.
@@ -31,14 +34,16 @@ class NestTransformer extends Transformer
     {
         $response = $model->toArray();
 
-        $response['created_at'] = self::formatTimestamp($model->created_at);
-        $response['updated_at'] = self::formatTimestamp($model->updated_at);
+        $response[$model->getUpdatedAtColumn()] = $this->formatTimestamp($model->updated_at);
+        $response[$model->getCreatedAtColumn()] = $this->formatTimestamp($model->created_at);
 
         return $response;
     }
 
     /**
      * Include the Eggs relationship on the given Nest model transformation.
+     *
+     * @throws \Jexactyl\Exceptions\Transformer\InvalidTransformerLevelException
      */
     public function includeEggs(Nest $model): Collection|NullResource
     {
@@ -46,11 +51,15 @@ class NestTransformer extends Transformer
             return $this->null();
         }
 
-        return $this->collection($model->eggs, new EggTransformer());
+        $model->loadMissing('eggs');
+
+        return $this->collection($model->getRelation('eggs'), $this->makeTransformer(EggTransformer::class), Egg::RESOURCE_NAME);
     }
 
     /**
      * Include the servers relationship on the given Nest model.
+     *
+     * @throws \Jexactyl\Exceptions\Transformer\InvalidTransformerLevelException
      */
     public function includeServers(Nest $model): Collection|NullResource
     {
@@ -58,6 +67,8 @@ class NestTransformer extends Transformer
             return $this->null();
         }
 
-        return $this->collection($model->servers, new ServerTransformer());
+        $model->loadMissing('servers');
+
+        return $this->collection($model->getRelation('servers'), $this->makeTransformer(ServerTransformer::class), Server::RESOURCE_NAME);
     }
 }

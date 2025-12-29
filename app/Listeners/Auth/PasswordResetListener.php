@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Listeners\Auth;
+namespace Jexactyl\Listeners\Auth;
 
 use Illuminate\Http\Request;
-use Everest\Facades\Activity;
+use Jexactyl\Facades\Activity;
 use Illuminate\Auth\Events\PasswordReset;
 
 class PasswordResetListener

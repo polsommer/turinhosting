@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Console\Commands\Node;
+namespace Jexactyl\Console\Commands\Node;
 
-use Everest\Models\Node;
+use Jexactyl\Models\Node;
 use Illuminate\Console\Command;
 
 class NodeListCommand extends Command
@@ -11,11 +11,12 @@ class NodeListCommand extends Command
 
     public function handle(): int
     {
-        $nodes = Node::query()->get()->map(function (Node $node) {
+        $nodes = Node::query()->with('location')->get()->map(function (Node $node) {
             return [
                 'id' => $node->id,
                 'uuid' => $node->uuid,
                 'name' => $node->name,
+                'location' => $node->location->short,
                 'host' => $node->getConnectionAddress(),
             ];
         });
@@ -23,7 +24,7 @@ class NodeListCommand extends Command
         if ($this->option('format') === 'json') {
             $this->output->write($nodes->toJson(JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         } else {
-            $this->table(['ID', 'UUID', 'Name', 'Host'], $nodes->toArray());
+            $this->table(['ID', 'UUID', 'Name', 'Location', 'Host'], $nodes->toArray());
         }
 
         $this->output->newLine();

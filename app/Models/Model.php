@@ -1,6 +1,6 @@
 <?php
 
-namespace Everest\Models;
+namespace Jexactyl\Models;
 
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Arr;
@@ -10,8 +10,8 @@ use Illuminate\Validation\Rule;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\ValidationException;
-use Everest\Exceptions\Model\DataValidationException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Jexactyl\Exceptions\Model\DataValidationException;
 use Illuminate\Database\Eloquent\Model as IlluminateModel;
 use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 
@@ -155,7 +155,6 @@ abstract class Model extends IlluminateModel
             return;
         }
 
-        /** @var \Illuminate\Validation\Validator $validator */
         $validator = $this->getValidator();
         $validator->setData(
             // Trying to do self::toArray() here will leave out keys based on the whitelist/blacklist

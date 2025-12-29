@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Console\Commands;
+namespace Jexactyl\Console\Commands;
 
 use Illuminate\Console\Command;
-use Everest\Services\Helpers\SoftwareVersionService;
+use Jexactyl\Services\Helpers\SoftwareVersionService;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
 class InfoCommand extends Command
@@ -15,7 +15,7 @@ class InfoCommand extends Command
     /**
      * VersionCommand constructor.
      */
-    public function __construct(private ConfigRepository $config, private SoftwareVersionService $softwareVersionService)
+    public function __construct(private ConfigRepository $config, private SoftwareVersionService $versionService)
     {
         parent::__construct();
     }
@@ -27,10 +27,10 @@ class InfoCommand extends Command
     {
         $this->output->title('Version Information');
         $this->table([], [
-            ['Panel Version', $this->softwareVersionService->getCurrentVersion()],
-            ['Latest Version', $this->softwareVersionService->getLatestPanel()],
-            ['Up-to-Date', $this->softwareVersionService->isLatestPanel() ? 'Yes' : $this->formatText('No', 'bg=red')],
-            ['Unique Identifier', $this->config->get('everest.service.author')],
+            ['Panel Version', $this->config->get('app.version')],
+            ['Latest Version', $this->versionService->getPanel()],
+            ['Up-to-Date', $this->versionService->isLatestPanel() ? 'Yes' : $this->formatText('No', 'bg=red')],
+            ['Unique Identifier', $this->config->get('jexactyl.service.author')],
         ], 'compact');
 
         $this->output->title('Application Configuration');
@@ -45,7 +45,7 @@ class InfoCommand extends Command
             ['Session Driver', $this->config->get('session.driver')],
             ['Filesystem Driver', $this->config->get('filesystems.default')],
             ['Default Theme', $this->config->get('themes.active')],
-            ['Proxies', $this->config->get('trustedproxies.proxies')],
+            ['Proxies', implode(', ', $this->config->get('trustedproxy.proxies'))],
         ], 'compact');
 
         $this->output->title('Database Configuration');
@@ -56,6 +56,18 @@ class InfoCommand extends Command
             ['Port', $this->config->get("database.connections.$driver.port")],
             ['Database', $this->config->get("database.connections.$driver.database")],
             ['Username', $this->config->get("database.connections.$driver.username")],
+        ], 'compact');
+
+        // TODO: Update this to handle other mail drivers
+        $this->output->title('Email Configuration');
+        $this->table([], [
+            ['Driver', $this->config->get('mail.default')],
+            ['Host', $this->config->get('mail.mailers.smtp.host')],
+            ['Port', $this->config->get('mail.mailers.smtp.port')],
+            ['Username', $this->config->get('mail.mailers.smtp.username')],
+            ['From Address', $this->config->get('mail.from.address')],
+            ['From Name', $this->config->get('mail.from.name')],
+            ['Encryption', $this->config->get('mail.mailers.smtp.encryption')],
         ], 'compact');
     }
 

@@ -1,19 +1,15 @@
-import { forwardRef, useEffect, useState } from 'react';
-import * as React from 'react';
-import { Form } from 'formik';
-import styled from 'styled-components';
-import { breakpoint } from '@/theme';
-import FlashMessageRender from '@/components/FlashMessageRender';
 import tw from 'twin.macro';
+import { Form } from 'formik';
+import { breakpoint } from '@/theme';
+import React, { forwardRef } from 'react';
+import styled from 'styled-components/macro';
+import FlashMessageRender from '@/components/FlashMessageRender';
 
 type Props = React.DetailedHTMLProps<React.FormHTMLAttributes<HTMLFormElement>, HTMLFormElement> & {
     title?: string;
 };
 
-const Container = styled.div<{ isVisible: boolean }>`
-    opacity: ${({ isVisible }) => (isVisible ? 1 : 0)};
-    transition: opacity 0.5s ease-in;
-
+const Container = styled.div`
     ${breakpoint('sm')`
         ${tw`w-4/5 mx-auto`}
     `};
@@ -27,42 +23,28 @@ const Container = styled.div<{ isVisible: boolean }>`
     `};
 
     ${breakpoint('xl')`
-        ${tw`w-full my-auto`}
+        ${tw`w-full`}
+        max-width: 700px;
     `};
 `;
 
-export default forwardRef<HTMLFormElement, Props>(({ title, ...props }, ref) => {
-    const [visible, setVisible] = useState(false);
-
-    useEffect(() => {
-        const timeout = setTimeout(() => setVisible(true), 50);
-        return () => clearTimeout(timeout);
-    }, []);
-
-    return (
-        <Container isVisible={visible}>
-            <div className={'w-full grid lg:grid-cols-2'}>
-                <div className={'lg:w-1/2 lg:mx-auto'}>
-                    {title && <h2 css={tw`text-3xl text-center text-neutral-100 font-medium py-4`}>{title}</h2>}
-                    <FlashMessageRender css={tw`mb-2 px-1`} />
-                    <Form {...props} ref={ref}>
-                        <div css={tw`w-full bg-zinc-800/50 shadow-lg rounded-lg p-6 mx-1`}>
-                            <div css={tw`flex-1`}>{props.children}</div>
-                        </div>
-                    </Form>
-                    <p css={tw`text-center text-neutral-300 text-xs mt-4`}>
-                        &copy; {new Date().getFullYear()}&nbsp;
-                        <a
-                            rel={'noopener nofollow noreferrer'}
-                            href={'https://jexpanel.com'}
-                            target={'_blank'}
-                            css={tw`no-underline text-neutral-300 hover:text-green-400 duration-300`}
-                        >
-                            Jexpanel.com
-                        </a>
-                    </p>
-                </div>
+export default forwardRef<HTMLFormElement, Props>(({ title, ...props }, ref) => (
+    <Container>
+        {title && <h2 css={tw`text-3xl text-center text-neutral-100 font-medium py-4`}>{title}</h2>}
+        <FlashMessageRender css={tw`mb-2 px-1`} />
+        <Form {...props} ref={ref}>
+            <div css={tw`md:flex w-full bg-black bg-opacity-25 shadow-lg rounded-lg p-6 mx-1`}>
+                <div css={tw`flex-1`}>{props.children}</div>
             </div>
-        </Container>
-    );
-});
+        </Form>
+        <p css={tw`text-neutral-500 text-xs mt-6 sm:float-left`}>
+            &copy; <a href={'https://jexactyl.com'}>Jexactyl,</a> built on{' '}
+            <a href={'https://pterodactyl.io'}>Pterodactyl.</a>
+        </p>
+        <p css={tw`text-neutral-500 text-xs mt-6 sm:float-right`}>
+            <a href={'https://jexactyl.com'}> Site </a>
+            &bull;
+            <a href={'https://github.com/jexactyl/jexactyl'}> GitHub </a>
+        </p>
+    </Container>
+));

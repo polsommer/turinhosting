@@ -1,14 +1,14 @@
 <?php
 
-namespace Everest\Repositories\Eloquent;
+namespace Jexactyl\Repositories\Eloquent;
 
-use Everest\Models\Server;
+use Jexactyl\Models\Server;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Everest\Exceptions\Repository\RecordNotFoundException;
-use Everest\Contracts\Repository\ServerRepositoryInterface;
+use Jexactyl\Exceptions\Repository\RecordNotFoundException;
+use Jexactyl\Contracts\Repository\ServerRepositoryInterface;
 
 class ServerRepository extends EloquentRepository implements ServerRepositoryInterface
 {
@@ -67,7 +67,7 @@ class ServerRepository extends EloquentRepository implements ServerRepositoryInt
     /**
      * Return a server model and all variables associated with the server.
      *
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function findWithVariables(int $id): Server
     {
@@ -139,12 +139,12 @@ class ServerRepository extends EloquentRepository implements ServerRepositoryInt
     /**
      * Return a server by UUID.
      *
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function getByUuid(string $uuid): Server
     {
         try {
-            /** @var \Everest\Models\Server $model */
+            /** @var \Jexactyl\Models\Server $model */
             $model = $this->getBuilder()
                 ->with('nest', 'node')
                 ->where(function (Builder $query) use ($uuid) {

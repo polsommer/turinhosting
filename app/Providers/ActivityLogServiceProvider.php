@@ -1,10 +1,10 @@
 <?php
 
-namespace Everest\Providers;
+namespace Jexactyl\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Everest\Services\Activity\ActivityLogBatchService;
-use Everest\Services\Activity\ActivityLogTargetableService;
+use Jexactyl\Services\Activity\ActivityLogBatchService;
+use Jexactyl\Services\Activity\ActivityLogTargetableService;
 
 class ActivityLogServiceProvider extends ServiceProvider
 {

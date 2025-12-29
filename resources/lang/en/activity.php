@@ -24,6 +24,7 @@ return [
         'account' => [
             'email-changed' => 'Changed email from :old to :new',
             'password-changed' => 'Changed password',
+            'username-changed' => 'Changed username from :old to :new',
         ],
         'api-key' => [
             'create' => 'Created new API key :identifier',
@@ -37,7 +38,11 @@ return [
             'create' => 'Enabled two-factor auth',
             'delete' => 'Disabled two-factor auth',
         ],
+        'store' => [
+            'resource-purchase' => 'A resource was purchased',
+        ],
     ],
+
     'server' => [
         'reinstall' => 'Reinstalled server',
         'console' => [

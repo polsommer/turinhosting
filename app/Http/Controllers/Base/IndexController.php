@@ -1,11 +1,11 @@
 <?php
 
-namespace Everest\Http\Controllers\Base;
+namespace Jexactyl\Http\Controllers\Base;
 
 use Illuminate\View\View;
-use Everest\Http\Controllers\Controller;
+use Jexactyl\Http\Controllers\Controller;
 use Illuminate\View\Factory as ViewFactory;
-use Everest\Contracts\Repository\ServerRepositoryInterface;
+use Jexactyl\Contracts\Repository\ServerRepositoryInterface;
 
 class IndexController extends Controller
 {
@@ -23,6 +23,6 @@ class IndexController extends Controller
      */
     public function index(): View
     {
-        return view('templates/base.core');
+        return $this->view->make('templates/base.core');
     }
 }

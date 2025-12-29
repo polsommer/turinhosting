@@ -1,13 +1,19 @@
 <?php
 
-namespace Everest\Transformers\Api\Application;
+namespace Jexactyl\Transformers\Api\Application;
 
-use Everest\Models\EggVariable;
-use Everest\Models\ServerVariable;
-use Everest\Transformers\Api\Transformer;
+use Jexactyl\Models\EggVariable;
+use League\Fractal\Resource\Item;
+use Jexactyl\Services\Acl\Api\AdminAcl;
+use League\Fractal\Resource\NullResource;
 
-class ServerVariableTransformer extends Transformer
+class ServerVariableTransformer extends BaseTransformer
 {
+    /**
+     * List of resources that can be included.
+     */
+    protected array $availableIncludes = ['parent'];
+
     /**
      * Return the resource name for the JSONAPI output.
      */
@@ -19,8 +25,24 @@ class ServerVariableTransformer extends Transformer
     /**
      * Return a generic transformed server variable array.
      */
-    public function transform(EggVariable $model): array
+    public function transform(EggVariable $variable): array
     {
-        return $model->toArray();
+        return $variable->toArray();
+    }
+
+    /**
+     * Return the parent service variable data.
+     *
+     * @throws \Jexactyl\Exceptions\Transformer\InvalidTransformerLevelException
+     */
+    public function includeParent(EggVariable $variable): Item|NullResource
+    {
+        if (!$this->authorize(AdminAcl::RESOURCE_EGGS)) {
+            return $this->null();
+        }
+
+        $variable->loadMissing('variable');
+
+        return $this->item($variable->getRelation('variable'), $this->makeTransformer(EggVariableTransformer::class), 'variable');
     }
 }

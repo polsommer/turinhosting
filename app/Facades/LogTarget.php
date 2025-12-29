@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Facades;
+namespace Jexactyl\Facades;
 
 use Illuminate\Support\Facades\Facade;
-use Everest\Services\Activity\ActivityLogTargetableService;
+use Jexactyl\Services\Activity\ActivityLogTargetableService;
 
 class LogTarget extends Facade
 {

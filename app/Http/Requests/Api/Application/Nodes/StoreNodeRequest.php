@@ -1,43 +1,42 @@
 <?php
 
-namespace Everest\Http\Requests\Api\Application\Nodes;
+namespace Jexactyl\Http\Requests\Api\Application\Nodes;
 
-use Everest\Models\Node;
-use Illuminate\Support\Arr;
-use Everest\Models\AdminRole;
-use Everest\Http\Requests\Api\Application\ApplicationApiRequest;
+use Jexactyl\Models\Node;
+use Jexactyl\Services\Acl\Api\AdminAcl;
+use Jexactyl\Http\Requests\Api\Application\ApplicationApiRequest;
 
 class StoreNodeRequest extends ApplicationApiRequest
 {
+    protected ?string $resource = AdminAcl::RESOURCE_NODES;
+
+    protected int $permission = AdminAcl::WRITE;
+
     /**
      * Validation rules to apply to this request.
      */
     public function rules(array $rules = null): array
     {
         return collect($rules ?? Node::getRules())->only([
+            'public',
             'name',
-            'description',
-            'database_host_id',
+            'location_id',
             'fqdn',
             'scheme',
             'behind_proxy',
-            'public',
-            'deployable',
-            'deployable_free',
-
-            'listen_port_http',
-            'public_port_http',
-            'listen_port_sftp',
-            'public_port_sftp',
-
+            'maintenance_mode',
             'memory',
             'memory_overallocate',
             'disk',
             'disk_overallocate',
-
+            'deploy_fee',
             'upload_size',
-            'daemon_base',
+            'daemonListen',
+            'daemonSFTP',
+            'daemonBase',
         ])->mapWithKeys(function ($value, $key) {
+            $key = ($key === 'daemonSFTP') ? 'daemonSftp' : $key;
+
             return [snake_case($key) => $value];
         })->toArray();
     }
@@ -50,6 +49,7 @@ class StoreNodeRequest extends ApplicationApiRequest
         return [
             'daemon_base' => 'Daemon Base Path',
             'upload_size' => 'File Upload Size Limit',
+            'location_id' => 'Location',
             'public' => 'Node Visibility',
         ];
     }
@@ -61,17 +61,12 @@ class StoreNodeRequest extends ApplicationApiRequest
     public function validated($key = null, $default = null): array
     {
         $response = parent::validated();
-        $response['daemon_base'] = $response['daemon_base'] ?? Node::DEFAULT_DAEMON_BASE;
+        $response['daemonListen'] = $response['daemon_listen'];
+        $response['daemonSFTP'] = $response['daemon_sftp'];
+        $response['daemonBase'] = $response['daemon_base'] ?? (new Node())->getAttribute('daemonBase');
 
-        if (!is_null($key)) {
-            return Arr::get($response, $key, $default);
-        }
+        unset($response['daemon_base'], $response['daemon_listen'], $response['daemon_sftp']);
 
         return $response;
-    }
-
-    public function permission(): string
-    {
-        return AdminRole::NODES_CREATE;
     }
 }

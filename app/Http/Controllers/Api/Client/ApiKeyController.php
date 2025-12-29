@@ -1,14 +1,14 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Client;
+namespace Jexactyl\Http\Controllers\Api\Client;
 
-use Everest\Models\ApiKey;
-use Everest\Facades\Activity;
+use Jexactyl\Models\ApiKey;
+use Jexactyl\Facades\Activity;
 use Illuminate\Http\JsonResponse;
-use Everest\Exceptions\DisplayException;
-use Everest\Http\Requests\Api\Client\ClientApiRequest;
-use Everest\Transformers\Api\Client\ApiKeyTransformer;
-use Everest\Http\Requests\Api\Client\Account\StoreApiKeyRequest;
+use Jexactyl\Exceptions\DisplayException;
+use Jexactyl\Http\Requests\Api\Client\ClientApiRequest;
+use Jexactyl\Transformers\Api\Client\ApiKeyTransformer;
+use Jexactyl\Http\Requests\Api\Client\Account\StoreApiKeyRequest;
 
 class ApiKeyController extends ClientApiController
 {
@@ -18,14 +18,14 @@ class ApiKeyController extends ClientApiController
     public function index(ClientApiRequest $request): array
     {
         return $this->fractal->collection($request->user()->apiKeys)
-            ->transformWith(ApiKeyTransformer::class)
+            ->transformWith($this->getTransformer(ApiKeyTransformer::class))
             ->toArray();
     }
 
     /**
      * Store a new API key for a user's account.
      *
-     * @throws \Everest\Exceptions\DisplayException
+     * @throws \Jexactyl\Exceptions\DisplayException
      */
     public function store(StoreApiKeyRequest $request): array
     {
@@ -44,7 +44,7 @@ class ApiKeyController extends ClientApiController
             ->log();
 
         return $this->fractal->item($token->accessToken)
-            ->transformWith(ApiKeyTransformer::class)
+            ->transformWith($this->getTransformer(ApiKeyTransformer::class))
             ->addMeta(['secret_token' => $token->plainTextToken])
             ->toArray();
     }
@@ -54,17 +54,17 @@ class ApiKeyController extends ClientApiController
      */
     public function delete(ClientApiRequest $request, string $identifier): JsonResponse
     {
-        /** @var \Everest\Models\ApiKey $key */
+        /** @var \Jexactyl\Models\ApiKey $key */
         $key = $request->user()->apiKeys()
             ->where('key_type', ApiKey::TYPE_ACCOUNT)
             ->where('identifier', $identifier)
             ->firstOrFail();
 
+        $key->delete();
+
         Activity::event('user:api-key.delete')
             ->property('identifier', $key->identifier)
             ->log();
-
-        $key->delete();
 
         return new JsonResponse([], JsonResponse::HTTP_NO_CONTENT);
     }

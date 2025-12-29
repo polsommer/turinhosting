@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Services\Nests;
+namespace Jexactyl\Services\Nests;
 
-use Everest\Contracts\Repository\NestRepositoryInterface;
+use Jexactyl\Contracts\Repository\NestRepositoryInterface;
 
 class NestUpdateService
 {
@@ -16,8 +16,8 @@ class NestUpdateService
     /**
      * Update a nest and prevent changing the author once it is set.
      *
-     * @throws \Everest\Exceptions\Model\DataValidationException
-     * @throws \Everest\Exceptions\Repository\RecordNotFoundException
+     * @throws \Jexactyl\Exceptions\Model\DataValidationException
+     * @throws \Jexactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function handle(int $nest, array $data): void
     {

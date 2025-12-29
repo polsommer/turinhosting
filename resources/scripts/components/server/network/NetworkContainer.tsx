@@ -1,26 +1,27 @@
-import { useEffect, useState } from 'react';
-import Spinner from '@elements/Spinner';
-import { useFlashKey } from '@/plugins/useFlash';
-import { ServerContext } from '@/state/server';
-import AllocationRow from '@/components/server/network/AllocationRow';
-import { Button } from '@elements/button';
-import { createAllocation, getAllocations } from '@/api/server/allocations';
 import tw from 'twin.macro';
-import Can from '@elements/Can';
-import SpinnerOverlay from '@elements/SpinnerOverlay';
 import isEqual from 'react-fast-compare';
+import Can from '@/components/elements/Can';
+import { ServerContext } from '@/state/server';
+import { useFlashKey } from '@/plugins/useFlash';
+import React, { useEffect, useState } from 'react';
+import Spinner from '@/components/elements/Spinner';
+import { Button } from '@/components/elements/button/index';
+import SpinnerOverlay from '@/components/elements/SpinnerOverlay';
+import getServerAllocations from '@/api/swr/getServerAllocations';
+import AllocationRow from '@/components/server/network/AllocationRow';
 import { useDeepCompareEffect } from '@/plugins/useDeepCompareEffect';
-import PageContentBlock from '@/components/elements/PageContentBlock';
+import ServerContentBlock from '@/components/elements/ServerContentBlock';
+import createServerAllocation from '@/api/server/network/createServerAllocation';
 
 const NetworkContainer = () => {
     const [loading, setLoading] = useState(false);
-    const uuid = ServerContext.useStoreState(state => state.server.data!.uuid);
-    const allocationLimit = ServerContext.useStoreState(state => state.server.data!.featureLimits.allocations);
-    const allocations = ServerContext.useStoreState(state => state.server.data!.allocations, isEqual);
-    const setServerFromState = ServerContext.useStoreActions(actions => actions.server.setServerFromState);
+    const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
+    const allocationLimit = ServerContext.useStoreState((state) => state.server.data!.featureLimits.allocations);
+    const allocations = ServerContext.useStoreState((state) => state.server.data!.allocations, isEqual);
+    const setServerFromState = ServerContext.useStoreActions((actions) => actions.server.setServerFromState);
 
     const { clearFlashes, clearAndAddHttpError } = useFlashKey('server:network');
-    const { data, error, mutate } = getAllocations();
+    const { data, error, mutate } = getServerAllocations();
 
     useEffect(() => {
         mutate(allocations);
@@ -33,34 +34,33 @@ const NetworkContainer = () => {
     useDeepCompareEffect(() => {
         if (!data) return;
 
-        setServerFromState(state => ({ ...state, allocations: data }));
+        setServerFromState((state) => ({ ...state, allocations: data }));
     }, [data]);
 
     const onCreateAllocation = () => {
         clearFlashes();
 
         setLoading(true);
-        createAllocation(uuid)
-            .then(allocation => {
-                setServerFromState(s => ({ ...s, allocations: s.allocations.concat(allocation) }));
+        createServerAllocation(uuid)
+            .then((allocation) => {
+                setServerFromState((s) => ({ ...s, allocations: s.allocations.concat(allocation) }));
                 return mutate(data?.concat(allocation), false);
             })
-            .catch(error => clearAndAddHttpError(error))
+            .catch((error) => clearAndAddHttpError(error))
             .then(() => setLoading(false));
     };
 
     return (
-        <PageContentBlock
-            showFlashKey={'server:network'}
+        <ServerContentBlock
             title={'Network'}
-            header
-            description={'Assign, edit and remove ports from this server.'}
+            description={'Configure external networking and ports.'}
+            showFlashKey={'server:network'}
         >
             {!data ? (
                 <Spinner size={'large'} centered />
             ) : (
                 <>
-                    {data.map(allocation => (
+                    {data.map((allocation) => (
                         <AllocationRow key={`${allocation.ip}:${allocation.port}`} allocation={allocation} />
                     ))}
                     {allocationLimit > 0 && (
@@ -72,7 +72,7 @@ const NetworkContainer = () => {
                                     this server.
                                 </p>
                                 {allocationLimit > data.length && (
-                                    <Button css={tw`w-full sm:w-auto`} color={'primary'} onClick={onCreateAllocation}>
+                                    <Button css={tw`w-full sm:w-auto`} onClick={onCreateAllocation}>
                                         Create Allocation
                                     </Button>
                                 )}
@@ -81,7 +81,7 @@ const NetworkContainer = () => {
                     )}
                 </>
             )}
-        </PageContentBlock>
+        </ServerContentBlock>
     );
 };
 

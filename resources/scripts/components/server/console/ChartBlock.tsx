@@ -1,7 +1,6 @@
-import * as React from 'react';
+import React from 'react';
 import classNames from 'classnames';
 import styles from '@/components/server/console/style.module.css';
-import { useStoreState } from '@/state/hooks';
 
 interface ChartBlockProps {
     title: string;
@@ -9,16 +8,12 @@ interface ChartBlockProps {
     children: React.ReactNode;
 }
 
-export default ({ title, legend, children }: ChartBlockProps) => {
-    const { secondary } = useStoreState(state => state.theme.data!.colors);
-
-    return (
-        <div className={classNames(styles.chart_container, 'group')} style={{ backgroundColor: secondary }}>
-            <div className={'flex items-center justify-between px-4 py-2'}>
-                <h3 className={'font-header transition-colors duration-100 group-hover:text-slate-50'}>{title}</h3>
-                {legend && <p className={'flex items-center text-sm'}>{legend}</p>}
-            </div>
-            <div className={'z-10 ml-2'}>{children}</div>
+export default ({ title, legend, children }: ChartBlockProps) => (
+    <div className={classNames(styles.chart_container, 'group', 'j-up')}>
+        <div className={'flex items-center justify-between px-4 py-2'}>
+            <h3 className={'font-header transition-colors duration-100 group-hover:text-gray-50'}>{title}</h3>
+            {legend && <p className={'text-sm flex items-center'}>{legend}</p>}
         </div>
-    );
-};
+        <div className={'z-10 ml-2'}>{children}</div>
+    </div>
+);

@@ -1,16 +1,16 @@
 <?php
 
-namespace Everest\Repositories\Wings;
+namespace Jexactyl\Repositories\Wings;
 
-use Everest\Models\Node;
+use Jexactyl\Models\Node;
 use Lcobucci\JWT\Token\Plain;
 use GuzzleHttp\Exception\GuzzleException;
-use Everest\Exceptions\Http\Connection\DaemonConnectionException;
+use Jexactyl\Exceptions\Http\Connection\DaemonConnectionException;
 
 class DaemonTransferRepository extends DaemonRepository
 {
     /**
-     * @throws \Everest\Exceptions\Http\Connection\DaemonConnectionException
+     * @throws \Jexactyl\Exceptions\Http\Connection\DaemonConnectionException
      */
     public function notify(Node $targetNode, Plain $token): void
     {

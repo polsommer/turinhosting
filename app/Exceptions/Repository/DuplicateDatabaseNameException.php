@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Exceptions\Repository;
+namespace Jexactyl\Exceptions\Repository;
 
-use Everest\Exceptions\DisplayException;
+use Jexactyl\Exceptions\DisplayException;
 
 class DuplicateDatabaseNameException extends DisplayException
 {

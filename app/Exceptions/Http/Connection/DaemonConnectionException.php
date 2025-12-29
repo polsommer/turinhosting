@@ -1,11 +1,11 @@
 <?php
 
-namespace Everest\Exceptions\Http\Connection;
+namespace Jexactyl\Exceptions\Http\Connection;
 
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
-use Everest\Exceptions\DisplayException;
 use GuzzleHttp\Exception\GuzzleException;
+use Jexactyl\Exceptions\DisplayException;
 
 /**
  * @method \GuzzleHttp\Exception\GuzzleException getPrevious()

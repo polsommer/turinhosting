@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
-use Everest\Models\User;
+use Jexactyl\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -29,6 +29,8 @@ class UserFactory extends Factory
             'uuid' => Uuid::uuid4()->toString(),
             'username' => $this->faker->userName . '_' . Str::random(10),
             'email' => Str::random(32) . '@example.com',
+            'name_first' => $this->faker->firstName,
+            'name_last' => $this->faker->lastName,
             'password' => $password ?: $password = bcrypt('password'),
             'language' => 'en',
             'root_admin' => false,
@@ -41,7 +43,7 @@ class UserFactory extends Factory
     /**
      * Indicate that the user is an admin.
      */
-    public function admin(): static
+    public function admin(): Factory
     {
         return $this->state(['root_admin' => true]);
     }

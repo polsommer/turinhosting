@@ -1,16 +1,13 @@
 <?php
 
-namespace Everest\Transformers\Api\Client;
+namespace Jexactyl\Transformers\Api\Client;
 
-use Everest\Models\User;
+use Jexactyl\Models\User;
 use Illuminate\Support\Str;
-use Everest\Models\ActivityLog;
-use League\Fractal\Resource\Item;
+use Jexactyl\Models\ActivityLog;
 use Illuminate\Database\Eloquent\Model;
-use Everest\Transformers\Api\Transformer;
-use League\Fractal\Resource\NullResource;
 
-class ActivityLogTransformer extends Transformer
+class ActivityLogTransformer extends BaseClientTransformer
 {
     protected array $availableIncludes = ['actor'];
 
@@ -37,13 +34,13 @@ class ActivityLogTransformer extends Transformer
         ];
     }
 
-    public function includeActor(ActivityLog $model): Item|NullResource
+    public function includeActor(ActivityLog $model)
     {
         if (!$model->actor instanceof User) {
             return $this->null();
         }
 
-        return $this->item($model->actor, new UserTransformer());
+        return $this->item($model->actor, $this->makeTransformer(UserTransformer::class), User::RESOURCE_NAME);
     }
 
     /**

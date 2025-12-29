@@ -1,17 +1,12 @@
-import type { ReactNode } from 'react';
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-import styled, { css } from 'styled-components';
 import tw from 'twin.macro';
-
-import Spinner from '@elements/Spinner';
 import { breakpoint } from '@/theme';
-import FadeTransition from '@elements/transitions/FadeTransition';
-import { useStoreState } from '@/state/hooks';
+import { createPortal } from 'react-dom';
+import Fade from '@/components/elements/Fade';
+import Spinner from '@/components/elements/Spinner';
+import styled, { css } from 'styled-components/macro';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 export interface RequiredModalProps {
-    children?: ReactNode;
-
     visible: boolean;
     onDismissed: () => void;
     appear?: boolean;
@@ -26,8 +21,8 @@ export interface ModalProps extends RequiredModalProps {
 }
 
 export const ModalMask = styled.div`
-    ${tw`fixed z-50 overflow-auto flex w-full inset-0 transition-all duration-300`};
-    background: rgba(0, 0, 0, 0.8);
+    ${tw`fixed z-50 overflow-auto flex w-full inset-0`};
+    background: rgba(0, 0, 0, 0.7);
 `;
 
 const ModalContainer = styled.div<{ alignTop?: boolean }>`
@@ -37,7 +32,7 @@ const ModalContainer = styled.div<{ alignTop?: boolean }>`
     ${breakpoint('lg')`max-width: 50%`};
 
     ${tw`relative flex flex-col w-full m-auto`};
-    ${props =>
+    ${(props) =>
         props.alignTop &&
         css`
             margin-top: 20%;
@@ -60,7 +55,7 @@ const ModalContainer = styled.div<{ alignTop?: boolean }>`
     }
 `;
 
-function Modal({
+const Modal: React.FC<ModalProps> = ({
     visible,
     appear,
     dismissable,
@@ -70,10 +65,8 @@ function Modal({
     closeOnEscape = true,
     onDismissed,
     children,
-}: ModalProps) {
+}) => {
     const [render, setRender] = useState(visible);
-
-    const { colors } = useStoreState(state => state.theme.data!);
 
     const isDismissable = useMemo(() => {
         return (dismissable || true) && !(showSpinnerOverlay || false);
@@ -92,20 +85,14 @@ function Modal({
         };
     }, [isDismissable, closeOnEscape, render]);
 
-    useEffect(() => {
-        setRender(visible);
-
-        if (!visible) {
-            onDismissed();
-        }
-    }, [visible]);
+    useEffect(() => setRender(visible), [visible]);
 
     return (
-        <FadeTransition as={Fragment} show={render} duration="duration-150" appear={appear ?? true} unmount>
+        <Fade in={render} timeout={150} appear={appear || true} unmountOnExit onExited={() => onDismissed()}>
             <ModalMask
-                onClick={e => e.stopPropagation()}
-                onContextMenu={e => e.stopPropagation()}
-                onMouseDown={e => {
+                onClick={(e) => e.stopPropagation()}
+                onContextMenu={(e) => e.stopPropagation()}
+                onMouseDown={(e) => {
                     if (isDismissable && closeOnBackground) {
                         e.stopPropagation();
                         if (e.target === e.currentTarget) {
@@ -132,31 +119,31 @@ function Modal({
                             </svg>
                         </div>
                     )}
-
-                    <FadeTransition duration="duration-150" show={showSpinnerOverlay ?? false} appear>
-                        <div
-                            css={tw`absolute w-full h-full rounded flex items-center justify-center`}
-                            style={{ background: colors.secondary, zIndex: 9999 }}
-                        >
-                            <Spinner />
-                        </div>
-                    </FadeTransition>
-
+                    {showSpinnerOverlay && (
+                        <Fade timeout={150} appear in>
+                            <div
+                                css={tw`absolute w-full h-full rounded flex items-center justify-center`}
+                                style={{ background: 'hsla(211, 10%, 53%, 0.35)', zIndex: 9999 }}
+                            >
+                                <Spinner />
+                            </div>
+                        </Fade>
+                    )}
                     <div
-                        css={tw`p-3 sm:p-4 md:p-6 rounded shadow-md overflow-y-scroll transition-all duration-150 opacity-100 bg-black/80`}
+                        css={tw`bg-neutral-900 p-3 sm:p-4 md:p-6 rounded shadow-md overflow-y-scroll transition-all duration-150`}
                     >
                         {children}
                     </div>
                 </ModalContainer>
             </ModalMask>
-        </FadeTransition>
+        </Fade>
     );
-}
+};
 
-function PortaledModal({ children, ...props }: ModalProps): JSX.Element {
+const PortaledModal: React.FC<ModalProps> = ({ children, ...props }) => {
     const element = useRef(document.getElementById('modal-portal'));
 
     return createPortal(<Modal {...props}>{children}</Modal>, element.current!);
-}
+};
 
 export default PortaledModal;

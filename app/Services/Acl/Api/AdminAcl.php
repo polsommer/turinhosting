@@ -1,8 +1,8 @@
 <?php
 
-namespace Everest\Services\Acl\Api;
+namespace Jexactyl\Services\Acl\Api;
 
-use Everest\Models\ApiKey;
+use Jexactyl\Models\ApiKey;
 
 class AdminAcl
 {

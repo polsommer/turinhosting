@@ -1,9 +1,9 @@
 <?php
 
-namespace Everest\Models;
+namespace Jexactyl\Models;
 
 /**
- * Everest\Models\Setting.
+ * Jexactyl\Models\Setting.
  *
  * @property int $id
  * @property string $key

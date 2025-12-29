@@ -1,14 +1,14 @@
 <?php
 
-namespace Everest\Http\Controllers\Api\Client\Servers;
+namespace Jexactyl\Http\Controllers\Api\Client\Servers;
 
-use Everest\Models\User;
-use Everest\Models\Server;
+use Jexactyl\Models\User;
 use Carbon\CarbonImmutable;
+use Jexactyl\Models\Server;
 use Illuminate\Http\JsonResponse;
-use Everest\Services\Nodes\NodeJWTService;
-use Everest\Http\Controllers\Api\Client\ClientApiController;
-use Everest\Http\Requests\Api\Client\Servers\Files\UploadFileRequest;
+use Jexactyl\Services\Nodes\NodeJWTService;
+use Jexactyl\Http\Controllers\Api\Client\ClientApiController;
+use Jexactyl\Http\Requests\Api\Client\Servers\Files\UploadFileRequest;
 
 class FileUploadController extends ClientApiController
 {
