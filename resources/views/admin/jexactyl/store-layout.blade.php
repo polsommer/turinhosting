@@ -24,7 +24,7 @@
                     </div>
                     <div class="box-body">
                         <p class="text-muted">
-                            Define layout blocks for the storefront overview, resources, and balance pages. This JSON is stored as
+                            Define layout blocks for the storefront overview, resources, purchase/credits, and create pages. This JSON is stored as
                             <code>jexactyl::store:layout</code>. Leave the field empty to restore defaults.
                         </p>
                         <div class="form-group">
@@ -34,7 +34,14 @@
                                 class="form-control"
                                 rows="18"
                             >{{ old('store:layout:json', $layout_json) }}</textarea>
-                            <p class="text-muted"><small>Allowed block types: hero, banners, featured, catalog, resource-grid, resource-tips, resource-cta, balance-summary, earnings.</small></p>
+                            <p class="text-muted"><small>Allowed block types: hero, banners, featured, catalog, resource-hero, resource-grid, resource-tips, resource-cta, purchase-hero, balance-summary, earnings, create-hero, create-cta.</small></p>
+                            <p class="text-muted"><small>Example:</small></p>
+                            <pre class="text-muted"><code>{
+  "overview": [{ "type": "hero" }, { "type": "featured" }, { "type": "catalog" }],
+  "resources": [{ "type": "resource-hero" }, { "type": "resource-grid" }],
+  "purchase": [{ "type": "purchase-hero" }, { "type": "balance-summary" }],
+  "create": [{ "type": "create-hero" }, { "type": "create-cta" }]
+}</code></pre>
                         </div>
                     </div>
                     <div class="box-footer">
