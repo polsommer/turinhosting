@@ -1,7 +1,7 @@
 import * as Icon from 'react-feather';
 import { Form, Formik } from 'formik';
 import useFlash from '@/plugins/useFlash';
-import { useStoreState } from 'easy-peasy';
+import { useStoreActions, useStoreState } from 'easy-peasy';
 import { number, object, string } from 'yup';
 import Field from '@/components/elements/Field';
 import Select from '@/components/elements/Select';
@@ -19,6 +19,7 @@ import FlashMessageRender from '@/components/FlashMessageRender';
 import StoreContainer from '@/components/elements/StoreContainer';
 import { getResources, Resources } from '@/api/store/getResources';
 import PageContentBlock from '@/components/elements/PageContentBlock';
+import { getStoreProducts } from '@/api/store/getProducts';
 import {
     faArchive,
     faCube,
@@ -32,6 +33,7 @@ import {
     faNetworkWired,
     faStickyNote,
 } from '@fortawesome/free-solid-svg-icons';
+import { useLocation } from 'react-router-dom';
 
 interface CreateValues {
     name: string;
@@ -53,7 +55,10 @@ export default () => {
     const [resources, setResources] = useState<Resources>();
 
     const user = useStoreState((state) => state.user.data!);
+    const products = useStoreState((state) => state.storefront.products);
+    const setProductCatalog = useStoreActions((actions) => actions.storefront.setProductCatalog);
     const { clearFlashes, clearAndAddHttpError } = useFlash();
+    const location = useLocation();
 
     const [egg, setEgg] = useState<number>(0);
     const [eggs, setEggs] = useState<Egg[]>();
@@ -66,11 +71,16 @@ export default () => {
         clearFlashes();
 
         getResources().then((resources) => setResources(resources));
+        if (!products) {
+            getStoreProducts()
+                .then((response) => setProductCatalog(response))
+                .catch(() => null);
+        }
 
         getEggs().then((eggs) => setEggs(eggs));
         getNests().then((nests) => setNests(nests));
         getNodes().then((nodes) => setNodes(nodes));
-    }, []);
+    }, [clearFlashes, products, setProductCatalog]);
 
     const changeNest = (e: ChangeEvent<HTMLSelectElement>) => {
         setNest(parseInt(e.target.value));
@@ -120,19 +130,27 @@ export default () => {
         );
     }
 
+    const plan = new URLSearchParams(location.search).get('plan');
+    const planProduct = plan
+        ? products?.categories.flatMap((category) => category.products).find((product) => product.id === plan)
+        : undefined;
+
     return (
         <PageContentBlock title={'Create Server'} showFlashKey={'store:create'}>
             <Formik
                 onSubmit={submit}
+                enableReinitialize
                 initialValues={{
-                    name: `${user.username}'s server`,
-                    description: 'Write a server description here.',
-                    cpu: resources.cpu,
-                    memory: resources.memory,
-                    disk: resources.disk,
-                    ports: resources.ports,
-                    backups: resources.backups,
-                    databases: resources.databases,
+                    name: planProduct ? `${user.username}'s ${planProduct.name}` : `${user.username}'s server`,
+                    description: planProduct
+                        ? `Provisioned from the ${planProduct.name} storefront plan.`
+                        : 'Write a server description here.',
+                    cpu: planProduct?.resources.cpu ?? resources.cpu,
+                    memory: planProduct?.resources.memory ?? resources.memory,
+                    disk: planProduct?.resources.disk ?? resources.disk,
+                    ports: planProduct?.resources.ports ?? resources.ports,
+                    backups: planProduct?.resources.backups ?? resources.backups,
+                    databases: planProduct?.resources.databases ?? resources.databases,
                     nest: 1,
                     egg: 1,
                     node: 1,
