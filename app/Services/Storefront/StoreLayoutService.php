@@ -55,10 +55,15 @@ class StoreLayoutService
             return $defaults;
         }
 
+        $purchase = $layout['purchase'] ?? null;
+        if ((!is_array($purchase) || $purchase === []) && array_key_exists('balance', $layout)) {
+            $purchase = $layout['balance'];
+        }
+
         return [
             'overview' => self::normalizeSection($layout['overview'] ?? null, $defaults['overview'] ?? []),
             'resources' => self::normalizeSection($layout['resources'] ?? null, $defaults['resources'] ?? []),
-            'purchase' => self::normalizeSection($layout['purchase'] ?? null, $defaults['purchase'] ?? []),
+            'purchase' => self::normalizeSection($purchase, $defaults['purchase'] ?? []),
             'create' => self::normalizeSection($layout['create'] ?? null, $defaults['create'] ?? []),
         ];
     }
