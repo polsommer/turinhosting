@@ -1,5 +1,5 @@
 import tw from 'twin.macro';
-import { breakpoint } from '@/theme';
+import { breakpoint, tokens } from '@/theme';
 import { createPortal } from 'react-dom';
 import Fade from '@/components/elements/Fade';
 import Spinner from '@/components/elements/Spinner';
@@ -22,7 +22,7 @@ export interface ModalProps extends RequiredModalProps {
 
 export const ModalMask = styled.div`
     ${tw`fixed z-50 overflow-auto flex w-full inset-0`};
-    background: rgba(0, 0, 0, 0.7);
+    background: ${tokens.effects.modalOverlay};
 `;
 
 const ModalContainer = styled.div<{ alignTop?: boolean }>`
@@ -123,14 +123,15 @@ const Modal: React.FC<ModalProps> = ({
                         <Fade timeout={150} appear in>
                             <div
                                 css={tw`absolute w-full h-full rounded flex items-center justify-center`}
-                                style={{ background: 'hsla(211, 10%, 53%, 0.35)', zIndex: 9999 }}
+                                style={{ background: tokens.effects.modalSpinnerOverlay, zIndex: 9999 }}
                             >
                                 <Spinner />
                             </div>
                         </Fade>
                     )}
                     <div
-                        css={tw`bg-neutral-900 p-3 sm:p-4 md:p-6 rounded shadow-md overflow-y-scroll transition-all duration-150`}
+                        css={tw`p-3 sm:p-4 md:p-6 rounded shadow-md overflow-y-scroll transition-all duration-150`}
+                        style={{ backgroundColor: tokens.colors.surface, color: tokens.colors.text }}
                     >
                         {children}
                     </div>

@@ -1,16 +1,16 @@
 import tw from 'twin.macro';
-import { breakpoint } from '@/theme';
+import { breakpoint, tokens } from '@/theme';
 import styled from 'styled-components/macro';
 
 const ContentContainer = styled.div`
     ${tw`mx-auto w-full`};
-    max-width: var(--jex-layout-max-width, 1200px);
-    padding-left: var(--jex-layout-padding, 24px);
-    padding-right: var(--jex-layout-padding, 24px);
+    max-width: ${tokens.layout.maxWidth};
+    padding-left: ${tokens.layout.padding};
+    padding-right: ${tokens.layout.padding};
 
     ${breakpoint('xl')`
-        padding-left: var(--jex-layout-padding, 24px);
-        padding-right: var(--jex-layout-padding, 24px);
+        padding-left: ${tokens.layout.padding};
+        padding-right: ${tokens.layout.padding};
     `};
 `;
 

@@ -1,4 +1,5 @@
 import { BreakpointFunction, createBreakpoint } from 'styled-components-breakpoint';
+import { tokens } from '@/theme/tokens';
 
 type Breakpoints = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
@@ -9,3 +10,5 @@ export const breakpoint: BreakpointFunction<Breakpoints> = createBreakpoint<Brea
     lg: 1024,
     xl: 1280,
 });
+
+export { tokens };

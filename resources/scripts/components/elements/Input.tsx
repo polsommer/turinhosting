@@ -1,4 +1,5 @@
 import tw from 'twin.macro';
+import { tokens } from '@/theme';
 import styled, { css } from 'styled-components/macro';
 
 export interface Props {
@@ -7,18 +8,24 @@ export interface Props {
 }
 
 const light = css<Props>`
-    ${tw`bg-white border-neutral-200 text-neutral-800`};
+    background-color: ${tokens.colors.background};
+    border-color: ${tokens.colors.border};
+    color: ${tokens.colors.text};
     &:focus {
-        ${tw`border-primary-400`}
+        border-color: ${tokens.colors.primary};
     }
 
     &:disabled {
-        ${tw`bg-neutral-100 border-neutral-200`};
+        background-color: ${tokens.colors.surface};
+        border-color: ${tokens.colors.border};
     }
 `;
 
 const checkboxStyle = css<Props>`
-    ${tw`bg-neutral-500 cursor-pointer appearance-none inline-block align-middle select-none flex-shrink-0 w-4 h-4 text-primary-400 border border-neutral-300 rounded-sm`};
+    ${tw`cursor-pointer appearance-none inline-block align-middle select-none flex-shrink-0 w-4 h-4 rounded-sm`};
+    color: ${tokens.colors.primary};
+    background-color: ${tokens.colors.muted};
+    border: 1px solid ${tokens.colors.border};
     color-adjust: exact;
     background-origin: border-box;
     transition: all 75ms linear, box-shadow 25ms linear;
@@ -31,8 +38,9 @@ const checkboxStyle = css<Props>`
     }
 
     &:focus {
-        ${tw`outline-none border-primary-300`};
-        box-shadow: 0 0 0 1px rgba(9, 103, 210, 0.25);
+        ${tw`outline-none`};
+        border-color: ${tokens.colors.primary};
+        box-shadow: 0 0 0 1px ${tokens.components.focusRingColor};
     }
 `;
 
@@ -41,11 +49,17 @@ const inputStyle = css<Props>`
     resize: none;
     ${tw`appearance-none outline-none w-full min-w-0`};
     ${tw`p-2.5 border-2 rounded text-sm transition-all duration-150`};
-    ${tw`bg-neutral-800 border-neutral-700 hover:border-neutral-600 text-neutral-200 shadow-none focus:ring-0`};
+    ${tw`shadow-none focus:ring-0`};
+    background-color: ${tokens.colors.surface};
+    border-color: ${tokens.colors.border};
+    color: ${tokens.colors.text};
+    &:hover:not(:disabled):not(:read-only) {
+        border-color: ${tokens.colors.muted};
+    }
 
     & + .input-help {
         ${tw`mt-1 text-xs`};
-        ${(props) => (props.hasError ? tw`text-red-200` : tw`text-neutral-200`)};
+        color: ${(props) => (props.hasError ? tokens.status.dangerText : tokens.colors.muted)};
     }
 
     &:required,
@@ -54,8 +68,15 @@ const inputStyle = css<Props>`
     }
 
     &:not(:disabled):not(:read-only):focus {
-        ${tw`shadow-md border-primary-300 ring-2 ring-primary-400 ring-opacity-50`};
-        ${(props) => props.hasError && tw`border-red-300 ring-red-200`};
+        ${tw`shadow-md`};
+        border-color: ${tokens.colors.primary};
+        box-shadow: 0 0 0 2px ${tokens.components.focusRingColor};
+        ${(props) =>
+            props.hasError &&
+            css`
+                border-color: ${tokens.status.dangerBorder};
+                box-shadow: 0 0 0 2px ${tokens.status.dangerTextStrong};
+            `};
     }
 
     &:disabled {
@@ -63,7 +84,16 @@ const inputStyle = css<Props>`
     }
 
     ${(props) => props.isLight && light};
-    ${(props) => props.hasError && tw`text-red-100 border-red-400 hover:border-red-300`};
+    ${(props) =>
+        props.hasError &&
+        css`
+            color: ${tokens.status.dangerTextStrong};
+            border-color: ${tokens.status.dangerBorder};
+
+            &:hover {
+                border-color: ${tokens.status.dangerTextStrong};
+            }
+        `};
 `;
 
 const Input = styled.input<Props>`

@@ -68,6 +68,7 @@
         @include('layouts.scripts')
     </head>
     <body
+        data-theme="{{ data_get($themeConfiguration ?? [], 'mode', 'brand') }}"
         data-theme-preview="{{ $themePreviewActive ? 'true' : 'false' }}"
         data-layout-header="{{ data_get($themeConfiguration ?? [], 'blocks.showHeader') ? 'true' : 'false' }}"
         data-layout-footer="{{ data_get($themeConfiguration ?? [], 'blocks.showFooter') ? 'true' : 'false' }}"
