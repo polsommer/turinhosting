@@ -46,22 +46,37 @@ export default () => {
 
     return (
         <PageContentBlock title={'Account Balance'} description={'Add funds fast with secure, trusted gateways.'}>
-            <div className={'rounded-2xl border border-gray-700 bg-gray-900/60 p-6'}>
-                <div className={'flex flex-col gap-2'}>
-                    <p className={'text-xs uppercase tracking-[0.3em] text-indigo-300'}>Checkout</p>
-                    <h2 className={'text-3xl font-semibold text-white'}>Purchase credits for instant VPS upgrades</h2>
-                    <p className={'text-sm text-neutral-300'}>
-                        Top up your balance once, then spend credits on servers and resources without delays.
-                    </p>
-                </div>
-                <div className={'mt-4 flex flex-wrap gap-3 text-xs text-neutral-300'}>
-                    <span className={'rounded-full border border-gray-700 px-3 py-1'}>Stripe &amp; PayPal support</span>
-                    <span className={'rounded-full border border-gray-700 px-3 py-1'}>Secure checkout</span>
-                    <span className={'rounded-full border border-gray-700 px-3 py-1'}>Spend instantly</span>
-                </div>
-            </div>
             {purchaseBlocks.map((block, index) => {
                 switch (block.type) {
+                    case 'purchase-hero':
+                        return (
+                            <div key={`purchase-hero-${index}`} className={'rounded-2xl border border-gray-700 bg-gray-900/60 p-6'}>
+                                <div className={'flex flex-col gap-2'}>
+                                    <p className={'text-xs uppercase tracking-[0.3em] text-indigo-300'}>
+                                        {block.eyebrow ?? 'Secure Checkout'}
+                                    </p>
+                                    <h2 className={'text-3xl font-semibold text-white'}>
+                                        {block.title ?? 'Add credits for faster VPS launches'}
+                                    </h2>
+                                    <p className={'text-sm text-neutral-300'}>
+                                        {block.description ??
+                                            'Top up once and spend instantly on plans, upgrades, and renewals.'}
+                                    </p>
+                                </div>
+                                <div className={'mt-4 flex flex-wrap gap-3 text-xs text-neutral-300'}>
+                                    {(block.highlights ?? ['Stripe & PayPal', 'Secure payments', 'Spend immediately']).map(
+                                        (highlight) => (
+                                            <span
+                                                key={highlight}
+                                                className={'rounded-full border border-gray-700 px-3 py-1'}
+                                            >
+                                                {highlight}
+                                            </span>
+                                        )
+                                    )}
+                                </div>
+                            </div>
+                        );
                     case 'balance-summary':
                         return (
                             <Container key={`purchase-balance-${index}`} className={'lg:grid lg:grid-cols-2 my-10'}>

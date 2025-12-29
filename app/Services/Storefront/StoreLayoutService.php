@@ -30,13 +30,19 @@ class StoreLayoutService
                 ['type' => 'catalog'],
             ],
             'resources' => [
+                ['type' => 'resource-hero'],
                 ['type' => 'resource-grid'],
                 ['type' => 'resource-tips'],
                 ['type' => 'resource-cta'],
             ],
             'purchase' => [
+                ['type' => 'purchase-hero'],
                 ['type' => 'balance-summary'],
                 ['type' => 'earnings'],
+            ],
+            'create' => [
+                ['type' => 'create-hero'],
+                ['type' => 'create-cta'],
             ],
         ]);
     }
@@ -53,6 +59,7 @@ class StoreLayoutService
             'overview' => self::normalizeSection($layout['overview'] ?? null, $defaults['overview'] ?? []),
             'resources' => self::normalizeSection($layout['resources'] ?? null, $defaults['resources'] ?? []),
             'purchase' => self::normalizeSection($layout['purchase'] ?? null, $defaults['purchase'] ?? []),
+            'create' => self::normalizeSection($layout['create'] ?? null, $defaults['create'] ?? []),
         ];
     }
 
@@ -87,6 +94,8 @@ class StoreLayoutService
     private static function normalizeBlock(string $type, array $block): array
     {
         switch ($type) {
+            case 'resource-hero':
+                return self::normalizeResourceHeroBlock($block);
             case 'featured':
                 return self::normalizeFeaturedBlock($block);
             case 'catalog':
@@ -97,10 +106,16 @@ class StoreLayoutService
                 return self::normalizeResourceTipsBlock($block);
             case 'resource-cta':
                 return self::normalizeResourceCtaBlock($block);
+            case 'purchase-hero':
+                return self::normalizePurchaseHeroBlock($block);
             case 'balance-summary':
                 return self::normalizeBalanceSummaryBlock($block);
             case 'earnings':
                 return self::normalizeEarningsBlock($block);
+            case 'create-hero':
+                return self::normalizeCreateHeroBlock($block);
+            case 'create-cta':
+                return self::normalizeCreateCtaBlock($block);
             default:
                 return array_merge($block, ['type' => $type]);
         }
@@ -146,6 +161,22 @@ class StoreLayoutService
         return array_merge($defaults, $block, ['type' => 'resource-grid', 'resources' => $resources]);
     }
 
+    private static function normalizeResourceHeroBlock(array $block): array
+    {
+        $defaults = [
+            'type' => 'resource-hero',
+            'eyebrow' => self::cleanString($block['eyebrow'] ?? 'Resource Add-ons'),
+            'title' => self::cleanString($block['title'] ?? 'Boost your VPS in seconds'),
+            'description' => self::cleanString($block['description'] ?? 'Top up CPU, RAM, storage, and more instantly. Changes apply right away.'),
+            'highlights' => self::cleanList($block['highlights'] ?? ['Instant activation', 'Pay with balance', 'No downtime']),
+        ];
+
+        return array_merge($defaults, $block, [
+            'type' => 'resource-hero',
+            'highlights' => $defaults['highlights'],
+        ]);
+    }
+
     private static function normalizeResourceTipsBlock(array $block): array
     {
         $defaults = [
@@ -167,6 +198,22 @@ class StoreLayoutService
         ];
 
         return array_merge($defaults, $block, ['type' => 'resource-cta']);
+    }
+
+    private static function normalizePurchaseHeroBlock(array $block): array
+    {
+        $defaults = [
+            'type' => 'purchase-hero',
+            'eyebrow' => self::cleanString($block['eyebrow'] ?? 'Secure Checkout'),
+            'title' => self::cleanString($block['title'] ?? 'Add credits for faster VPS launches'),
+            'description' => self::cleanString($block['description'] ?? 'Top up once and spend instantly on plans, upgrades, and renewals.'),
+            'highlights' => self::cleanList($block['highlights'] ?? ['Stripe & PayPal', 'Secure payments', 'Spend immediately']),
+        ];
+
+        return array_merge($defaults, $block, [
+            'type' => 'purchase-hero',
+            'highlights' => $defaults['highlights'],
+        ]);
     }
 
     private static function normalizeBalanceSummaryBlock(array $block): array
@@ -191,6 +238,44 @@ class StoreLayoutService
         return array_merge($defaults, $block, ['type' => 'earnings']);
     }
 
+    private static function normalizeCreateHeroBlock(array $block): array
+    {
+        $defaults = [
+            'type' => 'create-hero',
+            'eyebrow' => self::cleanString($block['eyebrow'] ?? 'Launch Flow'),
+            'title' => self::cleanString($block['title'] ?? 'Build the exact VPS you need'),
+            'description' => self::cleanString($block['description'] ?? 'Start with a plan or customize every resource, then deploy in minutes.'),
+            'steps' => self::cleanSteps($block['steps'] ?? [
+                ['title' => 'Configure', 'description' => 'Set CPU, RAM, and storage.'],
+                ['title' => 'Select', 'description' => 'Pick node, nest, and egg.'],
+                ['title' => 'Deploy', 'description' => 'Review and launch instantly.'],
+            ]),
+        ];
+
+        return array_merge($defaults, $block, [
+            'type' => 'create-hero',
+            'steps' => $defaults['steps'],
+        ]);
+    }
+
+    private static function normalizeCreateCtaBlock(array $block): array
+    {
+        $defaults = [
+            'type' => 'create-cta',
+            'title' => self::cleanString($block['title'] ?? 'Need more resources or credits?'),
+            'description' => self::cleanString($block['description'] ?? 'Visit the store to add resources or funds before checkout.'),
+            'links' => self::cleanLinks($block['links'] ?? [
+                ['label' => 'Add resources', 'href' => '/store/resources'],
+                ['label' => 'Add credits', 'href' => '/store/credits'],
+            ]),
+        ];
+
+        return array_merge($defaults, $block, [
+            'type' => 'create-cta',
+            'links' => $defaults['links'],
+        ]);
+    }
+
     private static function cleanList($items): array
     {
         if (!is_array($items)) {
@@ -200,6 +285,62 @@ class StoreLayoutService
         return array_values(array_filter(array_map(static function ($item) {
             return trim((string) $item);
         }, $items), static fn ($item) => $item !== ''));
+    }
+
+    private static function cleanSteps($items): array
+    {
+        if (!is_array($items)) {
+            return [];
+        }
+
+        $steps = [];
+
+        foreach ($items as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+
+            $title = self::cleanString($item['title'] ?? '');
+            $description = self::cleanString($item['description'] ?? '');
+            if ($title === '' && $description === '') {
+                continue;
+            }
+
+            $steps[] = [
+                'title' => $title,
+                'description' => $description,
+            ];
+        }
+
+        return $steps;
+    }
+
+    private static function cleanLinks($items): array
+    {
+        if (!is_array($items)) {
+            return [];
+        }
+
+        $links = [];
+
+        foreach ($items as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+
+            $label = self::cleanString($item['label'] ?? '');
+            $href = self::cleanString($item['href'] ?? '');
+            if ($label === '' || $href === '') {
+                continue;
+            }
+
+            $links[] = [
+                'label' => $label,
+                'href' => $href,
+            ];
+        }
+
+        return $links;
     }
 
     private static function cleanString($value): string

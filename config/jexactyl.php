@@ -287,6 +287,13 @@ return [
         ],
         'resources' => [
             [
+                'type' => 'resource-hero',
+                'eyebrow' => 'Resource Add-ons',
+                'title' => 'Boost your VPS in seconds',
+                'description' => 'Top up CPU, RAM, storage, and more instantly. Changes apply right away.',
+                'highlights' => ['Instant activation', 'Pay with balance', 'No downtime'],
+            ],
+            [
                 'type' => 'resource-grid',
                 'resources' => ['cpu', 'memory', 'disk', 'slot', 'port', 'backup', 'database'],
             ],
@@ -296,21 +303,51 @@ return [
             ],
             [
                 'type' => 'resource-cta',
-                'title' => 'Ready to get started?',
+                'title' => 'Scale when you are ready',
+                'description' => 'Create a new VPS with your upgraded resources in minutes.',
                 'link' => '/store/create',
-                'linkLabel' => 'Create a server',
+                'linkLabel' => 'Create a VPS',
             ],
         ],
         'purchase' => [
             [
+                'type' => 'purchase-hero',
+                'eyebrow' => 'Secure Checkout',
+                'title' => 'Add credits for faster VPS launches',
+                'description' => 'Top up once and spend instantly on plans, upgrades, and renewals.',
+                'highlights' => ['Stripe & PayPal', 'Secure payments', 'Spend immediately'],
+            ],
+            [
                 'type' => 'balance-summary',
-                'balanceTitle' => 'Account Balance',
-                'gatewaysTitle' => 'Add Funds',
+                'balanceTitle' => 'VPS balance',
+                'gatewaysTitle' => 'Add credits',
             ],
             [
                 'type' => 'earnings',
                 'title' => 'Idle Balance Earnings',
                 'description' => 'See how much you will earn per minute while AFK.',
+            ],
+        ],
+        'create' => [
+            [
+                'type' => 'create-hero',
+                'eyebrow' => 'Launch Flow',
+                'title' => 'Build the exact VPS you need',
+                'description' => 'Start with a plan or customize every resource, then deploy in minutes.',
+                'steps' => [
+                    ['title' => 'Configure', 'description' => 'Set CPU, RAM, and storage.'],
+                    ['title' => 'Select', 'description' => 'Pick node, nest, and egg.'],
+                    ['title' => 'Deploy', 'description' => 'Review and launch instantly.'],
+                ],
+            ],
+            [
+                'type' => 'create-cta',
+                'title' => 'Need more resources or credits?',
+                'description' => 'Visit the store to add resources or funds before checkout.',
+                'links' => [
+                    ['label' => 'Add resources', 'href' => '/store/resources'],
+                    ['label' => 'Add credits', 'href' => '/store/credits'],
+                ],
             ],
         ],
     ],
