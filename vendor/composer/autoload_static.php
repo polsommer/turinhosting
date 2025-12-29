@@ -3691,6 +3691,7 @@ class ComposerStaticInitaf1319460d84b33087c626e3329c8592
         'Jexactyl\\Http\\Controllers\\Api\\Client\\Servers\\SubuserController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/Client/Servers/SubuserController.php',
         'Jexactyl\\Http\\Controllers\\Api\\Client\\Servers\\WebsocketController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/Client/Servers/WebsocketController.php',
         'Jexactyl\\Http\\Controllers\\Api\\Client\\Store\\PayPalController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/Client/Store/PayPalController.php',
+        'Jexactyl\\Http\\Controllers\\Api\\Client\\Store\\ProductController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/Client/Store/ProductController.php',
         'Jexactyl\\Http\\Controllers\\Api\\Client\\Store\\ResourceController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/Client/Store/ResourceController.php',
         'Jexactyl\\Http\\Controllers\\Api\\Client\\Store\\ServerController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/Client/Store/ServerController.php',
         'Jexactyl\\Http\\Controllers\\Api\\Client\\Store\\StripeController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/Client/Store/StripeController.php',

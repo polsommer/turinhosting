@@ -3038,6 +3038,7 @@ return array(
     'Jexactyl\\Http\\Controllers\\Api\\Client\\Servers\\SubuserController' => $baseDir . '/app/Http/Controllers/Api/Client/Servers/SubuserController.php',
     'Jexactyl\\Http\\Controllers\\Api\\Client\\Servers\\WebsocketController' => $baseDir . '/app/Http/Controllers/Api/Client/Servers/WebsocketController.php',
     'Jexactyl\\Http\\Controllers\\Api\\Client\\Store\\PayPalController' => $baseDir . '/app/Http/Controllers/Api/Client/Store/PayPalController.php',
+    'Jexactyl\\Http\\Controllers\\Api\\Client\\Store\\ProductController' => $baseDir . '/app/Http/Controllers/Api/Client/Store/ProductController.php',
     'Jexactyl\\Http\\Controllers\\Api\\Client\\Store\\ResourceController' => $baseDir . '/app/Http/Controllers/Api/Client/Store/ResourceController.php',
     'Jexactyl\\Http\\Controllers\\Api\\Client\\Store\\ServerController' => $baseDir . '/app/Http/Controllers/Api/Client/Store/ServerController.php',
     'Jexactyl\\Http\\Controllers\\Api\\Client\\Store\\StripeController' => $baseDir . '/app/Http/Controllers/Api/Client/Store/StripeController.php',
