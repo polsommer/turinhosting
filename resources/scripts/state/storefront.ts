@@ -42,6 +42,7 @@ export interface StorefrontSettings {
 export type StorefrontLayoutBlock =
     | { type: 'hero' }
     | { type: 'banners' }
+    | { type: 'resource-hero'; eyebrow?: string; title?: string; description?: string; highlights?: string[] }
     | {
           type: 'featured';
           title?: string;
@@ -54,14 +55,18 @@ export type StorefrontLayoutBlock =
     | { type: 'resource-grid'; resources?: string[] }
     | { type: 'resource-tips'; title?: string }
     | { type: 'resource-cta'; title?: string; description?: string; link?: string; linkLabel?: string }
+    | { type: 'purchase-hero'; eyebrow?: string; title?: string; description?: string; highlights?: string[] }
     | { type: 'balance-summary'; balanceTitle?: string; gatewaysTitle?: string }
     | { type: 'earnings'; title?: string; description?: string }
+    | { type: 'create-hero'; eyebrow?: string; title?: string; description?: string; steps?: { title: string; description: string }[] }
+    | { type: 'create-cta'; title?: string; description?: string; links?: { label: string; href: string }[] }
     | { type: string; [key: string]: unknown };
 
 export interface StorefrontLayout {
     overview: StorefrontLayoutBlock[];
     resources: StorefrontLayoutBlock[];
     purchase: StorefrontLayoutBlock[];
+    create: StorefrontLayoutBlock[];
 }
 
 export interface StorefrontProductSpecs {
@@ -115,8 +120,9 @@ export interface StorefrontStore {
 
 export const defaultStoreLayout: StorefrontLayout = {
     overview: [{ type: 'hero' }, { type: 'featured' }, { type: 'catalog' }],
-    resources: [{ type: 'resource-grid' }, { type: 'resource-tips' }, { type: 'resource-cta' }],
-    purchase: [{ type: 'balance-summary' }, { type: 'earnings' }],
+    resources: [{ type: 'resource-hero' }, { type: 'resource-grid' }, { type: 'resource-tips' }, { type: 'resource-cta' }],
+    purchase: [{ type: 'purchase-hero' }, { type: 'balance-summary' }, { type: 'earnings' }],
+    create: [{ type: 'create-hero' }, { type: 'create-cta' }],
 };
 
 const storefront: StorefrontStore = {

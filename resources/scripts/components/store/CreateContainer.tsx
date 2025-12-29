@@ -21,7 +21,7 @@ import { getResources, Resources } from '@/api/store/getResources';
 import PageContentBlock from '@/components/elements/PageContentBlock';
 import formatCurrency from '@/util/formatCurrency';
 import { useLocation } from 'react-router-dom';
-import { StorefrontProduct } from '@/state/storefront';
+import { defaultStoreLayout, StorefrontProduct } from '@/state/storefront';
 import { Costs, getCosts } from '@/api/store/getCosts';
 import {
     faArchive,
@@ -60,6 +60,7 @@ export default () => {
     const user = useStoreState((state) => state.user.data!);
     const currency = useStoreState((state) => state.storefront.data?.currency);
     const catalog = useStoreState((state) => state.storefront.data?.products);
+    const layout = useStoreState((state) => state.storefront.data?.layout) ?? defaultStoreLayout;
     const { clearFlashes, clearAndAddHttpError } = useFlash();
     const location = useLocation();
 
@@ -140,419 +141,441 @@ export default () => {
         );
     }
 
-        return (
-            <PageContentBlock
-                title={'Create Your VPS'}
-                description={'Customize every detail and deploy in minutes.'}
-                showFlashKey={'store:create'}
-            >
+    const createBlocks = layout.create ?? defaultStoreLayout.create;
+    const heroBlock = createBlocks.find((block) => block.type === 'create-hero');
+    const ctaBlock = createBlocks.find((block) => block.type === 'create-cta');
+
+    return (
+        <PageContentBlock
+            title={'Create Your VPS'}
+            description={'Customize every detail and deploy in minutes.'}
+            showFlashKey={'store:create'}
+        >
+            {heroBlock?.type === 'create-hero' && (
                 <div className={'rounded-2xl border border-gray-700 bg-gray-900/60 p-6 mb-8'}>
                     <div className={'flex flex-col gap-2'}>
-                        <p className={'text-xs uppercase tracking-[0.3em] text-indigo-300'}>Launch flow</p>
-                        <h2 className={'text-3xl font-semibold text-white'}>Build the exact server you need</h2>
+                        <p className={'text-xs uppercase tracking-[0.3em] text-indigo-300'}>
+                            {heroBlock.eyebrow ?? 'Launch Flow'}
+                        </p>
+                        <h2 className={'text-3xl font-semibold text-white'}>
+                            {heroBlock.title ?? 'Build the exact VPS you need'}
+                        </h2>
                         <p className={'text-sm text-neutral-300'}>
-                            Start with a plan or fully customize resources, then choose a node and server type.
+                            {heroBlock.description ??
+                                'Start with a plan or customize every resource, then deploy in minutes.'}
                         </p>
                     </div>
                     <div className={'mt-4 grid gap-3 text-xs text-neutral-300 md:grid-cols-3'}>
-                        <div className={'rounded-xl border border-gray-700 px-3 py-2'}>
-                            <p className={'font-semibold text-white'}>1. Configure</p>
-                            <p>Set CPU, RAM, and storage.</p>
-                        </div>
-                        <div className={'rounded-xl border border-gray-700 px-3 py-2'}>
-                            <p className={'font-semibold text-white'}>2. Select</p>
-                            <p>Pick node, nest, and egg.</p>
-                        </div>
-                        <div className={'rounded-xl border border-gray-700 px-3 py-2'}>
-                            <p className={'font-semibold text-white'}>3. Deploy</p>
-                            <p>Review and launch instantly.</p>
-                        </div>
+                        {(heroBlock.steps ?? [
+                            { title: 'Configure', description: 'Set CPU, RAM, and storage.' },
+                            { title: 'Select', description: 'Pick node, nest, and egg.' },
+                            { title: 'Deploy', description: 'Review and launch instantly.' },
+                        ]).map((step, index) => (
+                            <div key={`${step.title}-${index}`} className={'rounded-xl border border-gray-700 px-3 py-2'}>
+                                <p className={'font-semibold text-white'}>
+                                    {index + 1}. {step.title}
+                                </p>
+                                <p>{step.description}</p>
+                            </div>
+                        ))}
                     </div>
                 </div>
-                <Formik
-                    onSubmit={submit}
-                    enableReinitialize
-                    initialValues={{
-                        name: `${user.username}'s server`,
-                        description: selectedProduct
-                            ? `${selectedProduct.name} plan from the storefront.`
-                            : 'Write a server description here.',
-                        cpu: getPresetValue(selectedProduct?.provisioning?.cpu, resources.cpu, 25),
-                        memory: getPresetValue(selectedProduct?.provisioning?.memory, resources.memory, 256),
-                        disk: getPresetValue(selectedProduct?.provisioning?.disk, resources.disk, 256),
-                        ports: getPresetValue(selectedProduct?.provisioning?.ports, resources.ports, 1),
-                        backups: selectedProduct?.provisioning?.backups ?? resources.backups,
-                        databases: selectedProduct?.provisioning?.databases ?? resources.databases,
-                        nest: 1,
-                        egg: 1,
-                        node: 1,
-                    }}
-                    validationSchema={object().shape({
-                        name: string().required().min(3),
-                        description: string().optional().min(3).max(191),
+            )}
+            <Formik
+                onSubmit={submit}
+                enableReinitialize
+                initialValues={{
+                    name: `${user.username}'s server`,
+                    description: selectedProduct
+                        ? `${selectedProduct.name} plan from the storefront.`
+                        : 'Write a server description here.',
+                    cpu: getPresetValue(selectedProduct?.provisioning?.cpu, resources.cpu, 25),
+                    memory: getPresetValue(selectedProduct?.provisioning?.memory, resources.memory, 256),
+                    disk: getPresetValue(selectedProduct?.provisioning?.disk, resources.disk, 256),
+                    ports: getPresetValue(selectedProduct?.provisioning?.ports, resources.ports, 1),
+                    backups: selectedProduct?.provisioning?.backups ?? resources.backups,
+                    databases: selectedProduct?.provisioning?.databases ?? resources.databases,
+                    nest: 1,
+                    egg: 1,
+                    node: 1,
+                }}
+                validationSchema={object().shape({
+                    name: string().required().min(3),
+                    description: string().optional().min(3).max(191),
 
-                        cpu: number().required().min(25).max(resources.cpu),
-                        memory: number().required().min(256).max(resources.memory),
-                        disk: number().required().min(256).max(resources.disk),
+                    cpu: number().required().min(25).max(resources.cpu),
+                    memory: number().required().min(256).max(resources.memory),
+                    disk: number().required().min(256).max(resources.disk),
 
-                        ports: number().required().min(1).max(resources.ports),
-                        backups: number().optional().max(resources.backups),
-                        databases: number().optional().max(resources.databases),
+                    ports: number().required().min(1).max(resources.ports),
+                    backups: number().optional().max(resources.backups),
+                    databases: number().optional().max(resources.databases),
 
-                        node: number().required().default(node),
-                        nest: number().required().default(nest),
-                        egg: number().required().default(egg),
-                    })}
-                >
-                    {({ values }) => {
-                        const resourceLineItems = [
-                            {
-                                label: 'CPU',
-                                value: `${values.cpu}%`,
-                                cost: costs ? (values.cpu / 50) * costs.cpu : undefined,
-                            },
-                            {
-                                label: 'Memory',
-                                value: `${values.memory} MB`,
-                                cost: costs ? (values.memory / 1024) * costs.memory : undefined,
-                            },
-                            {
-                                label: 'Disk',
-                                value: `${values.disk} MB`,
-                                cost: costs ? (values.disk / 1024) * costs.disk : undefined,
-                            },
-                            {
-                                label: 'Ports',
-                                value: `${values.ports}`,
-                                cost: costs ? values.ports * costs.ports : undefined,
-                            },
-                            {
-                                label: 'Backups',
-                                value: `${values.backups ?? 0}`,
-                                cost: costs ? (values.backups ?? 0) * costs.backups : undefined,
-                            },
-                            {
-                                label: 'Databases',
-                                value: `${values.databases ?? 0}`,
-                                cost: costs ? (values.databases ?? 0) * costs.databases : undefined,
-                            },
-                        ];
+                    node: number().required().default(node),
+                    nest: number().required().default(nest),
+                    egg: number().required().default(egg),
+                })}
+            >
+                {({ values }) => {
+                    const resourceLineItems = [
+                        {
+                            label: 'CPU',
+                            value: `${values.cpu}%`,
+                            cost: costs ? (values.cpu / 50) * costs.cpu : undefined,
+                        },
+                        {
+                            label: 'Memory',
+                            value: `${values.memory} MB`,
+                            cost: costs ? (values.memory / 1024) * costs.memory : undefined,
+                        },
+                        {
+                            label: 'Disk',
+                            value: `${values.disk} MB`,
+                            cost: costs ? (values.disk / 1024) * costs.disk : undefined,
+                        },
+                        {
+                            label: 'Ports',
+                            value: `${values.ports}`,
+                            cost: costs ? values.ports * costs.ports : undefined,
+                        },
+                        {
+                            label: 'Backups',
+                            value: `${values.backups ?? 0}`,
+                            cost: costs ? (values.backups ?? 0) * costs.backups : undefined,
+                        },
+                        {
+                            label: 'Databases',
+                            value: `${values.databases ?? 0}`,
+                            cost: costs ? (values.databases ?? 0) * costs.databases : undefined,
+                        },
+                    ];
 
-                        const estimatedMonthlyCost = costs
-                            ? resourceLineItems.reduce((total, item) => total + (item.cost ?? 0), 0)
-                            : selectedProduct?.price;
+                    const estimatedMonthlyCost = costs
+                        ? resourceLineItems.reduce((total, item) => total + (item.cost ?? 0), 0)
+                        : selectedProduct?.price;
 
-                        return (
-                            <Form>
-                                <div className={'lg:grid lg:grid-cols-[minmax(0,1fr)_320px] gap-6 items-start'}>
-                                    <div>
-                                        {selectedProduct && (
-                                            <div className={'bg-gray-800 border border-gray-700 rounded-lg p-4 mb-6'}>
-                                                <h2 className={'text-xl font-semibold'}>Checkout preset applied</h2>
-                                                <p className={'text-sm text-neutral-400'}>
-                                                    {selectedProduct.name} has prefilled resource limits. You can
-                                                    still customize them below before provisioning.
-                                                </p>
-                                            </div>
-                                        )}
-                                        <h1 className={'text-5xl'}>Basic Details</h1>
-                                        <h3 className={'text-2xl text-neutral-500'}>
-                                            Set your server name and description for easy tracking.
-                                        </h3>
-                                        <StoreContainer className={'lg:grid lg:grid-cols-2 my-10 gap-4'}>
-                                            <TitledGreyBox
-                                                title={'Server name'}
-                                                icon={faStickyNote}
-                                                className={'mt-8 sm:mt-0'}
-                                            >
-                                                <Field name={'name'} />
-                                                <p className={'mt-1 text-xs'}>
-                                                    Assign a name to your server for use in the Panel.
-                                                </p>
-                                                <p className={'mt-1 text-xs text-gray-400'}>
-                                                    Character limits: <code>a-z A-Z 0-9 _ - .</code> and{' '}
-                                                    <code>[Space]</code>.
-                                                </p>
-                                            </TitledGreyBox>
-                                            <TitledGreyBox
-                                                title={'Server description'}
-                                                icon={faList}
-                                                className={'mt-8 sm:mt-0'}
-                                            >
-                                                <Field name={'description'} />
-                                                <p className={'mt-1 text-xs'}>Set a description for your server.</p>
-                                                <p className={'mt-1 text-xs text-yellow-400'}>* Optional</p>
-                                            </TitledGreyBox>
-                                        </StoreContainer>
-                                        <h1 className={'text-5xl'}>Resource Limits</h1>
-                                        <h3 className={'text-2xl text-neutral-500'}>
-                                            Dial in compute, memory, and storage to match your workload.
-                                        </h3>
-                                        <StoreContainer className={'lg:grid lg:grid-cols-3 my-10 gap-4'}>
-                                            <TitledGreyBox
-                                                title={'Server CPU limit'}
-                                                icon={faMicrochip}
-                                                className={'mt-8 sm:mt-0'}
-                                            >
-                                                <Field name={'cpu'} />
-                                                <p className={'mt-1 text-xs'}>Assign a limit for usable CPU.</p>
-                                                <p className={'mt-1 text-xs text-gray-400'}>
-                                                    {resources.cpu}% in account
-                                                </p>
-                                            </TitledGreyBox>
-                                            <TitledGreyBox
-                                                title={'Server RAM limit'}
-                                                icon={faMemory}
-                                                className={'mt-8 sm:mt-0'}
-                                            >
-                                                <div className={'relative'}>
-                                                    <Field name={'memory'} />
-                                                    <p
-                                                        className={
-                                                            'absolute text-sm top-1.5 right-2 bg-gray-700 p-2 rounded-lg'
-                                                        }
-                                                    >
-                                                        MB
-                                                    </p>
-                                                </div>
-                                                <p className={'mt-1 text-xs'}>Assign a limit for usable RAM.</p>
-                                                <p className={'mt-1 text-xs text-gray-400'}>
-                                                    {resources.memory}MB available
-                                                </p>
-                                            </TitledGreyBox>
-                                            <TitledGreyBox
-                                                title={'Server Storage limit'}
-                                                icon={faHdd}
-                                                className={'mt-8 sm:mt-0'}
-                                            >
-                                                <div className={'relative'}>
-                                                    <Field name={'disk'} />
-                                                    <p
-                                                        className={
-                                                            'absolute text-sm top-1.5 right-2 bg-gray-700 p-2 rounded-lg'
-                                                        }
-                                                    >
-                                                        MB
-                                                    </p>
-                                                </div>
-                                                <p className={'mt-1 text-xs'}>Assign a limit for usable storage.</p>
-                                                <p className={'mt-1 text-xs text-gray-400'}>
-                                                    {resources.disk}MB available
-                                                </p>
-                                            </TitledGreyBox>
-                                        </StoreContainer>
-                                        <h1 className={'text-5xl'}>Feature Limits</h1>
-                                        <h3 className={'text-2xl text-neutral-500'}>
-                                            Add databases, backups, and network ports in one place.
-                                        </h3>
-                                        <StoreContainer className={'lg:grid lg:grid-cols-3 my-10 gap-4'}>
-                                            <TitledGreyBox
-                                                title={'Server allocations'}
-                                                icon={faNetworkWired}
-                                                className={'mt-8 sm:mt-0'}
-                                            >
-                                                <Field name={'ports'} />
-                                                <p className={'mt-1 text-xs'}>
-                                                    Assign a number of ports to your server.
-                                                </p>
-                                                <p className={'mt-1 text-xs text-gray-400'}>
-                                                    {resources.ports} available
-                                                </p>
-                                            </TitledGreyBox>
-                                            <TitledGreyBox
-                                                title={'Server backups'}
-                                                icon={faArchive}
-                                                className={'mt-8 sm:mt-0'}
-                                            >
-                                                <Field name={'backups'} />
-                                                <p className={'mt-1 text-xs'}>Assign a number of backups to your server.</p>
-                                                <p className={'mt-1 text-xs text-gray-400'}>
-                                                    {resources.backups} available
-                                                </p>
-                                            </TitledGreyBox>
-                                            <TitledGreyBox
-                                                title={'Server databases'}
-                                                icon={faDatabase}
-                                                className={'mt-8 sm:mt-0'}
-                                            >
-                                                <Field name={'databases'} />
-                                                <p className={'mt-1 text-xs'}>
-                                                    Assign a number of databases to your server.
-                                                </p>
-                                                <p className={'mt-1 text-xs text-gray-400'}>
-                                                    {resources.databases} available
-                                                </p>
-                                            </TitledGreyBox>
-                                        </StoreContainer>
-                                        <h1 className={'text-5xl'}>Deployment</h1>
-                                        <h3 className={'text-2xl text-neutral-500'}>
-                                            Choose where to deploy and what to run.
-                                        </h3>
-                                        <StoreContainer className={'lg:grid lg:grid-cols-3 my-10 gap-4'}>
-                                            <TitledGreyBox
-                                                title={'Available Nodes'}
-                                                icon={faLayerGroup}
-                                                className={'mt-8 sm:mt-0'}
-                                            >
-                                                <Select name={'node'} onChange={(e) => setNode(parseInt(e.target.value))}>
-                                                    {!node && <option>Select a node...</option>}
-                                                    {nodes.map((n) => (
-                                                        <option key={n.id} value={n.id}>
-                                                            {n.name} ({n.location}) |{' '}
-                                                            {100 - parseInt(((n?.used / n?.total) * 100).toFixed(0))}% free
-                                                            | {formatCurrency(n.deployFee, currency)}
-                                                        </option>
-                                                    ))}
-                                                </Select>
-                                                <p className={'mt-1 text-xs text-gray-400'}>
-                                                    Select a node to deploy your server to.
-                                                </p>
-                                            </TitledGreyBox>
-                                            <TitledGreyBox
-                                                title={'Server Nest'}
-                                                icon={faCube}
-                                                className={'mt-8 sm:mt-0'}
-                                            >
-                                                <Select name={'nest'} onChange={(nest) => changeNest(nest)}>
-                                                    {!nest && <option>Select a nest...</option>}
-                                                    {nests.map((n) => (
-                                                        <option key={n.id} value={n.id}>
-                                                            {n.name}
-                                                        </option>
-                                                    ))}
-                                                </Select>
-                                                <p className={'mt-1 text-xs text-gray-400'}>
-                                                    Select a nest to use for your server.
-                                                </p>
-                                            </TitledGreyBox>
-                                            <TitledGreyBox title={'Server Egg'} icon={faEgg} className={'mt-8 sm:mt-0'}>
-                                                <Select name={'egg'} onChange={(e) => setEgg(parseInt(e.target.value))}>
-                                                    {!egg && <option>Select an egg...</option>}
-                                                    {eggs.map((e) => (
-                                                        <option key={e.id} value={e.id}>
-                                                            {e.name}
-                                                        </option>
-                                                    ))}
-                                                </Select>
-                                                <p className={'mt-1 text-xs text-gray-400'}>
-                                                    Choose what game you want to run on your server.
-                                                </p>
-                                            </TitledGreyBox>
-                                        </StoreContainer>
-                                        <InputSpinner visible={loading}>
-                                            <FlashMessageRender byKey={'store:create'} className={'my-2'} />
-                                            <div className={'text-right'}>
-                                                <Button
-                                                    type={'submit'}
-                                                    className={'w-1/6 mb-4'}
-                                                    size={Button.Sizes.Large}
-                                                    disabled={loading}
+                    return (
+                        <Form>
+                            <div className={'lg:grid lg:grid-cols-[minmax(0,1fr)_320px] gap-6 items-start'}>
+                                <div>
+                                    {selectedProduct && (
+                                        <div className={'bg-gray-800 border border-gray-700 rounded-lg p-4 mb-6'}>
+                                            <h2 className={'text-xl font-semibold'}>Checkout preset applied</h2>
+                                            <p className={'text-sm text-neutral-400'}>
+                                                {selectedProduct.name} has prefilled resource limits. You can
+                                                still customize them below before provisioning.
+                                            </p>
+                                        </div>
+                                    )}
+                                    <h1 className={'text-5xl'}>Basic Details</h1>
+                                    <h3 className={'text-2xl text-neutral-500'}>
+                                        Set your server name and description for easy tracking.
+                                    </h3>
+                                    <StoreContainer className={'lg:grid lg:grid-cols-2 my-10 gap-4'}>
+                                        <TitledGreyBox
+                                            title={'Server name'}
+                                            icon={faStickyNote}
+                                            className={'mt-8 sm:mt-0'}
+                                        >
+                                            <Field name={'name'} />
+                                            <p className={'mt-1 text-xs'}>
+                                                Assign a name to your server for use in the Panel.
+                                            </p>
+                                            <p className={'mt-1 text-xs text-gray-400'}>
+                                                Character limits: <code>a-z A-Z 0-9 _ - .</code> and{' '}
+                                                <code>[Space]</code>.
+                                            </p>
+                                        </TitledGreyBox>
+                                        <TitledGreyBox
+                                            title={'Server description'}
+                                            icon={faList}
+                                            className={'mt-8 sm:mt-0'}
+                                        >
+                                            <Field name={'description'} />
+                                            <p className={'mt-1 text-xs'}>Set a description for your server.</p>
+                                            <p className={'mt-1 text-xs text-yellow-400'}>* Optional</p>
+                                        </TitledGreyBox>
+                                    </StoreContainer>
+                                    <h1 className={'text-5xl'}>Resource Limits</h1>
+                                    <h3 className={'text-2xl text-neutral-500'}>
+                                        Dial in compute, memory, and storage to match your workload.
+                                    </h3>
+                                    <StoreContainer className={'lg:grid lg:grid-cols-3 my-10 gap-4'}>
+                                        <TitledGreyBox
+                                            title={'Server CPU limit'}
+                                            icon={faMicrochip}
+                                            className={'mt-8 sm:mt-0'}
+                                        >
+                                            <Field name={'cpu'} />
+                                            <p className={'mt-1 text-xs'}>Assign a limit for usable CPU.</p>
+                                            <p className={'mt-1 text-xs text-gray-400'}>
+                                                {resources.cpu}% in account
+                                            </p>
+                                        </TitledGreyBox>
+                                        <TitledGreyBox
+                                            title={'Server RAM limit'}
+                                            icon={faMemory}
+                                            className={'mt-8 sm:mt-0'}
+                                        >
+                                            <div className={'relative'}>
+                                                <Field name={'memory'} />
+                                                <p
+                                                    className={
+                                                        'absolute text-sm top-1.5 right-2 bg-gray-700 p-2 rounded-lg'
+                                                    }
                                                 >
-                                                    <Icon.Server className={'mr-2'} /> Create VPS
-                                                </Button>
+                                                    MB
+                                                </p>
                                             </div>
-                                        </InputSpinner>
-                                    </div>
-                                    <div className={'lg:sticky lg:top-6'}>
-                                        <div className={'bg-gray-800 border border-gray-700 rounded-lg p-6'}>
-                                            <div className={'flex items-center justify-between'}>
-                                                <div>
-                                                    <p className={'text-sm uppercase tracking-wide text-neutral-400'}>
-                                                        Order summary
+                                            <p className={'mt-1 text-xs'}>Assign a limit for usable RAM.</p>
+                                            <p className={'mt-1 text-xs text-gray-400'}>
+                                                {resources.memory}MB available
+                                            </p>
+                                        </TitledGreyBox>
+                                        <TitledGreyBox
+                                            title={'Server Storage limit'}
+                                            icon={faHdd}
+                                            className={'mt-8 sm:mt-0'}
+                                        >
+                                            <div className={'relative'}>
+                                                <Field name={'disk'} />
+                                                <p
+                                                    className={
+                                                        'absolute text-sm top-1.5 right-2 bg-gray-700 p-2 rounded-lg'
+                                                    }
+                                                >
+                                                    MB
+                                                </p>
+                                            </div>
+                                            <p className={'mt-1 text-xs'}>Assign a limit for usable storage.</p>
+                                            <p className={'mt-1 text-xs text-gray-400'}>
+                                                {resources.disk}MB available
+                                            </p>
+                                        </TitledGreyBox>
+                                    </StoreContainer>
+                                    <h1 className={'text-5xl'}>Feature Limits</h1>
+                                    <h3 className={'text-2xl text-neutral-500'}>
+                                        Add databases, backups, and network ports in one place.
+                                    </h3>
+                                    <StoreContainer className={'lg:grid lg:grid-cols-3 my-10 gap-4'}>
+                                        <TitledGreyBox
+                                            title={'Server allocations'}
+                                            icon={faNetworkWired}
+                                            className={'mt-8 sm:mt-0'}
+                                        >
+                                            <Field name={'ports'} />
+                                            <p className={'mt-1 text-xs'}>
+                                                Assign a number of ports to your server.
+                                            </p>
+                                            <p className={'mt-1 text-xs text-gray-400'}>
+                                                {resources.ports} available
+                                            </p>
+                                        </TitledGreyBox>
+                                        <TitledGreyBox
+                                            title={'Server backups'}
+                                            icon={faArchive}
+                                            className={'mt-8 sm:mt-0'}
+                                        >
+                                            <Field name={'backups'} />
+                                            <p className={'mt-1 text-xs'}>Assign a number of backups to your server.</p>
+                                            <p className={'mt-1 text-xs text-gray-400'}>
+                                                {resources.backups} available
+                                            </p>
+                                        </TitledGreyBox>
+                                        <TitledGreyBox
+                                            title={'Server databases'}
+                                            icon={faDatabase}
+                                            className={'mt-8 sm:mt-0'}
+                                        >
+                                            <Field name={'databases'} />
+                                            <p className={'mt-1 text-xs'}>
+                                                Assign a number of databases to your server.
+                                            </p>
+                                            <p className={'mt-1 text-xs text-gray-400'}>
+                                                {resources.databases} available
+                                            </p>
+                                        </TitledGreyBox>
+                                    </StoreContainer>
+                                    <h1 className={'text-5xl'}>Deployment</h1>
+                                    <h3 className={'text-2xl text-neutral-500'}>
+                                        Choose where to deploy and what to run.
+                                    </h3>
+                                    <StoreContainer className={'lg:grid lg:grid-cols-3 my-10 gap-4'}>
+                                        <TitledGreyBox
+                                            title={'Available Nodes'}
+                                            icon={faLayerGroup}
+                                            className={'mt-8 sm:mt-0'}
+                                        >
+                                            <Select name={'node'} onChange={(e) => setNode(parseInt(e.target.value))}>
+                                                {!node && <option>Select a node...</option>}
+                                                {nodes.map((n) => (
+                                                    <option key={n.id} value={n.id}>
+                                                        {n.name} ({n.location}) |{' '}
+                                                        {100 - parseInt(((n?.used / n?.total) * 100).toFixed(0))}% free
+                                                        | {formatCurrency(n.deployFee, currency)}
+                                                    </option>
+                                                ))}
+                                            </Select>
+                                            <p className={'mt-1 text-xs text-gray-400'}>
+                                                Select a node to deploy your server to.
+                                            </p>
+                                        </TitledGreyBox>
+                                        <TitledGreyBox
+                                            title={'Server Nest'}
+                                            icon={faCube}
+                                            className={'mt-8 sm:mt-0'}
+                                        >
+                                            <Select name={'nest'} onChange={(nest) => changeNest(nest)}>
+                                                {!nest && <option>Select a nest...</option>}
+                                                {nests.map((n) => (
+                                                    <option key={n.id} value={n.id}>
+                                                        {n.name}
+                                                    </option>
+                                                ))}
+                                            </Select>
+                                            <p className={'mt-1 text-xs text-gray-400'}>
+                                                Select a nest to use for your server.
+                                            </p>
+                                        </TitledGreyBox>
+                                        <TitledGreyBox title={'Server Egg'} icon={faEgg} className={'mt-8 sm:mt-0'}>
+                                            <Select name={'egg'} onChange={(e) => setEgg(parseInt(e.target.value))}>
+                                                {!egg && <option>Select an egg...</option>}
+                                                {eggs.map((e) => (
+                                                    <option key={e.id} value={e.id}>
+                                                        {e.name}
+                                                    </option>
+                                                ))}
+                                            </Select>
+                                            <p className={'mt-1 text-xs text-gray-400'}>
+                                                Choose what game you want to run on your server.
+                                            </p>
+                                        </TitledGreyBox>
+                                    </StoreContainer>
+                                    <InputSpinner visible={loading}>
+                                        <FlashMessageRender byKey={'store:create'} className={'my-2'} />
+                                        <div className={'text-right'}>
+                                            <Button
+                                                type={'submit'}
+                                                className={'w-1/6 mb-4'}
+                                                size={Button.Sizes.Large}
+                                                disabled={loading}
+                                            >
+                                                <Icon.Server className={'mr-2'} /> Create VPS
+                                            </Button>
+                                        </div>
+                                    </InputSpinner>
+                                </div>
+                                <div className={'lg:sticky lg:top-6'}>
+                                    <div className={'bg-gray-800 border border-gray-700 rounded-lg p-6'}>
+                                        <div className={'flex items-center justify-between'}>
+                                            <div>
+                                                <p className={'text-sm uppercase tracking-wide text-neutral-400'}>
+                                                    Order summary
+                                                </p>
+                                                <h2 className={'text-xl font-semibold'}>
+                                                    {selectedProduct?.name ?? 'Custom server'}
+                                                </h2>
+                                                {selectedProduct?.billing && (
+                                                    <p className={'text-xs text-neutral-400'}>
+                                                        Billing: {selectedProduct.billing}
                                                     </p>
-                                                    <h2 className={'text-xl font-semibold'}>
-                                                        {selectedProduct?.name ?? 'Custom server'}
-                                                    </h2>
-                                                    {selectedProduct?.billing && (
-                                                        <p className={'text-xs text-neutral-400'}>
-                                                            Billing: {selectedProduct.billing}
-                                                        </p>
-                                                    )}
-                                                </div>
-                                                {selectedProduct?.price !== undefined && (
-                                                    <span className={'text-lg font-semibold'}>
-                                                        {formatCurrency(selectedProduct.price, currency)}
-                                                    </span>
                                                 )}
                                             </div>
-                                            <div className={'mt-4 border-t border-gray-700 pt-4'}>
-                                                <h3 className={'text-sm font-semibold uppercase text-neutral-400'}>
-                                                    Selected resources
-                                                </h3>
-                                                <div className={'mt-3 space-y-2 text-sm'}>
-                                                    {resourceLineItems.map((item) => (
-                                                        <div key={item.label} className={'flex items-center justify-between'}>
-                                                            <span className={'text-neutral-300'}>
-                                                                {item.label}: {item.value}
-                                                            </span>
-                                                            {item.cost !== undefined && (
-                                                                <span className={'text-neutral-400'}>
-                                                                    {formatCurrency(item.cost, currency)}
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                                <div className={'mt-4 flex items-center justify-between text-base font-semibold'}>
-                                                    <span>Estimated monthly</span>
-                                                    <span>
-                                                        {estimatedMonthlyCost !== undefined
-                                                            ? formatCurrency(estimatedMonthlyCost, currency)
-                                                            : '—'}
-                                                    </span>
-                                                </div>
-                                                {!costs && selectedProduct?.price !== undefined && (
-                                                    <p className={'mt-2 text-xs text-neutral-500'}>
-                                                        Showing plan price while resource pricing loads.
-                                                    </p>
-                                                )}
-                                            </div>
-                                            {selectedProduct && (
-                                                <div className={'mt-6 border-t border-gray-700 pt-4'}>
-                                                    <h3 className={'text-sm font-semibold uppercase text-neutral-400'}>
-                                                        Plan details
-                                                    </h3>
-                                                    <div className={'mt-3 space-y-2 text-sm text-neutral-300'}>
-                                                        <p>CPU: {selectedProduct.specs.cpu}</p>
-                                                        <p>RAM: {selectedProduct.specs.memory}</p>
-                                                        <p>Disk: {selectedProduct.specs.disk}</p>
-                                                        <p>Bandwidth: {selectedProduct.specs.bandwidth}</p>
-                                                    </div>
-                                                    {selectedProduct.features && selectedProduct.features.length > 0 && (
-                                                        <div className={'mt-4'}>
-                                                            <p className={'text-sm font-semibold text-neutral-300'}>
-                                                                Features
-                                                            </p>
-                                                            <ul className={'mt-2 list-disc list-inside text-sm text-neutral-400'}>
-                                                                {selectedProduct.features.map((feature) => (
-                                                                    <li key={feature}>{feature}</li>
-                                                                ))}
-                                                            </ul>
-                                                        </div>
-                                                    )}
-                                                </div>
+                                            {selectedProduct?.price !== undefined && (
+                                                <span className={'text-lg font-semibold'}>
+                                                    {formatCurrency(selectedProduct.price, currency)}
+                                                </span>
                                             )}
                                         </div>
+                                        <div className={'mt-4 border-t border-gray-700 pt-4'}>
+                                            <h3 className={'text-sm font-semibold uppercase text-neutral-400'}>
+                                                Selected resources
+                                            </h3>
+                                            <div className={'mt-3 space-y-2 text-sm'}>
+                                                {resourceLineItems.map((item) => (
+                                                    <div key={item.label} className={'flex items-center justify-between'}>
+                                                        <span className={'text-neutral-300'}>
+                                                            {item.label}: {item.value}
+                                                        </span>
+                                                        {item.cost !== undefined && (
+                                                            <span className={'text-neutral-400'}>
+                                                                {formatCurrency(item.cost, currency)}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className={'mt-4 flex items-center justify-between text-base font-semibold'}>
+                                                <span>Estimated monthly</span>
+                                                <span>
+                                                    {estimatedMonthlyCost !== undefined
+                                                        ? formatCurrency(estimatedMonthlyCost, currency)
+                                                        : '—'}
+                                                </span>
+                                            </div>
+                                            {!costs && selectedProduct?.price !== undefined && (
+                                                <p className={'mt-2 text-xs text-neutral-500'}>
+                                                    Showing plan price while resource pricing loads.
+                                                </p>
+                                            )}
+                                        </div>
+                                        {selectedProduct && (
+                                            <div className={'mt-6 border-t border-gray-700 pt-4'}>
+                                                <h3 className={'text-sm font-semibold uppercase text-neutral-400'}>
+                                                    Plan details
+                                                </h3>
+                                                <div className={'mt-3 space-y-2 text-sm text-neutral-300'}>
+                                                    <p>CPU: {selectedProduct.specs.cpu}</p>
+                                                    <p>RAM: {selectedProduct.specs.memory}</p>
+                                                    <p>Disk: {selectedProduct.specs.disk}</p>
+                                                    <p>Bandwidth: {selectedProduct.specs.bandwidth}</p>
+                                                </div>
+                                                {selectedProduct.features && selectedProduct.features.length > 0 && (
+                                                    <div className={'mt-4'}>
+                                                        <p className={'text-sm font-semibold text-neutral-300'}>
+                                                            Features
+                                                        </p>
+                                                        <ul className={'mt-2 list-disc list-inside text-sm text-neutral-400'}>
+                                                            {selectedProduct.features.map((feature) => (
+                                                                <li key={feature}>{feature}</li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                    {ctaBlock?.type === 'create-cta' && (
                                         <div className={'mt-4 rounded-lg border border-gray-700 bg-gray-900/60 p-4 text-sm text-neutral-300'}>
-                                            <p className={'font-semibold text-white'}>Need more resources or credits?</p>
+                                            <p className={'font-semibold text-white'}>
+                                                {ctaBlock.title ?? 'Need more resources or credits?'}
+                                            </p>
                                             <p className={'mt-1 text-neutral-400'}>
-                                                Visit the resource shop or add funds to finish checkout faster.
+                                                {ctaBlock.description ??
+                                                    'Visit the store to add resources or funds before checkout.'}
                                             </p>
                                             <div className={'mt-3 flex flex-col gap-2 text-sm'}>
-                                                <a className={'text-indigo-300 hover:text-indigo-200'} href={'/store/resources'}>
-                                                    Add resources
-                                                </a>
-                                                <a className={'text-indigo-300 hover:text-indigo-200'} href={'/store/credits'}>
-                                                    Add credits
-                                                </a>
+                                                {(ctaBlock.links ?? [
+                                                    { label: 'Add resources', href: '/store/resources' },
+                                                    { label: 'Add credits', href: '/store/credits' },
+                                                ]).map((link) => (
+                                                    <a
+                                                        key={link.href}
+                                                        className={'text-indigo-300 hover:text-indigo-200'}
+                                                        href={link.href}
+                                                    >
+                                                        {link.label}
+                                                    </a>
+                                                ))}
                                             </div>
                                         </div>
-                                    </div>
+                                    )}
                                 </div>
-                            </Form>
-                        );
-                    }}
-                </Formik>
+                            </div>
+                        </Form>
+                    );
+                }}
+            </Formik>
         </PageContentBlock>
     );
 };
