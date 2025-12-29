@@ -14,6 +14,7 @@ class AppearanceFormRequest extends AdminFormRequest
             'theme:user:background' => 'nullable|url',
             'theme:admin' => 'required|string|in:jexactyl,dark,light,blue,minecraft',
             'theme' => 'required|array',
+            'theme.mode' => 'nullable|string|in:brand,dark,light',
             'theme.colors' => 'required|array',
             'theme.colors.primary' => 'required|string|max:32',
             'theme.colors.primaryHover' => 'required|string|max:32',

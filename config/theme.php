@@ -11,6 +11,7 @@ return [
     'layout_preview' => null,
 
     'layout_defaults' => [
+        'mode' => 'brand',
         'colors' => [
             'primary' => '#2563eb',
             'primaryHover' => '#1d4ed8',

@@ -67,6 +67,18 @@
                                 </div>
                             </div>
                             <div class="form-group col-md-4">
+                                <label class="control-label">Base Client Theme</label>
+                                <div>
+                                    <select name="theme[mode]" class="form-control">
+                                        @php($baseMode = old('theme.mode', data_get($themeConfiguration ?? [], 'mode', 'brand')))
+                                        <option value="brand" @if ($baseMode === 'brand') selected @endif>Brand</option>
+                                        <option value="dark" @if ($baseMode === 'dark') selected @endif>Dark</option>
+                                        <option value="light" @if ($baseMode === 'light') selected @endif>Light</option>
+                                    </select>
+                                    <p class="text-muted"><small>Sets the default client theme tokens (brand, dark, or light).</small></p>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-4">
                                 <label class="control-label">Client Background</label>
                                 <div>
                                     <input type="text" class="form-control" name="theme:user:background" value="{{ old('theme:user:background', config('theme.user.background')) }}" />

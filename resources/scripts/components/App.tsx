@@ -6,6 +6,7 @@ import { StoreProvider } from 'easy-peasy';
 import { hot } from 'react-hot-loader/root';
 import { history } from '@/components/history';
 import { SiteSettings, ThemeSettings } from '@/state/settings';
+import { resolveTheme, resolveThemeMode, ThemeMode } from '@/theme/tokens';
 import IndexRouter from '@/routers/IndexRouter';
 import earnCredits from '@/api/account/earnCredits';
 import { setupInterceptors } from '@/api/interceptors';
@@ -35,29 +36,30 @@ interface ExtendedWindow extends Window {
 
 setupInterceptors(history);
 
-const applyThemeConfiguration = (theme: ThemeSettings) => {
+const applyThemeConfiguration = (theme: ThemeSettings, mode: ThemeMode) => {
     const root = document.documentElement;
+    const resolvedTheme = resolveTheme(theme, mode);
     const entries: Array<[string, string]> = [
-        ['--jex-color-primary', theme.colors.primary],
-        ['--jex-color-primary-hover', theme.colors.primaryHover],
-        ['--jex-color-primary-text', theme.colors.primaryText],
-        ['--jex-color-accent', theme.colors.accent],
-        ['--jex-color-bg', theme.colors.background],
-        ['--jex-color-surface', theme.colors.surface],
-        ['--jex-color-text', theme.colors.text],
-        ['--jex-color-muted', theme.colors.muted],
-        ['--jex-color-border', theme.colors.border],
-        ['--jex-font-base', theme.typography.fontFamilyBase],
-        ['--jex-font-heading', theme.typography.fontFamilyHeading],
-        ['--jex-font-mono', theme.typography.fontFamilyMono],
-        ['--jex-font-size', theme.typography.baseSize],
-        ['--jex-layout-max-width', theme.layout.maxWidth],
-        ['--jex-layout-padding', theme.layout.padding],
-        ['--jex-layout-gap', theme.layout.contentGap],
-        ['--jex-component-button-radius', theme.components.buttonRadius],
-        ['--jex-component-card-radius', theme.components.cardRadius],
-        ['--jex-component-input-radius', theme.components.inputRadius],
-        ['--jex-component-focus-ring', theme.components.focusRingColor],
+        ['--jex-color-primary', resolvedTheme.colors.primary],
+        ['--jex-color-primary-hover', resolvedTheme.colors.primaryHover],
+        ['--jex-color-primary-text', resolvedTheme.colors.primaryText],
+        ['--jex-color-accent', resolvedTheme.colors.accent],
+        ['--jex-color-bg', resolvedTheme.colors.background],
+        ['--jex-color-surface', resolvedTheme.colors.surface],
+        ['--jex-color-text', resolvedTheme.colors.text],
+        ['--jex-color-muted', resolvedTheme.colors.muted],
+        ['--jex-color-border', resolvedTheme.colors.border],
+        ['--jex-font-base', resolvedTheme.typography.fontFamilyBase],
+        ['--jex-font-heading', resolvedTheme.typography.fontFamilyHeading],
+        ['--jex-font-mono', resolvedTheme.typography.fontFamilyMono],
+        ['--jex-font-size', resolvedTheme.typography.baseSize],
+        ['--jex-layout-max-width', resolvedTheme.layout.maxWidth],
+        ['--jex-layout-padding', resolvedTheme.layout.padding],
+        ['--jex-layout-gap', resolvedTheme.layout.contentGap],
+        ['--jex-component-button-radius', resolvedTheme.components.buttonRadius],
+        ['--jex-component-card-radius', resolvedTheme.components.cardRadius],
+        ['--jex-component-input-radius', resolvedTheme.components.inputRadius],
+        ['--jex-component-focus-ring', resolvedTheme.components.focusRingColor],
     ];
 
     entries.forEach(([key, value]) => {
@@ -92,7 +94,8 @@ const App = () => {
     }
 
     if (SiteConfiguration?.theme) {
-        applyThemeConfiguration(SiteConfiguration.theme);
+        const themeMode = resolveThemeMode(document.body.dataset.theme ?? undefined);
+        applyThemeConfiguration(SiteConfiguration.theme, themeMode);
     }
 
     if (!store.getState().storefront.data) {

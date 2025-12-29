@@ -29,6 +29,7 @@ export interface SiteSettings {
 }
 
 export interface ThemeSettings {
+    mode?: string;
     colors: {
         primary: string;
         primaryHover: string;
