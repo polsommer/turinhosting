@@ -1,7 +1,8 @@
 # Install from Scratch
 
 Use this guide to install the TurinHosting (Jexactyl) panel directly from this repository. The steps below target a
-Linux server and assume you are installing to `/var/www/turinhosting`.
+Linux server and assume you are installing to `/var/www/turinhosting`. For Ubuntu 22.04-specific commands, see the
+[Ubuntu 22.04 installation guide](install-ubuntu-22.04.md).
 
 ## 1. System Requirements
 
