@@ -274,6 +274,9 @@ return [
                 'type' => 'hero',
             ],
             [
+                'type' => 'banners',
+            ],
+            [
                 'type' => 'featured',
                 'title' => 'Featured VPS plans',
                 'description' => 'Highlight the most popular VPS packages.',

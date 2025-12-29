@@ -6,19 +6,36 @@ import { Button } from '@/components/elements/button';
 interface BannerProps {
     className: string;
     title: string;
+    description?: string;
     action: string;
     link: string;
 }
 
-export default (props: BannerProps) => {
+export default ({ className, title, description, action, link }: BannerProps) => {
     return (
         <div
-            className={classNames(props.className, 'w-full bg-auto bg-center rounded-tr-xl rounded-bl-xl bg-gray-800')}
+            className={classNames(
+                className,
+                'group relative flex min-h-[260px] w-full overflow-hidden rounded-3xl border border-gray-700/60 bg-gray-900/70 p-6 shadow-lg'
+            )}
         >
-            <div className={'bg-gray-900 bg-opacity-75 text-center rounded-lg p-2 m-2 lg:mt-[40rem]'}>
-                <p className={'text-3xl text-gray-200'}>{props.title}</p>
-                <Link to={`/store/${props.link}`}>
-                    <Button className={'my-2 w-full lg:w-1/2'}>{props.action}</Button>
+            <div className={'absolute inset-0 bg-gradient-to-br from-black/70 via-black/40 to-transparent'} />
+            <div className={'relative z-10 flex h-full flex-col justify-between gap-8'}>
+                <div>
+                    <p className={'text-xs uppercase tracking-[0.35em] text-indigo-200'}>VPS Store</p>
+                    <p className={'mt-3 text-2xl font-semibold text-white md:text-3xl'}>{title}</p>
+                    {description && <p className={'mt-2 text-sm text-neutral-200'}>{description}</p>}
+                </div>
+                <Link to={`/store/${link}`}>
+                    <Button
+                        className={
+                            'w-full justify-center rounded-full border border-white/20 bg-white/10 text-white transition group-hover:border-indigo-400 group-hover:bg-indigo-500/20'
+                        }
+                        size={Button.Sizes.Large}
+                        variant={Button.Variants.Secondary}
+                    >
+                        {action}
+                    </Button>
                 </Link>
             </div>
         </div>

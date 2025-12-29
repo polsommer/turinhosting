@@ -119,7 +119,7 @@ export interface StorefrontStore {
 }
 
 export const defaultStoreLayout: StorefrontLayout = {
-    overview: [{ type: 'hero' }, { type: 'featured' }, { type: 'catalog' }],
+    overview: [{ type: 'hero' }, { type: 'banners' }, { type: 'featured' }, { type: 'catalog' }],
     resources: [{ type: 'resource-hero' }, { type: 'resource-grid' }, { type: 'resource-tips' }, { type: 'resource-cta' }],
     purchase: [{ type: 'purchase-hero' }, { type: 'balance-summary' }, { type: 'earnings' }],
     create: [{ type: 'create-hero' }, { type: 'create-cta' }],
