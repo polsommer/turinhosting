@@ -72,8 +72,8 @@ export default () => {
                 confirm={'Continue'}
                 onConfirmed={() => purchase(resource)}
             >
-                Are you sure you want to purchase this resource ({resource})? This will take the credits from your
-                account and add the resource. This is not a reversible transaction.
+                Are you sure you want to purchase this resource ({resource})? This will deduct the cost from your
+                balance and add the resource. This is not a reversible transaction.
             </Dialog.Confirm>
             <Container className={'lg:grid lg:grid-cols-4 my-10 gap-8'}>
                 <PurchaseBox

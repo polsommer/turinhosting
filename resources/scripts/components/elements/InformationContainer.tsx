@@ -8,6 +8,7 @@ import Translate from '@/components/elements/Translate';
 import InformationBox from '@/components/elements/InformationBox';
 import getLatestActivity, { Activity } from '@/api/account/getLatestActivity';
 import { wrapProperties } from '@/components/elements/activity/ActivityLogEntry';
+import formatCurrency from '@/util/formatCurrency';
 import {
     faCircle,
     faCoins,
@@ -24,6 +25,7 @@ export default () => {
     const properties = wrapProperties(activity?.properties);
     const user = useStoreState((state) => state.user.data!);
     const store = useStoreState((state) => state.storefront.data!);
+    const currency = useStoreState((state) => state.storefront.data?.currency);
 
     useEffect(() => {
         getResources().then((d) => setBal(d.balance));
@@ -41,15 +43,15 @@ export default () => {
         <>
             {store.earn.enabled ? (
                 <InformationBox icon={faCircle} iconCss={'animate-pulse'}>
-                    Earning <span className={'text-green-600'}>{store.earn.amount}</span> credits / min.
+                    Earning <span className={'text-green-600'}>{formatCurrency(store.earn.amount, currency)}</span> / min.
                 </InformationBox>
             ) : (
                 <InformationBox icon={faExclamationCircle}>
-                    Credit earning is currently <span className={'text-red-600'}>disabled.</span>
+                    Balance earning is currently <span className={'text-red-600'}>disabled.</span>
                 </InformationBox>
             )}
             <InformationBox icon={faCoins}>
-                You have <span className={'text-green-600'}>{bal}</span> credits available.
+                You have <span className={'text-green-600'}>{formatCurrency(bal, currency)}</span> available.
             </InformationBox>
             <InformationBox icon={faUserLock}>
                 {user.useTotp ? (

@@ -13,6 +13,7 @@ import ServerErrorSvg from '@/assets/images/server_error.svg';
 import FlashMessageRender from '@/components/FlashMessageRender';
 import SpinnerOverlay from '@/components/elements/SpinnerOverlay';
 import PageContentBlock from '@/components/elements/PageContentBlock';
+import formatCurrency from '@/util/formatCurrency';
 
 export default () => {
     const [name, setName] = useState('');
@@ -24,6 +25,7 @@ export default () => {
 
     const { clearFlashes, clearAndAddHttpError } = useFlash();
     const store = useStoreState((state) => state.storefront.data!);
+    const currency = useStoreState((state) => state.storefront.data?.currency);
     const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
     const serverName = ServerContext.useStoreState((state) => state.server.data!.name);
     const renewable = ServerContext.useStoreState((state) => state.server.data?.renewable);
@@ -73,7 +75,8 @@ export default () => {
                 onConfirmed={() => doRenewal()}
             >
                 <SpinnerOverlay visible={isSubmit} />
-                Are you sure you want to spend {store.renewals.cost} credits to renew your server?
+                Are you sure you want to spend {formatCurrency(store.renewals.cost, currency)} from your balance to
+                renew your server?
             </Dialog.Confirm>
             <Dialog.Confirm
                 open={deleteDialog}

@@ -34,9 +34,9 @@ export default () => {
                     link={'resources'}
                 />
                 <StoreBanner
-                    title={'Run out of credits?'}
+                    title={'Need more balance?'}
                     className={'bg-storethree'}
-                    action={'Buy Credits'}
+                    action={'Add Funds'}
                     link={'credits'}
                 />
             </div>

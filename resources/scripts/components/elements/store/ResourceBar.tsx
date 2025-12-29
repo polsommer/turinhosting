@@ -4,11 +4,13 @@ import * as Icon from 'react-feather';
 import styled from 'styled-components/macro';
 import { megabytesToHuman } from '@/helpers';
 import React, { useState, useEffect } from 'react';
+import { useStoreState } from '@/state/hooks';
 import Spinner from '@/components/elements/Spinner';
 import ContentBox from '@/components/elements/ContentBox';
 import Tooltip from '@/components/elements/tooltip/Tooltip';
 import StoreContainer from '@/components/elements/StoreContainer';
 import { getResources, Resources } from '@/api/store/getResources';
+import formatCurrency from '@/util/formatCurrency';
 
 const Wrapper = styled.div`
     ${tw`text-2xl flex flex-row justify-center items-center`};
@@ -23,13 +25,14 @@ interface BoxProps {
     title: string;
     description: string;
     icon: React.ReactElement;
-    amount: number;
+    amount: number | string;
     toHuman?: boolean;
     suffix?: string;
 }
 
 export default ({ className, titles }: RowProps) => {
     const [resources, setResources] = useState<Resources>();
+    const currency = useStoreState((state) => state.storefront.data?.currency);
 
     useEffect(() => {
         getResources().then((resources) => setResources(resources));
@@ -42,7 +45,9 @@ export default ({ className, titles }: RowProps) => {
             <Tooltip content={props.description}>
                 <Wrapper>
                     {props.icon}
-                    <span className={'ml-2'}>{props.toHuman ? megabytesToHuman(props.amount) : props.amount}</span>
+                    <span className={'ml-2'}>
+                        {props.toHuman && typeof props.amount === 'number' ? megabytesToHuman(props.amount) : props.amount}
+                    </span>
                     {props.suffix}
                 </Wrapper>
             </Tooltip>
@@ -52,10 +57,10 @@ export default ({ className, titles }: RowProps) => {
     return (
         <StoreContainer className={classNames(className, 'grid grid-cols-2 sm:grid-cols-7 gap-x-6 gap-y-2')}>
             <ResourceBox
-                title={'Credits'}
-                description={'The amount of credits you have available.'}
+                title={'Balance'}
+                description={'The amount of money you have available.'}
                 icon={<Icon.DollarSign />}
-                amount={resources.balance}
+                amount={formatCurrency(resources.balance, currency)}
             />
             <ResourceBox
                 title={'CPU'}
