@@ -12,6 +12,7 @@ import SearchContainer from '@/components/dashboard/search/SearchContainer';
 
 const Navigation = styled.div`
     ${tw`w-full bg-neutral-800 shadow-xl overflow-x-auto`};
+    background-color: var(--jex-color-surface, #111827);
     & > div {
         ${tw`mx-auto w-full flex items-center`};
     }
@@ -38,7 +39,7 @@ const RightNavigation = styled.div`
         &:active,
         &:hover,
         &.active {
-            box-shadow: inset 0 -2px ${theme`colors.cyan.700`.toString()};
+            box-shadow: inset 0 -2px var(--jex-color-accent, ${theme`colors.cyan.700`.toString()});
         }
     }
 `;

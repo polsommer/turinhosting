@@ -3,11 +3,16 @@ import { createGlobalStyle } from 'styled-components/macro';
 
 export default createGlobalStyle`
     body {
-        ${tw`bg-neutral-900 font-sans font-medium text-gray-200`};
+        ${tw`font-sans font-medium`};
+        background-color: var(--jex-color-bg, #0f172a);
+        color: var(--jex-color-text, #e5e7eb);
+        font-family: var(--jex-font-base, 'Rubik', sans-serif);
+        font-size: var(--jex-font-size, 16px);
     }
 
     h1, h2, h3, h4, h5, h6 {
         ${tw`tracking-normal`};
+        font-family: var(--jex-font-heading, 'IBM Plex Sans', sans-serif);
     }
 
     p {
@@ -20,6 +25,10 @@ export default createGlobalStyle`
 
     textarea, select, input, button, button:focus, button:focus-visible {
         ${tw`outline-none`};
+    }
+
+    input, select, textarea {
+        border-radius: var(--jex-component-input-radius, 10px);
     }
 
     input[type=number]::-webkit-outer-spin-button,

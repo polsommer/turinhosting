@@ -74,6 +74,7 @@ export default () => {
     const rootAdmin = useStoreState((state) => state.user.data!.rootAdmin);
     const databasesEnabled = useStoreState((state) => state.settings.data!.databases);
     const editEnabled = useStoreState((state) => state.storefront.data!.editing.enabled);
+    const { showHeader, showSidebar } = useStoreState((state) => state.settings.data!.theme.blocks);
 
     const id = ServerContext.useStoreState((state) => state.server.data?.id);
     const uuid = ServerContext.useStoreState((state) => state.server.data?.uuid);
@@ -102,7 +103,7 @@ export default () => {
 
     return (
         <React.Fragment key={'server-router'}>
-            {width >= 1280 ? <SidePanel /> : <MobileNavigation />}
+            {width >= 1280 ? showSidebar && <SidePanel /> : showHeader && <MobileNavigation />}
             {!uuid || !id ? (
                 error ? (
                     <ServerError message={error} />
@@ -111,112 +112,114 @@ export default () => {
                 )
             ) : (
                 <>
-                    <CSSTransition timeout={150} classNames={'fade'} appear in>
-                        <SubNavigation className={'j-down'}>
-                            <div>
-                                <NavLink to={match.url} exact>
-                                    <div css={tw`flex items-center justify-between`}>
-                                        Console <Icon.Terminal css={tw`ml-1`} size={18} />
-                                    </div>
-                                </NavLink>
-                                <NavLink to={`${match.url}/analytics`} exact>
-                                    <div css={tw`flex items-center justify-between`}>
-                                        Analytics <Icon.BarChart css={tw`ml-1`} size={18} />
-                                    </div>
-                                </NavLink>
-                                <Can action={'activity.*'}>
-                                    <NavLink to={`${match.url}/activity`}>
+                    {showHeader && (
+                        <CSSTransition timeout={150} classNames={'fade'} appear in>
+                            <SubNavigation className={'j-down'}>
+                                <div>
+                                    <NavLink to={match.url} exact>
                                         <div css={tw`flex items-center justify-between`}>
-                                            Activity <Icon.Eye css={tw`ml-1`} size={18} />
+                                            Console <Icon.Terminal css={tw`ml-1`} size={18} />
                                         </div>
                                     </NavLink>
-                                </Can>
-                                {eggFeatures?.includes('eula') && (
-                                    <Can action={'plugin.*'}>
-                                        <NavLink to={`${match.url}/plugins`}>
+                                    <NavLink to={`${match.url}/analytics`} exact>
+                                        <div css={tw`flex items-center justify-between`}>
+                                            Analytics <Icon.BarChart css={tw`ml-1`} size={18} />
+                                        </div>
+                                    </NavLink>
+                                    <Can action={'activity.*'}>
+                                        <NavLink to={`${match.url}/activity`}>
                                             <div css={tw`flex items-center justify-between`}>
-                                                Plugins <Icon.Box css={tw`ml-1`} size={18} />
+                                                Activity <Icon.Eye css={tw`ml-1`} size={18} />
                                             </div>
                                         </NavLink>
                                     </Can>
-                                )}
-                                <Can action={'file.*'}>
-                                    <NavLink to={`${match.url}/files`}>
-                                        <div css={tw`flex items-center justify-between`}>
-                                            Files <Icon.Folder css={tw`ml-1`} size={18} />
-                                        </div>
-                                    </NavLink>
-                                </Can>
-                                {databasesEnabled && (
-                                    <Can action={'database.*'}>
-                                        <NavLink to={`${match.url}/databases`}>
+                                    {eggFeatures?.includes('eula') && (
+                                        <Can action={'plugin.*'}>
+                                            <NavLink to={`${match.url}/plugins`}>
+                                                <div css={tw`flex items-center justify-between`}>
+                                                    Plugins <Icon.Box css={tw`ml-1`} size={18} />
+                                                </div>
+                                            </NavLink>
+                                        </Can>
+                                    )}
+                                    <Can action={'file.*'}>
+                                        <NavLink to={`${match.url}/files`}>
                                             <div css={tw`flex items-center justify-between`}>
-                                                Databases <Icon.Database css={tw`ml-1`} size={18} />
+                                                Files <Icon.Folder css={tw`ml-1`} size={18} />
                                             </div>
                                         </NavLink>
                                     </Can>
-                                )}
-                                <Can action={'schedule.*'}>
-                                    <NavLink to={`${match.url}/schedules`}>
-                                        <div css={tw`flex items-center justify-between`}>
-                                            Tasks <Icon.Clock css={tw`ml-1`} size={18} />
-                                        </div>
-                                    </NavLink>
-                                </Can>
-                                <Can action={'user.*'}>
-                                    <NavLink to={`${match.url}/users`}>
-                                        <div css={tw`flex items-center justify-between`}>
-                                            Users <Icon.Users css={tw`ml-1`} size={18} />
-                                        </div>
-                                    </NavLink>
-                                </Can>
-                                <Can action={'backup.*'}>
-                                    <NavLink to={`${match.url}/backups`}>
-                                        <div css={tw`flex items-center justify-between`}>
-                                            Backups <Icon.Archive css={tw`ml-1`} size={18} />
-                                        </div>
-                                    </NavLink>
-                                </Can>
-                                <Can action={'allocation.*'}>
-                                    <NavLink to={`${match.url}/network`}>
-                                        <div css={tw`flex items-center justify-between`}>
-                                            Network <Icon.Share2 css={tw`ml-1`} size={18} />
-                                        </div>
-                                    </NavLink>
-                                </Can>
-                                <Can action={'startup.*'}>
-                                    <NavLink to={`${match.url}/startup`}>
-                                        <div css={tw`flex items-center justify-between`}>
-                                            Startup <Icon.Play css={tw`ml-1`} size={18} />
-                                        </div>
-                                    </NavLink>
-                                </Can>
-                                <Can action={['settings.*', 'file.sftp']} matchAny>
-                                    <NavLink to={`${match.url}/settings`}>
-                                        <div css={tw`flex items-center justify-between`}>
-                                            Settings <Icon.Settings css={tw`ml-1`} size={18} />
-                                        </div>
-                                    </NavLink>
-                                </Can>
-                                {editEnabled && (
-                                    <Can action={['settings.*']} matchAny>
-                                        <NavLink to={`${match.url}/edit`}>
+                                    {databasesEnabled && (
+                                        <Can action={'database.*'}>
+                                            <NavLink to={`${match.url}/databases`}>
+                                                <div css={tw`flex items-center justify-between`}>
+                                                    Databases <Icon.Database css={tw`ml-1`} size={18} />
+                                                </div>
+                                            </NavLink>
+                                        </Can>
+                                    )}
+                                    <Can action={'schedule.*'}>
+                                        <NavLink to={`${match.url}/schedules`}>
                                             <div css={tw`flex items-center justify-between`}>
-                                                Edit <Icon.Edit css={tw`ml-1`} size={18} />
+                                                Tasks <Icon.Clock css={tw`ml-1`} size={18} />
                                             </div>
                                         </NavLink>
                                     </Can>
-                                )}
-                                {rootAdmin && (
-                                    <a href={'/admin/servers/view/' + serverId} rel='noreferrer' target={'_blank'}>
-                                        <div css={tw`flex items-center justify-between`}>
-                                            Admin <Icon.ExternalLink css={tw`ml-1`} size={18} />
-                                        </div>
-                                    </a>
-                                )}
-                            </div>
-                        </SubNavigation>
-                    </CSSTransition>
+                                    <Can action={'user.*'}>
+                                        <NavLink to={`${match.url}/users`}>
+                                            <div css={tw`flex items-center justify-between`}>
+                                                Users <Icon.Users css={tw`ml-1`} size={18} />
+                                            </div>
+                                        </NavLink>
+                                    </Can>
+                                    <Can action={'backup.*'}>
+                                        <NavLink to={`${match.url}/backups`}>
+                                            <div css={tw`flex items-center justify-between`}>
+                                                Backups <Icon.Archive css={tw`ml-1`} size={18} />
+                                            </div>
+                                        </NavLink>
+                                    </Can>
+                                    <Can action={'allocation.*'}>
+                                        <NavLink to={`${match.url}/network`}>
+                                            <div css={tw`flex items-center justify-between`}>
+                                                Network <Icon.Share2 css={tw`ml-1`} size={18} />
+                                            </div>
+                                        </NavLink>
+                                    </Can>
+                                    <Can action={'startup.*'}>
+                                        <NavLink to={`${match.url}/startup`}>
+                                            <div css={tw`flex items-center justify-between`}>
+                                                Startup <Icon.Play css={tw`ml-1`} size={18} />
+                                            </div>
+                                        </NavLink>
+                                    </Can>
+                                    <Can action={['settings.*', 'file.sftp']} matchAny>
+                                        <NavLink to={`${match.url}/settings`}>
+                                            <div css={tw`flex items-center justify-between`}>
+                                                Settings <Icon.Settings css={tw`ml-1`} size={18} />
+                                            </div>
+                                        </NavLink>
+                                    </Can>
+                                    {editEnabled && (
+                                        <Can action={['settings.*']} matchAny>
+                                            <NavLink to={`${match.url}/edit`}>
+                                                <div css={tw`flex items-center justify-between`}>
+                                                    Edit <Icon.Edit css={tw`ml-1`} size={18} />
+                                                </div>
+                                            </NavLink>
+                                        </Can>
+                                    )}
+                                    {rootAdmin && (
+                                        <a href={'/admin/servers/view/' + serverId} rel='noreferrer' target={'_blank'}>
+                                            <div css={tw`flex items-center justify-between`}>
+                                                Admin <Icon.ExternalLink css={tw`ml-1`} size={18} />
+                                            </div>
+                                        </a>
+                                    )}
+                                </div>
+                            </SubNavigation>
+                        </CSSTransition>
+                    )}
                     <InstallListener />
                     <TransferListener />
                     <WebsocketHandler />

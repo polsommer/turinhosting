@@ -3,10 +3,14 @@ import { breakpoint } from '@/theme';
 import styled from 'styled-components/macro';
 
 const ContentContainer = styled.div`
-    ${tw`mx-4`};
+    ${tw`mx-auto w-full`};
+    max-width: var(--jex-layout-max-width, 1200px);
+    padding-left: var(--jex-layout-padding, 24px);
+    padding-right: var(--jex-layout-padding, 24px);
 
     ${breakpoint('xl')`
-        ${tw`ml-36 mr-16`};
+        padding-left: var(--jex-layout-padding, 24px);
+        padding-right: var(--jex-layout-padding, 24px);
     `};
 `;
 

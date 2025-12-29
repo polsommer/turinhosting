@@ -25,56 +25,58 @@ export default () => {
     const { width } = useWindowDimensions();
     const coupons = useStoreState((state) => state.settings.data!.coupons);
     const referrals = useStoreState((state) => state.storefront.data!.referrals.enabled);
+    const { showHeader, showSidebar } = useStoreState((state) => state.settings.data!.theme.blocks);
 
     return (
         <>
-            {width >= 1280 ? <SidePanel /> : <MobileNavigation />}
-            {location.pathname.startsWith('/account') ? (
-                <SubNavigation className={'j-down'}>
-                    <div>
-                        <NavLink to={'/account'} exact>
-                            <div css={tw`flex items-center justify-between`}>
-                                Account <Icon.User css={tw`ml-1`} size={18} />
-                            </div>
-                        </NavLink>
-                        <NavLink to={'/account/security'}>
-                            <div css={tw`flex items-center justify-between`}>
-                                Security <Icon.Key css={tw`ml-1`} size={18} />
-                            </div>
-                        </NavLink>
-                        {referrals && (
-                            <NavLink to={'/account/referrals'}>
+            {width >= 1280 ? showSidebar && <SidePanel /> : showHeader && <MobileNavigation />}
+            {showHeader &&
+                (location.pathname.startsWith('/account') ? (
+                    <SubNavigation className={'j-down'}>
+                        <div>
+                            <NavLink to={'/account'} exact>
                                 <div css={tw`flex items-center justify-between`}>
-                                    Referrals <Icon.DollarSign css={tw`ml-1`} size={18} />
+                                    Account <Icon.User css={tw`ml-1`} size={18} />
                                 </div>
                             </NavLink>
-                        )}
-                        <NavLink to={'/account/api'}>
-                            <div css={tw`flex items-center justify-between`}>
-                                API <Icon.Code css={tw`ml-1`} size={18} />
-                            </div>
-                        </NavLink>
-                        <NavLink to={'/account/ssh'}>
-                            <div css={tw`flex items-center justify-between`}>
-                                SSH Keys <Icon.Terminal css={tw`ml-1`} size={18} />
-                            </div>
-                        </NavLink>
-                        {coupons && (
-                            <NavLink to={'/account/coupons'}>
-                                <div className={'flex items-center justify-between'}>
-                                    Coupons <Icon.DollarSign className={'ml-1'} size={18} />
+                            <NavLink to={'/account/security'}>
+                                <div css={tw`flex items-center justify-between`}>
+                                    Security <Icon.Key css={tw`ml-1`} size={18} />
                                 </div>
                             </NavLink>
-                        )}
-                    </div>
-                </SubNavigation>
-            ) : (
-                <SubNavigation className={'lg:visible invisible'}>
-                    <div>
-                        <InformationContainer />
-                    </div>
-                </SubNavigation>
-            )}
+                            {referrals && (
+                                <NavLink to={'/account/referrals'}>
+                                    <div css={tw`flex items-center justify-between`}>
+                                        Referrals <Icon.DollarSign css={tw`ml-1`} size={18} />
+                                    </div>
+                                </NavLink>
+                            )}
+                            <NavLink to={'/account/api'}>
+                                <div css={tw`flex items-center justify-between`}>
+                                    API <Icon.Code css={tw`ml-1`} size={18} />
+                                </div>
+                            </NavLink>
+                            <NavLink to={'/account/ssh'}>
+                                <div css={tw`flex items-center justify-between`}>
+                                    SSH Keys <Icon.Terminal css={tw`ml-1`} size={18} />
+                                </div>
+                            </NavLink>
+                            {coupons && (
+                                <NavLink to={'/account/coupons'}>
+                                    <div className={'flex items-center justify-between'}>
+                                        Coupons <Icon.DollarSign className={'ml-1'} size={18} />
+                                    </div>
+                                </NavLink>
+                            )}
+                        </div>
+                    </SubNavigation>
+                ) : (
+                    <SubNavigation className={'lg:visible invisible'}>
+                        <div>
+                            <InformationContainer />
+                        </div>
+                    </SubNavigation>
+                ))}
             <TransitionRouter>
                 <React.Suspense fallback={<Spinner centered />}>
                     <Switch location={location}>

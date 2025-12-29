@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLocation } from 'react-router';
+import { useStoreState } from 'easy-peasy';
 import TransitionRouter from '@/TransitionRouter';
 import SidePanel from '@/components/elements/SidePanel';
 import { NotFound } from '@/components/elements/ScreenBlock';
@@ -13,10 +14,11 @@ export default () => {
     const location = useLocation();
     const { width } = useWindowDimensions();
     const match = useRouteMatch<{ id: string }>();
+    const { showHeader, showSidebar } = useStoreState((state) => state.settings.data!.theme.blocks);
 
     return (
         <>
-            {width >= 1280 ? <SidePanel /> : <MobileNavigation />}
+            {width >= 1280 ? showSidebar && <SidePanel /> : showHeader && <MobileNavigation />}
             <TransitionRouter>
                 <Switch location={location}>
                     <Route path={match.path} exact>

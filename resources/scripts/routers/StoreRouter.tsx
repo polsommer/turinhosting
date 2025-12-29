@@ -1,6 +1,7 @@
 import React from 'react';
 import * as Icon from 'react-feather';
 import { useLocation } from 'react-router';
+import { useStoreState } from 'easy-peasy';
 import TransitionRouter from '@/TransitionRouter';
 import SidePanel from '@/components/elements/SidePanel';
 import { NotFound } from '@/components/elements/ScreenBlock';
@@ -17,34 +18,37 @@ export default () => {
     const location = useLocation();
     const { width } = useWindowDimensions();
     const match = useRouteMatch<{ id: string }>();
+    const { showHeader, showSidebar } = useStoreState((state) => state.settings.data!.theme.blocks);
 
     return (
         <>
-            {width >= 1280 ? <SidePanel /> : <MobileNavigation />}
-            <SubNavigation className={'j-down'}>
-                <div>
-                    <NavLink to={match.path} exact>
-                        <div className={'flex items-center justify-between'}>
-                            Store <Icon.ShoppingCart className={'ml-1'} size={18} />
-                        </div>
-                    </NavLink>
-                    <NavLink to={`${match.path}/resources`}>
-                        <div className={'flex items-center justify-between'}>
-                            Resources <Icon.Cpu className={'ml-1'} size={18} />
-                        </div>
-                    </NavLink>
-                    <NavLink to={`${match.path}/credits`}>
-                        <div className={'flex items-center justify-between'}>
-                            Balance <Icon.DollarSign className={'ml-1'} size={18} />
-                        </div>
-                    </NavLink>
-                    <NavLink to={`${match.path}/create`}>
-                        <div className={'flex items-center justify-between'}>
-                            Create Server <Icon.Server className={'ml-1'} size={18} />
-                        </div>
-                    </NavLink>
-                </div>
-            </SubNavigation>
+            {width >= 1280 ? showSidebar && <SidePanel /> : showHeader && <MobileNavigation />}
+            {showHeader && (
+                <SubNavigation className={'j-down'}>
+                    <div>
+                        <NavLink to={match.path} exact>
+                            <div className={'flex items-center justify-between'}>
+                                Store <Icon.ShoppingCart className={'ml-1'} size={18} />
+                            </div>
+                        </NavLink>
+                        <NavLink to={`${match.path}/resources`}>
+                            <div className={'flex items-center justify-between'}>
+                                Resources <Icon.Cpu className={'ml-1'} size={18} />
+                            </div>
+                        </NavLink>
+                        <NavLink to={`${match.path}/credits`}>
+                            <div className={'flex items-center justify-between'}>
+                                Balance <Icon.DollarSign className={'ml-1'} size={18} />
+                            </div>
+                        </NavLink>
+                        <NavLink to={`${match.path}/create`}>
+                            <div className={'flex items-center justify-between'}>
+                                Create Server <Icon.Server className={'ml-1'} size={18} />
+                            </div>
+                        </NavLink>
+                    </div>
+                </SubNavigation>
+            )}
             <TransitionRouter>
                 <Switch location={location}>
                     <Route path={`${match.path}`} exact>

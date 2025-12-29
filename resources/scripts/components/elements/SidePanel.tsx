@@ -24,6 +24,8 @@ export default () => {
 
     const PanelDiv = styled.div`
         ${tw`h-screen sticky bg-neutral-800 flex flex-col w-20 fixed top-0`};
+        background-color: var(--jex-color-surface, #111827);
+        color: var(--jex-color-text, #e5e7eb);
 
         & > div {
             ${tw`mx-auto`};
