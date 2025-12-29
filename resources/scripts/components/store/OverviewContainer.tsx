@@ -123,7 +123,7 @@ export default () => {
         [currency]
     );
 
-    const overviewBlocks = layout.overview?.length ? layout.overview : defaultStoreLayout.overview;
+    const overviewBlocks = layout.overview ?? defaultStoreLayout.overview;
 
     const getFeaturedProducts = (
         block: Extract<StorefrontLayoutBlock, { type: 'featured' }>

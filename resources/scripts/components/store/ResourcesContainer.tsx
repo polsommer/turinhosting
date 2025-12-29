@@ -116,7 +116,7 @@ export default () => {
         },
     };
 
-    const resourceBlocks = layout.resources?.length ? layout.resources : defaultStoreLayout.resources;
+    const resourceBlocks = layout.resources ?? defaultStoreLayout.resources;
 
     return (
         <PageContentBlock

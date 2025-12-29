@@ -81,6 +81,10 @@ class StoreLayoutService
             return $fallback;
         }
 
+        if ($section === []) {
+            return [];
+        }
+
         $blocks = [];
 
         foreach ($section as $block) {
