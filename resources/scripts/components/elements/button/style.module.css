@@ -2,6 +2,8 @@
     @apply px-4 py-2 inline-flex items-center justify-center;
     @apply rounded text-base font-semibold transition-all duration-100;
     @apply focus:ring-[3px] focus:ring-offset-2 focus:ring-offset-gray-700 focus:ring-opacity-50;
+    border-radius: var(--jex-component-button-radius, 10px);
+    --tw-ring-color: var(--jex-component-focus-ring, rgba(56, 189, 248, 0.6));
 
     /* Sizing Controls */
     &.small {
@@ -36,19 +38,36 @@
 .primary {
     @apply bg-green-600 text-green-50;
     @apply hover:bg-green-500 active:bg-green-500 focus:ring-green-400 focus:ring-opacity-75;
+    background-color: var(--jex-color-primary, #16a34a);
+    color: var(--jex-color-primary-text, #f0fdf4);
 
     &.secondary {
         @apply hover:bg-green-600 active:bg-green-600;
+        background-color: transparent;
     }
 
     &:disabled {
         @apply bg-green-500/75 text-green-200/75;
+        background-color: var(--jex-color-primary, #16a34a);
+        opacity: 0.7;
+    }
+
+    &:hover,
+    &:active {
+        background-color: var(--jex-color-primary-hover, #22c55e);
     }
 }
 
 .success {
     @apply bg-green-600 text-green-50;
     @apply hover:bg-green-500 active:bg-green-500 focus:ring-green-400 focus:ring-opacity-75;
+    background-color: var(--jex-color-primary, #16a34a);
+    color: var(--jex-color-primary-text, #f0fdf4);
+
+    &:hover,
+    &:active {
+        background-color: var(--jex-color-primary-hover, #22c55e);
+    }
 
     &.secondary {
         @apply hover:bg-green-600 active:bg-green-600;
@@ -62,6 +81,7 @@
 .warn {
     @apply bg-yellow-600 text-yellow-50;
     @apply hover:bg-yellow-500 active:bg-yellow-500 focus:ring-yellow-400 focus:ring-opacity-75;
+    border-radius: var(--jex-component-button-radius, 10px);
 
     &.secondary {
         @apply hover:bg-yellow-600 active:bg-yellow-600;
@@ -75,6 +95,7 @@
 .danger {
     @apply bg-red-600 text-gray-50;
     @apply hover:bg-red-500 active:bg-red-500 focus:ring-red-400 focus:ring-opacity-75;
+    border-radius: var(--jex-component-button-radius, 10px);
 
     &.secondary {
         @apply hover:bg-red-600 active:bg-red-600;
@@ -88,6 +109,7 @@
 .text {
     @apply bg-gray-500 text-gray-50;
     @apply hover:bg-gray-400 active:bg-gray-400 focus:ring-gray-300 focus:ring-opacity-50;
+    border-radius: var(--jex-component-button-radius, 10px);
 
     &.secondary {
         @apply hover:bg-gray-500 active:bg-gray-500;

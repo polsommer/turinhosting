@@ -19,6 +19,21 @@
 
         @include('layouts.scripts')
 
+        @if(!empty($themeCssVariables))
+            <style>
+                :root {
+                    {{ $themeCssVariables }}
+                }
+                body {
+                    font-family: var(--jex-font-base, 'Rubik', sans-serif);
+                    font-size: var(--jex-font-size, 16px);
+                }
+            </style>
+        @endif
+        @if(!empty(data_get($themeConfiguration ?? [], 'typography.fontImportUrl')))
+            <link rel="stylesheet" href="{{ data_get($themeConfiguration, 'typography.fontImportUrl') }}">
+        @endif
+
         @section('scripts')
             {!! Theme::css('vendor/select2/select2.min.css?t={cache-version}') !!}
             {!! Theme::css('vendor/bootstrap/bootstrap.min.css?t={cache-version}') !!}

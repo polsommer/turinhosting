@@ -5,7 +5,7 @@ import { store } from '@/state';
 import { StoreProvider } from 'easy-peasy';
 import { hot } from 'react-hot-loader/root';
 import { history } from '@/components/history';
-import { SiteSettings } from '@/state/settings';
+import { SiteSettings, ThemeSettings } from '@/state/settings';
 import IndexRouter from '@/routers/IndexRouter';
 import earnCredits from '@/api/account/earnCredits';
 import { setupInterceptors } from '@/api/interceptors';
@@ -35,6 +35,38 @@ interface ExtendedWindow extends Window {
 
 setupInterceptors(history);
 
+const applyThemeConfiguration = (theme: ThemeSettings) => {
+    const root = document.documentElement;
+    const entries: Array<[string, string]> = [
+        ['--jex-color-primary', theme.colors.primary],
+        ['--jex-color-primary-hover', theme.colors.primaryHover],
+        ['--jex-color-primary-text', theme.colors.primaryText],
+        ['--jex-color-accent', theme.colors.accent],
+        ['--jex-color-bg', theme.colors.background],
+        ['--jex-color-surface', theme.colors.surface],
+        ['--jex-color-text', theme.colors.text],
+        ['--jex-color-muted', theme.colors.muted],
+        ['--jex-color-border', theme.colors.border],
+        ['--jex-font-base', theme.typography.fontFamilyBase],
+        ['--jex-font-heading', theme.typography.fontFamilyHeading],
+        ['--jex-font-mono', theme.typography.fontFamilyMono],
+        ['--jex-font-size', theme.typography.baseSize],
+        ['--jex-layout-max-width', theme.layout.maxWidth],
+        ['--jex-layout-padding', theme.layout.padding],
+        ['--jex-layout-gap', theme.layout.contentGap],
+        ['--jex-component-button-radius', theme.components.buttonRadius],
+        ['--jex-component-card-radius', theme.components.cardRadius],
+        ['--jex-component-input-radius', theme.components.inputRadius],
+        ['--jex-component-focus-ring', theme.components.focusRingColor],
+    ];
+
+    entries.forEach(([key, value]) => {
+        if (value) {
+            root.style.setProperty(key, value);
+        }
+    });
+};
+
 const App = () => {
     const { JexactylUser, SiteConfiguration, StoreConfiguration } = window as ExtendedWindow;
 
@@ -57,6 +89,10 @@ const App = () => {
 
     if (!store.getState().settings.data) {
         store.getActions().settings.setSettings(SiteConfiguration!);
+    }
+
+    if (SiteConfiguration?.theme) {
+        applyThemeConfiguration(SiteConfiguration.theme);
     }
 
     if (!store.getState().storefront.data) {

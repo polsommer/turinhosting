@@ -27,6 +27,10 @@ const ProductCard = ({ product, currency }: Props) => {
                     ? 'border-indigo-500 shadow-indigo-500/20 ring-1 ring-indigo-400/40'
                     : 'border-gray-700'
             )}
+            style={{
+                backgroundColor: 'var(--jex-color-surface, #111827)',
+                borderRadius: 'var(--jex-component-card-radius, 16px)',
+            }}
         >
             <div className={'flex items-start justify-between'}>
                 <div>

@@ -25,6 +25,8 @@ class SettingsServiceProvider extends ServiceProvider
         'recaptcha:secret_key',
         'recaptcha:website_key',
         'theme:user:background',
+        'theme:layout',
+        'theme:layout_preview',
         'jexactyl:guzzle:timeout',
         'jexactyl:auth:2fa_required',
         'jexactyl:guzzle:connect_timeout',

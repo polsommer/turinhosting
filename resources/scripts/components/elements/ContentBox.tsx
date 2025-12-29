@@ -25,6 +25,10 @@ const ContentBox = ({ title, borderColor, showFlashes, showLoadingOverlay, child
                 !!borderColor && tw`border-t-4`,
                 isLight ? tw`bg-neutral-700` : tw`bg-neutral-800`,
             ]}
+            style={{
+                borderRadius: 'var(--jex-component-card-radius, 16px)',
+                backgroundColor: isLight ? 'var(--jex-color-surface, #1f2937)' : 'var(--jex-color-surface, #111827)',
+            }}
         >
             <SpinnerOverlay visible={showLoadingOverlay || false} />
             {children}

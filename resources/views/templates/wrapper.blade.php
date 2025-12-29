@@ -47,6 +47,16 @@
                 }
             </style>
         @endif
+        @if(!empty($themeCssVariables))
+            <style>
+                :root {
+                    {{ $themeCssVariables }}
+                }
+            </style>
+        @endif
+        @if(!empty(data_get($themeConfiguration ?? [], 'typography.fontImportUrl')))
+            <link rel="stylesheet" href="{{ data_get($themeConfiguration, 'typography.fontImportUrl') }}">
+        @endif
 
         <style>
             @import url('//fonts.googleapis.com/css?family=Rubik:300,400,500&display=swap');
@@ -57,7 +67,12 @@
 
         @include('layouts.scripts')
     </head>
-    <body>
+    <body
+        data-theme-preview="{{ $themePreviewActive ? 'true' : 'false' }}"
+        data-layout-header="{{ data_get($themeConfiguration ?? [], 'blocks.showHeader') ? 'true' : 'false' }}"
+        data-layout-footer="{{ data_get($themeConfiguration ?? [], 'blocks.showFooter') ? 'true' : 'false' }}"
+        data-layout-sidebar="{{ data_get($themeConfiguration ?? [], 'blocks.showSidebar') ? 'true' : 'false' }}"
+    >
         @section('content')
             @yield('above-container')
             @yield('container')

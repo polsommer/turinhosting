@@ -3,6 +3,8 @@ import styled from 'styled-components/macro';
 
 const SubNavigation = styled.div`
     ${tw`bg-neutral-800 overflow-x-auto font-mono font-semibold mb-4 sm:mb-10 xl:ml-20`};
+    background-color: var(--jex-color-surface, #111827);
+    font-family: var(--jex-font-mono, 'IBM Plex Mono', monospace);
 
     & > div {
         ${tw`flex text-sm mx-auto px-2`};
@@ -22,7 +24,7 @@ const SubNavigation = styled.div`
             &:active,
             &.active {
                 ${tw`text-neutral-100`};
-                box-shadow: inset 0 -2px ${theme`colors.green.600`.toString()};
+                box-shadow: inset 0 -2px var(--jex-color-accent, ${theme`colors.green.600`.toString()});
             }
         }
     }
