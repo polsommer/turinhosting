@@ -7,6 +7,9 @@
                     <li @if($activeTab === 'index') class="active "@endif>
                         <a href="{{ route('admin.index') }}">Home</a>
                     </li>
+                    <li @if($activeTab === 'onboarding') class="active "@endif>
+                        <a href="{{ route('admin.jexactyl.onboarding') }}">Onboarding</a>
+                    </li>
                     <li @if($activeTab === 'appearance') class="active" @endif>
                         <a href="{{ route('admin.jexactyl.appearance') }}">Appearance</a>
                     </li>

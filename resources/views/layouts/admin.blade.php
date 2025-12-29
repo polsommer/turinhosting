@@ -34,6 +34,39 @@
             <link rel="stylesheet" href="{{ data_get($themeConfiguration, 'typography.fontImportUrl') }}">
         @endif
 
+        <style>
+            .admin-help-toggle {
+                position: fixed;
+                bottom: 24px;
+                right: 24px;
+                z-index: 1030;
+            }
+            .admin-help-panel {
+                position: fixed;
+                bottom: 70px;
+                right: 24px;
+                width: 320px;
+                max-height: 60vh;
+                overflow-y: auto;
+                background: #ffffff;
+                border: 1px solid #d2d6de;
+                border-radius: 4px;
+                box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+                display: none;
+                z-index: 1030;
+            }
+            .admin-help-panel .admin-help-header {
+                padding: 10px 12px;
+                border-bottom: 1px solid #f4f4f4;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .admin-help-panel .admin-help-body {
+                padding: 12px;
+            }
+        </style>
+
         @section('scripts')
             {!! Theme::css('vendor/select2/select2.min.css?t={cache-version}') !!}
             {!! Theme::css('vendor/bootstrap/bootstrap.min.css?t={cache-version}') !!}
@@ -141,6 +174,21 @@
                 </section>
             </div>
         </div>
+        <div id="admin-help-panel" class="admin-help-panel">
+            <div class="admin-help-header">
+                <strong id="admin-help-title">Admin Help</strong>
+                <button type="button" class="btn btn-box-tool" id="admin-help-close">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="admin-help-body">
+                <ul id="admin-help-list" class="list-unstyled"></ul>
+                <p id="admin-help-empty" class="text-muted" style="display: none;">No tips available for this page yet.</p>
+            </div>
+        </div>
+        <button type="button" id="admin-help-toggle" class="btn btn-info admin-help-toggle">
+            <i class="fa fa-life-ring"></i> Help
+        </button>
         @section('footer-scripts')
             <script src="/js/keyboard.polyfill.js" type="application/javascript"></script>
             <script>keyboardeventKeyPolyfill.polyfill();</script>
@@ -191,6 +239,86 @@
                 $(function () {
                     $('[data-toggle="tooltip"]').tooltip();
                 })
+            </script>
+
+            <script>
+                $(function () {
+                    const tipsByRoute = {
+                        'admin.jexactyl.onboarding': {
+                            title: 'Onboarding help',
+                            items: [
+                                'Complete each checklist item before marking a step done.',
+                                'Use the buttons in each step to jump to the right configuration screen.',
+                            ],
+                        },
+                        'admin.jexactyl.store': {
+                            title: 'Storefront guidance',
+                            items: [
+                                'Enable Stripe or PayPal before turning on the storefront.',
+                                'Define pricing so users can see what credits or resources cost.',
+                            ],
+                        },
+                        'admin.jexactyl.mail': {
+                            title: 'Mail configuration',
+                            items: [
+                                'SMTP is required to send receipts and alerts.',
+                                'Use the test button to confirm delivery after saving settings.',
+                            ],
+                        },
+                        'admin.jexactyl.appearance': {
+                            title: 'Appearance tips',
+                            items: [
+                                'Publish a theme layout to update the UI immediately.',
+                                'Preview changes before saving to avoid disrupting users.',
+                            ],
+                        },
+                        'admin.nodes': {
+                            title: 'Node setup',
+                            items: [
+                                'Add at least one node before creating servers.',
+                                'Verify the node is online and has allocations available.',
+                            ],
+                        },
+                        'admin.servers': {
+                            title: 'Server management',
+                            items: [
+                                'Use locations and nodes to control where servers are deployed.',
+                                'Double-check resource limits when provisioning new servers.',
+                            ],
+                        },
+                    };
+
+                    const currentRoute = '{{ Route::currentRouteName() }}';
+                    const tips = tipsByRoute[currentRoute];
+                    const $panel = $('#admin-help-panel');
+                    const $list = $('#admin-help-list');
+                    const $empty = $('#admin-help-empty');
+                    const $title = $('#admin-help-title');
+                    const $toggle = $('#admin-help-toggle');
+
+                    $list.empty();
+
+                    if (tips && tips.items.length) {
+                        $title.text(tips.title);
+                        tips.items.forEach((tip) => {
+                            $('<li/>').text(tip).appendTo($list);
+                        });
+                        $empty.hide();
+                        $toggle.show();
+                    } else {
+                        $title.text('Admin Help');
+                        $empty.show();
+                        $toggle.show();
+                    }
+
+                    $toggle.on('click', function () {
+                        $panel.toggle();
+                    });
+
+                    $('#admin-help-close').on('click', function () {
+                        $panel.hide();
+                    });
+                });
             </script>
         @show
     </body>
