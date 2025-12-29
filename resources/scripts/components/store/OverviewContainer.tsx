@@ -1,13 +1,24 @@
-import React from 'react';
-import { useStoreState } from 'easy-peasy';
+import React, { useEffect } from 'react';
+import { useStoreActions, useStoreState } from 'easy-peasy';
 import useWindowDimensions from '@/plugins/useWindowDimensions';
 import ResourceBar from '@/components/elements/store/ResourceBar';
 import StoreBanner from '@/components/elements/store/StoreBanner';
 import PageContentBlock from '@/components/elements/PageContentBlock';
+import { getProducts } from '@/api/store/getProducts';
+import ProductCard from '@/components/elements/store/ProductCard';
 
 export default () => {
     const { width } = useWindowDimensions();
     const username = useStoreState((state) => state.user.data!.username);
+    const currency = useStoreState((state) => state.storefront.data?.currency);
+    const catalog = useStoreState((state) => state.storefront.data?.products);
+    const setStorefrontProducts = useStoreActions((actions) => actions.storefront.setStorefrontProducts);
+
+    useEffect(() => {
+        getProducts()
+            .then((products) => setStorefrontProducts(products))
+            .catch((error) => console.error('Failed to load storefront products', error));
+    }, [setStorefrontProducts]);
 
     return (
         <PageContentBlock title={'Storefront Overview'}>
@@ -39,6 +50,41 @@ export default () => {
                     action={'Add Funds'}
                     link={'credits'}
                 />
+            </div>
+            <div className={'mt-16'}>
+                <div className={'flex flex-col gap-2'}>
+                    <h2 className={'text-4xl font-semibold'}>Shop</h2>
+                    <p className={'text-neutral-400'}>
+                        Choose a VPS hosting plan or a game server bundle. Buy now to prefill resources and launch
+                        faster.
+                    </p>
+                </div>
+                <div className={'mt-10 space-y-12'}>
+                    {catalog?.categories?.map((category) => {
+                        const products =
+                            catalog?.products?.filter((product) => product.category === category.id) ?? [];
+
+                        if (!products.length) {
+                            return null;
+                        }
+
+                        return (
+                            <div key={category.id}>
+                                <div className={'flex flex-col gap-1 mb-6'}>
+                                    <h3 className={'text-3xl font-semibold'}>{category.name}</h3>
+                                    {category.description && (
+                                        <p className={'text-sm text-neutral-400'}>{category.description}</p>
+                                    )}
+                                </div>
+                                <div className={'grid gap-6 lg:grid-cols-2'}>
+                                    {products.map((product) => (
+                                        <ProductCard key={product.id} product={product} currency={currency} />
+                                    ))}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
             </div>
         </PageContentBlock>
     );
