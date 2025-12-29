@@ -16,6 +16,7 @@
 
 ## Installation
 Use the [Install from Scratch guide](docs/install-from-scratch.md) to get this repository running on your own server.
+For Ubuntu 22.04, follow the dedicated [Ubuntu 22.04 installation guide](docs/install-ubuntu-22.04.md).
 If you need help at any point during the installation process, please let us know on [Discord](https://discord.com/invite/qttGR4Z5Pk).
 
 ## Why use Jexactyl?
