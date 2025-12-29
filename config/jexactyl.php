@@ -306,4 +306,63 @@ return [
             ],
         ],
     ],
+
+    /*
+    |----------------------------------------------------------------------
+    | Storefront Layout Builder
+    |----------------------------------------------------------------------
+    |
+    | Define the default store layout. This can be overridden with the
+    | jexactyl::store:layout setting using a JSON payload.
+    */
+
+    'store_layout' => [
+        'overview' => [
+            [
+                'type' => 'hero',
+            ],
+            [
+                'type' => 'banners',
+            ],
+            [
+                'type' => 'featured',
+                'title' => 'Featured plans',
+                'description' => 'Highlight the best plans from your store.',
+                'limit' => 3,
+            ],
+            [
+                'type' => 'catalog',
+                'title' => 'Shop',
+                'description' => 'Choose a VPS hosting plan or a game server bundle. Buy now to prefill resources and launch faster.',
+            ],
+        ],
+        'resources' => [
+            [
+                'type' => 'resource-grid',
+                'resources' => ['cpu', 'memory', 'disk', 'slot', 'port', 'backup', 'database'],
+            ],
+            [
+                'type' => 'resource-tips',
+                'title' => 'How to use resources',
+            ],
+            [
+                'type' => 'resource-cta',
+                'title' => 'Ready to get started?',
+                'link' => '/store/create',
+                'linkLabel' => 'Create a server',
+            ],
+        ],
+        'purchase' => [
+            [
+                'type' => 'balance-summary',
+                'balanceTitle' => 'Account Balance',
+                'gatewaysTitle' => 'Add Funds',
+            ],
+            [
+                'type' => 'earnings',
+                'title' => 'Idle Balance Earnings',
+                'description' => 'See how much you will earn per minute while AFK.',
+            ],
+        ],
+    ],
 ];

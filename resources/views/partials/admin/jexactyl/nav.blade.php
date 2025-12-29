@@ -22,6 +22,9 @@
                     <li @if($activeTab === 'store') class="active" @endif>
                         <a href="{{ route('admin.jexactyl.store') }}">Storefront</a>
                     </li>
+                    <li @if($activeTab === 'store-layout') class="active" @endif>
+                        <a href="{{ route('admin.jexactyl.store.layout') }}">Store Layout</a>
+                    </li>
                     <li @if($activeTab === 'registration') class="active" @endif>
                         <a href="{{ route('admin.jexactyl.registration') }}">Registration</a>
                     </li>
