@@ -62,12 +62,18 @@ export interface StorefrontProduct {
     billing: string;
     specs: StorefrontProductSpecs;
     provisioning?: StorefrontProductProvisioning;
+    tag?: string;
+    features?: string[];
+    highlight?: boolean;
+    region?: string;
+    cta?: string;
 }
 
 export interface StorefrontCategory {
     id: string;
     name: string;
     description?: string;
+    icon?: string;
 }
 
 export interface StorefrontCatalog {
