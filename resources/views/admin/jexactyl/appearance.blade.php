@@ -223,6 +223,37 @@
                         </div>
                     </div>
                 </div>
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Full Page Editor <small>Inject custom HTML, CSS, and JavaScript for any page or storefront view.</small></h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label class="control-label">Custom Head HTML</label>
+                                <textarea class="form-control" rows="6" name="theme:custom_head_html">{{ old('theme:custom_head_html', config('theme.custom_head_html')) }}</textarea>
+                                <p class="text-muted"><small>Paste tags that belong in the &lt;head&gt; (fonts, meta tags, scripts).</small></p>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="control-label">Custom Body HTML</label>
+                                <textarea class="form-control" rows="6" name="theme:custom_body_html">{{ old('theme:custom_body_html', config('theme.custom_body_html')) }}</textarea>
+                                <p class="text-muted"><small>Injected near the end of the body for banners, widgets, or extra markup.</small></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label class="control-label">Custom CSS</label>
+                                <textarea class="form-control" rows="8" name="theme:custom_css">{{ old('theme:custom_css', config('theme.custom_css')) }}</textarea>
+                                <p class="text-muted"><small>Overrides styles across all storefront and panel pages.</small></p>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="control-label">Custom JavaScript</label>
+                                <textarea class="form-control" rows="8" name="theme:custom_js">{{ old('theme:custom_js', config('theme.custom_js')) }}</textarea>
+                                <p class="text-muted"><small>Attach smart behavior like storefront widgets, editors, or analytics.</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 {!! csrf_field() !!}
                 <input type="hidden" name="_method" value="PATCH" />
                 <button type="submit" class="btn btn-primary pull-right" style="margin-left: 8px;">Publish Changes</button>

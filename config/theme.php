@@ -9,6 +9,10 @@ return [
 
     'layout' => null,
     'layout_preview' => null,
+    'custom_css' => '',
+    'custom_js' => '',
+    'custom_head_html' => '',
+    'custom_body_html' => '',
 
     'layout_defaults' => [
         'mode' => 'brand',
