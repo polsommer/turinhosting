@@ -62,6 +62,14 @@
             @import url('//fonts.googleapis.com/css?family=Rubik:300,400,500&display=swap');
             @import url('//fonts.googleapis.com/css?family=IBM+Plex+Mono|IBM+Plex+Sans:500&display=swap');
         </style>
+        @if(!empty(config('theme.custom_css')))
+            <style>
+                {!! config('theme.custom_css') !!}
+            </style>
+        @endif
+        @if(!empty(config('theme.custom_head_html')))
+            {!! config('theme.custom_head_html') !!}
+        @endif
 
         @yield('assets')
 
@@ -82,5 +90,13 @@
         @section('scripts')
             {!! $asset->js('main.js') !!}
         @show
+        @if(!empty(config('theme.custom_body_html')))
+            {!! config('theme.custom_body_html') !!}
+        @endif
+        @if(!empty(config('theme.custom_js')))
+            <script>
+                {!! config('theme.custom_js') !!}
+            </script>
+        @endif
     </body>
 </html>
